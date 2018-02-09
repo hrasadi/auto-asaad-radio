@@ -9,7 +9,7 @@ class ProgramInfoDirectory extends SerializableObject {
         this.deflate();
     }
 
-    get deflate() {
+    deflate() {
         if (this.ProgramInfos) {
             for (let pInfo of this.ProgramInfos) {
                 pInfo.deflateProgramInfo();
