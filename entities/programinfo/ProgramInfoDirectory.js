@@ -11,8 +11,8 @@ class ProgramInfoDirectory extends SerializableObject {
 
     deflate() {
         if (this.ProgramInfos) {
-            for (let pInfo of this.ProgramInfos) {
-                pInfo.deflateProgramInfo();
+            for (let pname of Object.keys(this.ProgramInfos)) {
+                this._programInfos[pname].deflateProgramInfo();
             }
         }
     }
