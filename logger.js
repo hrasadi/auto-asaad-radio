@@ -19,7 +19,7 @@ let Logger = function(logFilePath, forceDebug = false) {
       })
     ),
     transports: [
-        new transports.File({filename: logFilePath, level: 'debug'}),
+        new transports.File({filename: logFilePath, level: 'info'}),
     ],
   });
 

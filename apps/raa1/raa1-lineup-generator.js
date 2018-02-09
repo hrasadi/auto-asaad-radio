@@ -95,7 +95,7 @@ class Raa1LineupGenerator extends LineupGenerator {
     async init() {
         // Pull conf git repo!
         execSync(
-            'git -C ' + path.resolve(path.dirname(this._confFilePath)) + ' pull origin master --no-edit'
+            'git -C ' + path.resolve(path.dirname(this._confFilePath)) + ' pull --no-edit'
         );
 
         try {

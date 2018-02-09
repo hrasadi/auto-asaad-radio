@@ -20,6 +20,7 @@ class Raa1API extends AppContext {
         super();
 
         this._confFilePath = program.args[0];
+        this._pInfoDirectoryFilePath = program.args[1];
 
         this._productionMode = process.env.NODE_ENV == 'production' ? true : false;
 
@@ -35,6 +36,9 @@ class Raa1API extends AppContext {
         try {
             try {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
+                this._pInfoDirectoryString = fs.readFileSync(
+                    this._pInfoDirectoryFilePath
+                );
             } catch (e) {
                 this.Logger.error('Error parsing config file. Inner exception is: ' + e);
                 process.exit(1);
@@ -83,13 +87,17 @@ class Raa1API extends AppContext {
             res.send('Success');
         });
 
-        this._webApp.get('/publicfeed', async (req, res) => {
+        this._webApp.get('/publicFeed', async (req, res) => {
             try {
                 let feed = await this.PublicFeed.renderFeed();
                 res.send(feed);
             } catch (error) {
                 AppContext.getInstance.Logger.error(error.stack);
             }
+        });
+
+        this._webApp.get('/programInfoDirectory', (req, res) => {
+            res.send(this._pInfoDirectoryString);
         });
 
         this._webApp.get('/linkgenerator/:medium', (req, res) => {
@@ -165,7 +173,10 @@ class Raa1API extends AppContext {
 program.version('1.0.0').parse(process.argv);
 
 if (program.args.length < 1) {
-    console.log('Usage: [NODE_ENV=production] node raa1-api.js {config-file}');
+    console.log(
+        'Usage: [NODE_ENV=production] node raa1-api.js {config-file}' +
+            '{program-info-directory-file}'
+    );
     process.exit(1);
 }
 
