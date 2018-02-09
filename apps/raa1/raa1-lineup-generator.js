@@ -6,7 +6,7 @@ const LineupGenerator = require('../../LineupGenerator');
 
 const Raa1ActionManager = require('./lineupaction/Raa1ActionManager');
 const Raa1StartTimeCalculatorManager = require('./starttimecalculator/' +
-                                                'Raa1StartTimeCalculatorManager');
+    'Raa1StartTimeCalculatorManager');
 
 const StandaloneMedia = require('../../standalone/StandaloneMedia');
 const StandaloneBox = require('../../standalone/StandaloneBox');
@@ -127,8 +127,8 @@ class Raa1LineupGenerator extends LineupGenerator {
 
         this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
         try {
-            this._pinfoDirectory = new ProgramInfoDirectory(JSON.parse(
-                fs.readFileSync(this._pinfoDirectoryFilePath))
+            this._pinfoDirectory = new ProgramInfoDirectory(
+                JSON.parse(fs.readFileSync(this._pinfoDirectoryFilePath))
             );
         } catch (e) {
             this.Logger.error(

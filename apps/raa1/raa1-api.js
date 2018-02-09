@@ -40,7 +40,7 @@ class Raa1API extends AppContext {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
                 this._pInfoDirectoryString = JSON.stringify(
                     new ProgramInfoDirectory(
-                        fs.readFileSync(this._pInfoDirectoryFilePath)
+                        JSON.parse(fs.readFileSync(this._pInfoDirectoryFilePath))
                     )
                 );
             } catch (e) {
