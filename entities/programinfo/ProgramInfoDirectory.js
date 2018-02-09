@@ -18,7 +18,7 @@ class ProgramInfoDirectory extends SerializableObject {
     }
 
     get ProgramInfos() {
-        return this.getOrNull(this._programInfo);
+        return this.getOrNull(this._programInfos);
     }
 
     set ProgramInfos(values) {

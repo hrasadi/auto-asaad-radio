@@ -20,6 +20,8 @@ const Raa1ClipPublisher = require('./publishers/Raa1ClipPublisher');
 const Raa1PodcastPublisher = require('./publishers/Raa1PodcastPublisher');
 const Raa1ArchivePublisher = require('./publishers/Raa1ArchivePublisher');
 
+const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
+
 const U = require('../../collaborativelistening/UserManager');
 const UserManager = U.UserManager;
 
@@ -125,8 +127,8 @@ class Raa1LineupGenerator extends LineupGenerator {
 
         this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
         try {
-            this._pinfoDirectory = JSON.parse(
-                fs.readFileSync(this._pinfoDirectoryFilePath)
+            this._pinfoDirectory = new ProgramInfoDirectory(JSON.parse(
+                fs.readFileSync(this._pinfoDirectoryFilePath))
             );
         } catch (e) {
             this.Logger.error(

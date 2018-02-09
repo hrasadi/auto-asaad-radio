@@ -4,6 +4,8 @@ const AppContext = require('../../AppContext');
 const UF = require('./collaborativelistening/Raa1PublicFeed');
 const Raa1PublicFeed = UF.Raa1PublicFeed;
 
+const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
+
 const Raa1UserManager = require('./collaborativelistening/Raa1UserManager');
 const U = require('../../collaborativelistening/UserManager');
 const User = U.User;
@@ -36,8 +38,10 @@ class Raa1API extends AppContext {
         try {
             try {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
-                this._pInfoDirectoryString = fs.readFileSync(
-                    this._pInfoDirectoryFilePath
+                this._pInfoDirectoryString = JSON.stringify(
+                    new ProgramInfoDirectory(
+                        fs.readFileSync(this._pInfoDirectoryFilePath)
+                    )
                 );
             } catch (e) {
                 this.Logger.error('Error parsing config file. Inner exception is: ' + e);

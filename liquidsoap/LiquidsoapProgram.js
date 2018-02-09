@@ -29,7 +29,7 @@ class LiquidsoapProgram extends Program {
             if (preShowStartTime.isBefore(moment())) {
                 AppContext.getInstance().Logger.info(
                     `PreShow ${this.CanonicalIdPath}` +
-                        `start time is passed. Skipping scheudling.`
+                        ` start time has passed. Skipping scheudling.`
                 );
                 return;
             }
