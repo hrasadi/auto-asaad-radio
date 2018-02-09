@@ -12,7 +12,7 @@ fi
 echo 'Starting now...'
 
 mkdir -p "$CWD/run/archive"
-mkdir -p "$CWD/run/counter"
+mkdir -p "$CWD/run/iterator"
 mkdir -p "$CWD/run/db"
 mkdir -p "$CWD/run/lineup"
 mkdir -p "$CWD/run/logs"

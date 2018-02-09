@@ -1,4 +1,4 @@
-const Logger = require('../../../logger');
+const Logger = require('../../logger');
 const AppContext = require('../../AppContext');
 
 const UF = require('./collaborativelistening/Raa1PublicFeed');
