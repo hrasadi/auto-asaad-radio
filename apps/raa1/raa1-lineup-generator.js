@@ -1,4 +1,4 @@
-const Logger = require('../../../logger');
+const Logger = require('../../logger');
 const DateUtils = require('../../DateUtils');
 
 const ObjectBuilder = require('../../entities/ObjectBuilder');
