@@ -464,8 +464,9 @@ class Program extends BaseProgram {
 
         // Publish to public feed
         if (this.Publishing.CollaborativeListeningFeed === 'Public') {
+            // We release all programs on the start time of their boxes
             AppContext.getInstance('LineupGenerator').PublicFeed.registerProgram(
-                programToPublish
+                programToPublish, this._parentBox.StartTime
             );
         } else if (this.Publishing.CollaborativeListeningFeed === 'Personal') {
             // Schedule for personal feed
