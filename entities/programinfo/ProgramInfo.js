@@ -60,12 +60,12 @@ class ProgramInfo extends SerializableObject {
         this._thumbnail = value;
     }
 
-    get CoverArt() {
-        return this.getOrNull(this._coverArt);
+    get Banner() {
+        return this.getOrNull(this._banner);
     }
 
-    set CoverArt(value) {
-        this._coverArt = value;
+    set Banner(value) {
+        this._banner = value;
     }
 }
 
