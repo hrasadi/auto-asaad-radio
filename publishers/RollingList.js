@@ -39,20 +39,21 @@ class RollingList {
         }
     }
 
-    flush() {
-        if (Object.keys(this._uncommitedMap).length > 0) {
-            this.loadHistroy();
-
-            for (let date in this._uncommitedMap) {
-                if (this._uncommitedMap[date]) {
-                    // Update the values for date with the new ones
-                    this._fullHistory[date] = this._uncommitedMap[date];
-                }
-            }
-
+    /**
+     * Flushes list data down to disk (also applies feed capacity and timeout)
+     * @param {String} pruneByDate the date for which we remove all items
+     * before that (excluding)
+     */
+    flush(pruneByDate) {
+        if (this.commit() > 0) {
             // Now sort, filter and save. Good news is that acsending string sort
             // works for us just fine
             let sortedDates = Object.keys(this._fullHistory).sort();
+            if (pruneByDate) {
+                sortedDates = sortedDates.filter((date) => {
+                    return (date.localeCompare(pruneByDate) >= 0);
+                });
+            }
 
             // if not unlimited
             if (this._maxItems !== 0) {
@@ -77,6 +78,23 @@ class RollingList {
                 JSON.stringify(this._fullHistory, null, 2)
             );
         }
+    }
+
+    commit() {
+        let commitedDatesCount = 0;
+
+        if (Object.keys(this._uncommitedMap).length > 0) {
+            this.loadHistroy();
+
+            for (let date in this._uncommitedMap) {
+                if (this._uncommitedMap[date]) {
+                    // Update the values for date with the new ones
+                    this._fullHistory[date] = this._uncommitedMap[date];
+                    commitedDatesCount++;
+                }
+            }
+        }
+        return commitedDatesCount;
     }
 
     // This is where we reassemble the items from different dates, note that

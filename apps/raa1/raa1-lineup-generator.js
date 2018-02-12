@@ -19,6 +19,7 @@ const Raa1ClipPublisher = require('./publishers/Raa1ClipPublisher');
 
 const Raa1PodcastPublisher = require('./publishers/Raa1PodcastPublisher');
 const Raa1ArchivePublisher = require('./publishers/Raa1ArchivePublisher');
+const Raa1LiveLineupPublisher = require('./publishers/Raa1ArchivePublisher');
 
 const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
 
@@ -123,6 +124,7 @@ class Raa1LineupGenerator extends LineupGenerator {
         this._publishers = {
             PodcastPublisher: new Raa1PodcastPublisher(),
             ArchivePublisher: new Raa1ArchivePublisher(),
+            LiveLineupPublisher: new Raa1LiveLineupPublisher(),
         };
 
         this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
