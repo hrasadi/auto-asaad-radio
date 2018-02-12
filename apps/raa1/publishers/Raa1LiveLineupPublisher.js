@@ -1,12 +1,11 @@
 const AppContext = require('../../../AppContext');
 
-const PodcastPublisher = require('../../../publishers/PodcastPublisher');
-
+const LiveLineupPublisher = require('../../../publishers/LiveLineupPublisher');
 const RollingList = require('../../../publishers/RollingList');
 
 const DateUtils = require('../../../DateUtils');
 
-class Raa1LiveLineupPublisher extends PodcastPublisher {
+class Raa1LiveLineupPublisher extends LiveLineupPublisher {
     constructor() {
         super();
         this._feedName = 'live-broadcast';
