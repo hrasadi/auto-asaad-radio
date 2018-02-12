@@ -8,7 +8,7 @@ const DateUtils = require('../../../DateUtils');
 class Raa1LiveLineupPublisher extends LiveLineupPublisher {
     constructor() {
         super();
-        this._feedName = 'live-broadcast';
+        this._feedName = 'live-lineup';
     }
 
     doPublish(program, targetDate) {
