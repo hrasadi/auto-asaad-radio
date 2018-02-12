@@ -19,7 +19,7 @@ const Raa1ClipPublisher = require('./publishers/Raa1ClipPublisher');
 
 const Raa1PodcastPublisher = require('./publishers/Raa1PodcastPublisher');
 const Raa1ArchivePublisher = require('./publishers/Raa1ArchivePublisher');
-const Raa1LiveLineupPublisher = require('./publishers/Raa1ArchivePublisher');
+const Raa1LiveLineupPublisher = require('./publishers/Raa1LiveLineupPublisher');
 
 const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
 
