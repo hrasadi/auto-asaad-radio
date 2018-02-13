@@ -134,7 +134,9 @@ class Raa1LineupGenerator extends LineupGenerator {
             );
         } catch (e) {
             this.Logger.error(
-                'Error parsing program info directory file.' + ' Inner exception is: ' + e.stack
+                'Error parsing program info directory file.' +
+                    ' Inner exception is: ' +
+                    e.stack
             );
             process.exit(1);
         }

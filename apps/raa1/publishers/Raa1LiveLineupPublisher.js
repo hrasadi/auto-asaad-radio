@@ -5,6 +5,8 @@ const RollingList = require('../../../publishers/RollingList');
 
 const DateUtils = require('../../../DateUtils');
 
+const moment = require('moment');
+
 class Raa1LiveLineupPublisher extends LiveLineupPublisher {
     constructor() {
         super();
@@ -24,8 +26,11 @@ class Raa1LiveLineupPublisher extends LiveLineupPublisher {
     }
 
     commit(vodTargetDate) {
-        // We overwrite the target date to the current date
+        // We overwrite the target date to the current date - 2
+        // (we keep TWO more day of programs to take care of timezone difference)
         let targetDate = DateUtils.getTodayString();
+        targetDate = moment(targetDate).subtract(2, 'day').format('YYYY-MM-DD');
+
         for (let feedName in this._rollingListsDict) {
             if (this._rollingListsDict.hasOwnProperty(feedName)) {
                 this._rollingListsDict[feedName].flush(targetDate);

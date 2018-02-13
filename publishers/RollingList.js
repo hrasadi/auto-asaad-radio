@@ -55,12 +55,12 @@ class RollingList {
                 });
             }
 
-            // if not unlimited
-            if (this._maxItems !== 0) {
-                let feedCapacity = this._maxItems;
-                let filteredHistory = {};
-                // start from newest to oldest
-                for (let date of sortedDates.reverse()) {
+            let feedCapacity = this._maxItems;
+            let filteredHistory = {};
+            for (let date of sortedDates.reverse()) {
+                // if not unlimited
+                if (this._maxItems !== 0) {
+                    // start from newest to oldest
                     if (feedCapacity - this._fullHistory[date].length > 0) {
                         filteredHistory[date] = this._fullHistory[date];
                         feedCapacity -= this._fullHistory[date].length;
@@ -68,9 +68,11 @@ class RollingList {
                         // enough, no more room to fit another day
                         break;
                     }
+                } else { // add anything in the sortedDates
+                    filteredHistory[date] = this._fullHistory[date];
                 }
-                this._fullHistory = filteredHistory;
             }
+            this._fullHistory = filteredHistory;
 
             // Save
             fs.writeFileSync(
