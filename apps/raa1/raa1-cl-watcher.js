@@ -45,11 +45,19 @@ class Raa1CLWatcher extends AppContext {
                 this._conf.CollaborativeListening.FeedDBFile,
                 this._conf.CollaborativeListening.FeedHistoryDBFile
             );
-            // this._personalFeed = new Raa1PersonalFeed('feed.db');
+
+            this._personalFeed = new Raa1PersonalFeed(
+                this._conf.CollaborativeListening.FeedDBFile,
+                this._conf.CollaborativeListening.FeedHistoryDBFile
+            );
 
             await this._publicFeed.init();
             this._publicFeedWatcher = this._publicFeed.getWatcher();
             this._publicFeedWatcher.init();
+
+            await this._personalFeed.init();
+            this._personalFeedWatcher = this._personalFeed.getWatcher();
+            this._personalFeedWatcher.init();
 
             await this._userManager.init(this._conf.Credentials);
 
@@ -67,12 +75,17 @@ class Raa1CLWatcher extends AppContext {
         // Wait for any incomplete work
         this.UserManager.shutdown();
         this.PublicFeed.shutdown();
+        this.PersonalFeed.shutdown();
 
         process.exit();
     };
 
     get PublicFeed() {
         return this._publicFeed;
+    }
+
+    get PersonalFeed() {
+        return this._personalFeed;
     }
 
     get UserManager() {

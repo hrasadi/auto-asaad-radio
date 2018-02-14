@@ -10,7 +10,7 @@ class Raa1PersonalFeed extends PersonalFeed {
     }
 
     notifyProgramStart(feedEntry) {
-        let message = 'برنامه‌ی جدید: ' + feedEntry.Program.Title;
+        let message = 'برنامه‌ی مخصوص شما: ' + feedEntry.Program.Title;
         AppContext.getInstance('Raa1CLWatcher').UserManager
                                     .notifyAllUsers(message, feedEntry);
     }
