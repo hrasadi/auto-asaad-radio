@@ -131,25 +131,20 @@ class PremiereProgramTemplate extends ProgramTemplate {
         plannedProgram.ShowPlan = plannedShow;
 
         // Generate subtitle for the program
-        plannedProgram.Subtitle = '';
+        plannedProgram._subtitle = '';
         if (plannedProgram.PreShowPlan) {
-            plannedProgram.Subtitle += plannedPreShow.ClipPlans.map(
+            plannedProgram._subtitle += plannedPreShow.ClipPlans.map(
                 (clipPlan) => clipPlan.Media.Description
-            ).filter((description) => {
-                if (description) { // filter out nulls
-                    return true;
-                }
-                return false;
-            }).join('; ') + '; ';
+            ).join('؛ ') + '؛ ';
         }
-        plannedProgram.Subtitle += plannedShow.ClipPlans.map(
+        plannedProgram._subtitle += plannedShow.ClipPlans.map(
             (clipPlan) => clipPlan.Media.Description
         ).filter((description) => {
             if (description) { // filter out nulls
                 return true;
             }
             return false;
-        } ).join('; ');
+        }).join('؛ ');
 
         // This is where we evaluate custom action params
         plannedProgram.evaluateCustomActionParams();
