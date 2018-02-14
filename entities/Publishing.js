@@ -67,23 +67,6 @@ class Publishing extends Entity {
     }
 
     set ColloborativeListeningProps(value) {
-        if (!value) {
-            value = {};
-        }
-
-        value.DefaultLife = value.DefaultLife ?
-            AppContext.getInstance('LineupGenerator')
-                    .Defaults.Publishing.ColloborativeListening.DefaultLife :
-            value.DefaultLife;
-        value.MaxLife = value.MaxLife ?
-            AppContext.getInstance('LineupGenerator')
-                    .Defaults.Publishing.ColloborativeListening.MaxLife :
-            value.MaxLife;
-        value.UpvoteBonus = value.UpvoteBonus ?
-            AppContext.getInstance('LineupGenerator')
-                    .Defaults.Publishing.ColloborativeListening.UpvoteBonus :
-            value.UpvoteBonus;
-
         this._collaborativeListeningProps = value;
     }
 }
