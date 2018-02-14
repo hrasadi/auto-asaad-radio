@@ -56,16 +56,18 @@ class PersonalFeed extends Feed {
 
         feedEntry.UserId = userId;
 
-        let user = await AppContext.getInstance(
-            'LineupGenerator'
-        ).UserManager.getUser(userId);
+        let user = await AppContext.getInstance('LineupGenerator').UserManager.getUser(
+            userId
+        );
 
         // Override program name if configured so
         let programTitle = program.Title;
         if (program.Publishing.CollaborativeListeningProps.OverrideProgramName) {
-            programTitle =
-                program.Publishing.CollaborativeListeningProps.OverrideProgramName;
-            programTitle = programTitle.replace(/__user_city__/gi, user.City);
+            if (user.City) {
+                programTitle =
+                    program.Publishing.CollaborativeListeningProps.OverrideProgramName;
+                programTitle = programTitle.replace(/__user_city__/gi, user.City);
+            }
         }
 
         program.Title = programTitle;
