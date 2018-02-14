@@ -58,7 +58,7 @@ class PersonalFeed extends Feed {
 
         let user = await AppContext.getInstance(
             'LineupGenerator'
-        ).UserManager.getUserById(userId);
+        ).UserManager.getUser(userId);
 
         // Override program name if configured so
         let programTitle = program.Title;
