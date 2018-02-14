@@ -84,7 +84,7 @@ class Publishing extends Entity {
                     .Defaults.Publishing.ColloborativeListening.UpvoteBonus :
             value.UpvoteBonus;
 
-        this._value = value;
+        this._collaborativeListeningProps = value;
     }
 }
 
