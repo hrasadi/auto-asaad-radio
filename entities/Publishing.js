@@ -9,8 +9,7 @@ class Publishing extends Entity {
         this._parent = parent;
     }
 
-    validate() {
-    }
+    validate() {}
 
     get PublicClipNamingStrategy() {
         return this.getOrElse(this._publicClipNamingStrategy, 'MainClip');
@@ -37,9 +36,9 @@ class Publishing extends Entity {
     }
 
     get PodcastFeed() {
-        let defaultFeed = this._podcast ?
-                            AppContext.getInstance('LineupGenerator')
-                            .Defaults.Publishing.PodcastFeed : null;
+        let defaultFeed = this._podcast
+            ? AppContext.getInstance('LineupGenerator').Defaults.Publishing.PodcastFeed
+            : null;
         return this.getOrElse(this._podcastFeed, defaultFeed);
     }
 
@@ -53,20 +52,44 @@ class Publishing extends Entity {
 
     set CollaborativeListeningFeed(value) {
         if (value && !['Public', 'Personal', 'None'].includes(value)) {
-            throw Error('Invalid CollaborativeListening feed.' +
-                'Acceptable values are "Public", "Personal" and "None"');
+            throw Error(
+                'Invalid CollaborativeListening feed.' +
+                    'Acceptable values are "Public", "Personal" and "None"'
+            );
         }
         this._collaborativeListeningFeed = value;
     }
 
     get CollaborativeListeningProps() {
-        let defaultCLProps = this._collaborativeListeningFeed !== 'None' ?
-                            Object.assign({}, AppContext.getInstance('LineupGenerator')
-                            .Defaults.Publishing.ColloborativeListening) : null;
+        let defaultCLProps =
+            this._collaborativeListeningFeed !== 'None'
+                ? Object.assign(
+                      {},
+                      AppContext.getInstance('LineupGenerator').Defaults.Publishing
+                          .ColloborativeListening
+                  )
+                : null;
         return this.getOrElse(this._collaborativeListeningProps, defaultCLProps);
     }
 
     set CollaborativeListeningProps(value) {
+        if (value) {
+            value.DefaultLife = value.DefaultLife
+                ? value.DefaultLife
+                : AppContext.getInstance('LineupGenerator').Defaults.Publishing
+                      .ColloborativeListening.DefaultLife;
+
+            value.MaxLife = value.MaxLife
+                ? value.MaxLife
+                : AppContext.getInstance('LineupGenerator').Defaults.Publishing
+                      .ColloborativeListening.MaxLife;
+
+            value.UpvoteBonus = value.UpvoteBonus
+                ? value.UpvoteBonus
+                : AppContext.getInstance('LineupGenerator').Defaults.Publishing
+                      .ColloborativeListening.UpvoteBonus;
+        }
+
         this._collaborativeListeningProps = value;
     }
 }
