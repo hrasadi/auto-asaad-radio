@@ -4,6 +4,9 @@ const AppContext = require('../../AppContext');
 const UF = require('./collaborativelistening/Raa1PublicFeed');
 const Raa1PublicFeed = UF.Raa1PublicFeed;
 
+const SF = require('./collaborativelistening/Raa1PersonalFeed');
+const Raa1PersonalFeed = SF.Raa1PublicFeed;
+
 const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
 
 const Raa1UserManager = require('./collaborativelistening/Raa1UserManager');
@@ -55,9 +58,12 @@ class Raa1API extends AppContext {
             this._publicFeed = new Raa1PublicFeed(
                 this._conf.CollaborativeListening.FeedDBFile
             );
-            // this._personalFeed = new Raa1PersonalFeed('feed.db');
+            this._personalFeed = new Raa1PersonalFeed(
+                this._conf.CollaborativeListening.FeedDBFile
+            );
 
             await this._publicFeed.init();
+            await this._personalFeed.init();
             await this._userManager.init(this._conf.Credentials);
 
             this.registerAPI();
@@ -76,6 +82,7 @@ class Raa1API extends AppContext {
         // Wait for any incomplete work
         this.UserManager.shutdown();
         this.PublicFeed.shutdown();
+        this.PersonalFeed.shutdown();
 
         process.exit();
     }
@@ -94,6 +101,16 @@ class Raa1API extends AppContext {
         this._webApp.get('/publicFeed', async (req, res) => {
             try {
                 let feed = await this.PublicFeed.renderFeed();
+                res.send(feed);
+            } catch (error) {
+                AppContext.getInstance.Logger.error(error.stack);
+            }
+        });
+
+        this._webApp.get('/personalFeed/:userId', async (req, res) => {
+            try {
+                let userId = req.params['userId'];
+                let feed = await this.PersonalFeed.renderFeed(userId);
                 res.send(feed);
             } catch (error) {
                 AppContext.getInstance.Logger.error(error.stack);

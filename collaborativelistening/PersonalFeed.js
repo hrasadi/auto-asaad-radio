@@ -85,11 +85,12 @@ class PersonalFeed extends Feed {
         }
     }
 
-    renderFeed() {
+    renderFeed(userId) {
         let now = DateUtils.getEpochSeconds(moment());
+        // skip programs planned for future
         return this.entryListForAll(PersonalFeedEntry, {
-            statement: 'ReleaseTimestamp < ?', // skip programs planned for future
-            values: now,
+            statement: 'ReleaseTimestamp < ? and UserId = ?',
+            values: [now, userId],
         });
     }
 
