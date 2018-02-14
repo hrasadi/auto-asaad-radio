@@ -59,14 +59,14 @@ class Publishing extends Entity {
         this._collaborativeListeningFeed = value;
     }
 
-    get ColloborativeListeningProps() {
+    get CollaborativeListeningProps() {
         let defaultCLProps = this._collaborativeListeningFeed !== 'None' ?
                             Object.assign({}, AppContext.getInstance('LineupGenerator')
                             .Defaults.Publishing.ColloborativeListening) : null;
         return this.getOrElse(this._collaborativeListeningProps, defaultCLProps);
     }
 
-    set ColloborativeListeningProps(value) {
+    set CollaborativeListeningProps(value) {
         this._collaborativeListeningProps = value;
     }
 }
