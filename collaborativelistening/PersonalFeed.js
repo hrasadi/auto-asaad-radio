@@ -68,7 +68,7 @@ class PersonalFeed extends Feed {
             programTitle = programTitle.replace(/__user_city__/gi, user.City);
         }
 
-        feedEntry.Title = programTitle;
+        feedEntry.Program.Title = programTitle;
 
         if (releaseMoment) {
             feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(releaseMoment);
