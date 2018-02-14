@@ -25,6 +25,18 @@ class AsyncDB {
         });
     }
 
+    getAsync(stmt, values) {
+        let self = this;
+        return new Promise((resolve, reject) => {
+            self._db.get(stmt, values, (err, rows) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(rows);
+            });
+        });
+    }
+
     allAsync(stmt, values) {
         let self = this;
         return new Promise((resolve, reject) => {

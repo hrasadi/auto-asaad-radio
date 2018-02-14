@@ -113,7 +113,7 @@ class Raa1API extends AppContext {
                 let feed = await this.PersonalFeed.renderFeed(userId);
                 res.send(feed);
             } catch (error) {
-                AppContext.getInstance.Logger.error(error.stack);
+                AppContext.getInstance().Logger.error(error.stack);
             }
         });
 

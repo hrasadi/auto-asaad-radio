@@ -29,6 +29,10 @@ class UserManager extends DBProvider {
     updateUser(user) {
         this.update(user);
     }
+
+    getUser(userId) {
+        return this.loadById(User, userId);
+    }
 }
 
 class User extends DBObject {

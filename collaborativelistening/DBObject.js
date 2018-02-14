@@ -49,7 +49,6 @@ class DBObject {
         };
     }
 
-
     getDeletePreStatement() {
         return {
             statement:

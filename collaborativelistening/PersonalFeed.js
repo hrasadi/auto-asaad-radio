@@ -56,6 +56,20 @@ class PersonalFeed extends Feed {
 
         feedEntry.UserId = userId;
 
+        let user = await AppContext.getInstance(
+            'LineupGenerator'
+        ).UserManager.getUserById(userId);
+
+        // Override program name if configured so
+        let programTitle = program.Title;
+        if (program.Publishing.CollaborativeListeningProps.OverrideProgramName) {
+            programTitle =
+                program.Publishing.CollaborativeListeningProps.OverrideProgramName;
+            programTitle = programTitle.replace(/__user_city__/gi, user.City);
+        }
+
+        feedEntry.Title = programTitle;
+
         if (releaseMoment) {
             feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(releaseMoment);
         } else {
