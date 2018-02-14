@@ -138,17 +138,6 @@ class ShowPlan extends Entity {
         }
     }
 
-    /**
-     * Remove clips from the show and keep only the main clip
-     */
-    pruneClipPlans() {
-        for (let i = 0; i < this.ClipPlans.length; i++) {
-            if (!this.ClipPlans[i].IsMainClip) {
-                this.ClipPlans.splice(i, 1);
-            }
-        }
-    }
-
     get ClipPlans() {
         return this.getOrNull(this._clipPlans);
     }

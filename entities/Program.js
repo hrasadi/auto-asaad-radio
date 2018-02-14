@@ -39,6 +39,16 @@ class BaseProgram extends Entity {
         this._title = value;
     }
 
+    // Subtitle will hold the merged names for the underlying clips.
+    // It will be initialized during plan phase
+    get Subtitle() {
+        return this.getOrNull(this._subtitle);
+    }
+
+    set Subtitle(value) {
+        this._subtitle = value;
+    }
+
     get Publishing() {
         return this.getOrElse(this._publishing, new Publishing(null, this));
     }
@@ -119,6 +129,17 @@ class PremiereProgramTemplate extends ProgramTemplate {
         let plannedProgram = new ProgramPlan(this, parent);
         plannedProgram.PreShowPlan = plannedPreShow;
         plannedProgram.ShowPlan = plannedShow;
+
+        // Generate subtitle for the program
+        plannedProgram.Subtitle = '';
+        if (plannedProgram.PreShowPlan) {
+            plannedProgram.Subtitle += plannedPreShow.ClipsPlans.map(
+                (clipPlan) => clipPlan.Media.Description
+            ).join('; ') + '; ';
+        }
+        plannedProgram.Subtitle += plannedShow.ClipsPlans.map(
+            (clipPlan) => clipPlan.Media.Description
+        ).join('; ');
 
         // This is where we evaluate custom action params
         plannedProgram.evaluateCustomActionParams();
@@ -223,6 +244,8 @@ class ReplayProgramTemplate extends ProgramTemplate {
                         // Replay program should not inherit properties
                         // from original program
                         replayProgram.Publishing = this.Publishing;
+                        // DO NOT copy the custom actions from the original program
+                        replayProgram.CustomActions = null;
                         replayProgramPlans.push(replayProgram);
                     }
                 }
@@ -333,14 +356,12 @@ class ProgramPlan extends BaseProgram {
     }
 
     /**
-     * Removes all clips except the main clip.
-     * Also removes the preshow if any.
+     * Removes the preshow if any.
      * All clips in a replay program is not main. This is to ensure that they will
      * not get replayed again.
      */
     pruneProgramPlan() {
         this.PreShowPlan = null;
-        this.ShowPlan.pruneClipPlans();
         this.ShowPlan.ClipPlans.map((clipPlan) => (clipPlan.IsMainClip = false));
     }
 
