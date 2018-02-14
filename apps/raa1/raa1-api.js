@@ -185,6 +185,10 @@ class Raa1API extends AppContext {
         return this._publicFeed;
     }
 
+    get PersonalFeed() {
+        return this._personalFeed;
+    }
+
     get UserManager() {
         return this._userManager;
     }
