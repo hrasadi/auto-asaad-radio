@@ -71,6 +71,8 @@ class Entity extends SerializableObject {
             for (let value of values) {
                 this._customActions.push(new CustomAction(value));
             }
+        } else {
+            this._customActions = null;
         }
     }
 }
