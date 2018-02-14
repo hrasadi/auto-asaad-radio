@@ -249,8 +249,6 @@ class ReplayProgramTemplate extends ProgramTemplate {
                         // Replay program should not inherit properties
                         // from original program
                         replayProgram.Publishing = this.Publishing;
-                        // DO NOT copy the custom actions from the original program
-                        replayProgram.CustomActions = null;
                         replayProgramPlans.push(replayProgram);
                     }
                 }
