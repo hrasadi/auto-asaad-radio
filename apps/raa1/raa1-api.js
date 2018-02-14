@@ -5,7 +5,7 @@ const UF = require('./collaborativelistening/Raa1PublicFeed');
 const Raa1PublicFeed = UF.Raa1PublicFeed;
 
 const SF = require('./collaborativelistening/Raa1PersonalFeed');
-const Raa1PersonalFeed = SF.Raa1PublicFeed;
+const Raa1PersonalFeed = SF.Raa1PersonalFeed;
 
 const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
 
