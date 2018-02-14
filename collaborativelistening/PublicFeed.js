@@ -60,7 +60,7 @@ class PublicFeed extends Feed {
 
         feedEntry.ExpirationTimestamp = DateUtils.getEpochSeconds(
             moment.unix(feedEntry.ReleaseTimestamp).add(
-                program.Publishing.ColloborativeListeningProps.DefaultLife,
+                program.Publishing.CollaborativeListeningProps.DefaultLife,
                 'hours')
         );
         feedEntry.Program = program;
