@@ -8,31 +8,35 @@ let cwd = process.argv[2];
 let startedClipAbsolutePath = process.argv[4];
 
 // check two queues
-let preshowShadowQueue = PlaybackClipQueue.buildQueue(
+let preShowShadowQueue = PlaybackClipQueue.buildQueue(
     cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
 );
-let boxshadowQueue = PlaybackClipQueue.buildQueue(
+let boxShadowQueue = PlaybackClipQueue.buildQueue(
     cwd + '/run/liquidsoap/box-clips.liquidsoap.queue'
 );
 
 let liveStatus = {};
 if (fs.existsSync(cwd + '/run/live/status.json')) {
-    liveStatus = JSON.parse(
-        fs.readFileSync(cwd + '/run/live/status.json', 'utf-8')
-    );
+    liveStatus = JSON.parse(fs.readFileSync(cwd + '/run/live/status.json', 'utf-8'));
 }
 
-if (preshowShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath) {
+if (
+    preShowShadowQueue.peakClip() &&
+    preShowShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath
+) {
     // Found! dequeue and notify
-    let clip = preshowShadowQueue.dequeueClip();
+    let clip = preShowShadowQueue.dequeueClip();
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
         // TODO: notify
     }
-} else if (boxshadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath) {
+} else if (
+    boxShadowQueue.peakClip &&
+    boxShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath
+) {
     // Found! dequeue and notify
-    let clip = boxshadowQueue.dequeueClip();
+    let clip = boxShadowQueue.dequeueClip();
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
