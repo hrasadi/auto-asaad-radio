@@ -39,7 +39,7 @@ class LiquidsoapProgram extends Program {
             let preShowSchedulerCmd =
                 'echo \'cd ' +
                 __dirname +
-                '/bin; ./play-interrupting-preshow.sh ' +
+                '/playback/bin; node ./play-interrupting-preshow.js ' +
                 AppContext.getInstance().CWD +
                 ' ' +
                 targetLineupFilePath +
@@ -87,7 +87,7 @@ class LiquidsoapProgram extends Program {
         let showSchedulerCmd =
             'echo \'cd ' +
             __dirname +
-            '/bin; ./play-interrupting-show.sh ' +
+            '/playback/bin; node ./play-interrupting-show.js ' +
             AppContext.getInstance().CWD +
             ' ' +
             targetLineupFilePath +

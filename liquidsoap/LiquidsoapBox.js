@@ -32,7 +32,7 @@ class LiquidsoapBox extends Box {
         let boxSchedulerCmd =
             'echo \'cd ' +
             __dirname +
-            '/bin; ./play-box.sh ' +
+            '/playback/bin; node ./play-box.js ' +
             AppContext.getInstance().CWD +
             ' ' +
             targetLineupFilePath +
