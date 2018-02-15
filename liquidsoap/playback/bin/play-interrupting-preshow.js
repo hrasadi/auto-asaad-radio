@@ -26,7 +26,7 @@ let queueClipsForPlayback = () => {
         program.PreShow.Clips.foreach((clip, index) => {
             // Enqueue in our shadowQueue
             let playbackClip = new PlaybackClip();
-            playbackClip.ClipAbsolutePath = clip.Preshow.Media.Path;
+            playbackClip.ClipAbsolutePath = clip.Media.Path;
             playbackClip.MarksStartOfProgram =
                 index == 0 ? program.CanonicalIdPath : null;
 

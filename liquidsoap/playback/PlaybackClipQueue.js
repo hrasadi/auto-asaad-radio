@@ -19,6 +19,27 @@ class PlaybackClipQueue extends SerializableObject {
         this._queueFilePath = queueFilePath;
     }
 
+    size() {
+        return this._queue.length;
+    }
+
+    enqueueClip(clip) {
+        if (clip) {
+            this.Queue.push(clip);
+        }
+    }
+
+    deqeueClip() {
+        if (this.Queue.length > 0) {
+            return this.Queue.splice(0, 1);
+        }
+        return null;
+    }
+
+    persist() {
+        fs.writeFileSync(this._queueFilePath, JSON.stringify(this));
+    }
+
     get Queue() {
         return this.getOrElse(this._queue, []);
     }
@@ -30,27 +51,6 @@ class PlaybackClipQueue extends SerializableObject {
                 this._queue.push(new PlaybackClip(clip));
             }
         }
-    }
-
-    size() {
-        return this._queue.length;
-    }
-
-    enqueueClip(clip) {
-        if (clip) {
-            this._queue.push(clip);
-        }
-    }
-
-    deqeueClip() {
-        if (this._queue.length > 0) {
-            return this._queue.splice(0, 1);
-        }
-        return null;
-    }
-
-    persist() {
-        fs.writeFileSync(this._queueFilePath, JSON.stringify(this));
     }
 }
 
