@@ -46,7 +46,7 @@ def reset_state() =
 end
 
 # Logic flow
-reset_state()
+ignore(reset_state())
 
 interrupting_preshow_queue = request.queue(id = "interrupting_preshow_q")
 # Attach a skip command to the source s:
