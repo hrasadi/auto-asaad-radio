@@ -32,7 +32,7 @@ if (
         // TODO: notify
     }
 } else if (
-    boxShadowQueue.peakClip &&
+    boxShadowQueue.peakClip() &&
     boxShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath
 ) {
     // Found! dequeue and notify
