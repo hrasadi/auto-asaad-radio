@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const cwd = process.argv[2];
 
-let fillerClipLockFilePath = cwd + '/run/interrupting-preshow-filler.liquidsoap.lock';
+let fillerClipLockFilePath = cwd + '/run/liquidsoap/interrupting-preshow-filler.lock';
 
 // path to the current (or most recent) filler clip lock file
 if (fs.existsSync(fillerClipLockFilePath)) {

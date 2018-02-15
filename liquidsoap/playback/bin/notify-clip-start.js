@@ -39,15 +39,13 @@ let startedProgramIdPath = null;
 // playback to see what is being played. We don't care about interrupting show
 // as interrupting program is actually started with preshow and not the show
 let channels = [
-    '/run/interrupting-preshow-playback.liquidsoap.lock',
-    '/run/box-playback.liquidsoap.lock',
+    cwd + '/run/interrupting-preshow-playback.liquidsoap.lock',
+    cwd + '/run/box-playback.liquidsoap.lock',
 ];
 
 for (let channel of channels) {
-    if (fs.existsSync(cwd + channel)) {
-        let programIdPath = fs.readFileSync(
-            cwd + '/run/interrupting-show-playback.liquidsoap.lock'
-        );
+    if (fs.existsSync(channel)) {
+        let programIdPath = fs.readFileSync(channel, 'utf-8');
         if (isProgramStartedNow(programIdPath)) {
             startedProgramIdPath = programIdPath;
             break;
@@ -62,10 +60,12 @@ if (startedProgramIdPath) {
         MostRecentProgram: startedProgramIdPath,
         IsCurrentlyPlaying: true,
     };
-} else if (startedClip.contains('/no-program.mp3')) {
+} else if (startedClip.indexOf('/no-program.mp3') != -1) {
     // Program playback ended. Keep the most recent program, end playback
     if (fs.existsSync(cwd + '/run/live/status.json')) {
-        newLiveStatus = JSON.parse(fs.readFileSync(cwd + '/run/live/status.json'));
+        newLiveStatus = JSON.parse(
+            fs.readFileSync(cwd + '/run/live/status.json', 'utf-8')
+        );
     }
     newLiveStatus.IsCurrentlyPlaying = false;
 } // else nothing new happened. Do nothing
