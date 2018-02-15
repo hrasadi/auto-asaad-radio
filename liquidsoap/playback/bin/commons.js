@@ -29,6 +29,7 @@ let pushToLiquidsoapQueue = async (queueName, clipFilePath) => {
 };
 
 module.exports = {
-    delay: delay,
-    pushToLiquidsoapQueue: pushToLiquidsoapQueue,
+    'delay': delay,
+    'pushToLiquidsoapQueue': pushToLiquidsoapQueue,
+    'execCustomLiquidsoapCommand': execCustomLiquidsoapCommand,
 };

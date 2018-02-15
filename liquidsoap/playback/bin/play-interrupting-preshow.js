@@ -5,6 +5,7 @@ const PlaybackClip = P.PlaybackClip;
 const IdUtils = require('../IdUtils');
 const delay = require('./commons').delay;
 const pushToLiquidsoapQueue = require('./commons').pushToLiquidsoapQueue;
+const execCustomLiquidsoapCommand = require('./commons').execCustomLiquidsoapCommand;
 
 const fs = require('fs');
 const moment = require('moment');
@@ -20,6 +21,9 @@ let queueClipsForPlayback = () => {
         // find the program
         let program = IdUtils.findProgram(lineup, programCanonicalIdPath);
 
+        // Skip current liquidsoap queue item
+        execCustomLiquidsoapCommand('interrupting_preshow_q.skip');
+
         let shadowQueue = PlaybackClipQueue.buildQueue(
             cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
         );
@@ -32,7 +36,7 @@ let queueClipsForPlayback = () => {
 
             shadowQueue.enqueueClip(playbackClip);
 
-            // TODO: add to liquidsoap queue
+            pushToLiquidsoapQueue('interrupting_preshow_q', clip.Media.Path);
         });
 
         // Commit changes
@@ -47,6 +51,9 @@ let queueClipsForPlayback = () => {
                 () => {}
             );
         }
+
+        // start playback of the preshow
+        execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = true');
     } else {
         throw Error(`Fatal error! Cannot find lineup ${lineupFilePath}`);
     }
