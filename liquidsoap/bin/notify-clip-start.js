@@ -1,118 +1,82 @@
-var fs = require('fs');
-var path = require('path');
-var moment = require('moment');
-var execSync = require('child_process').execSync;
+const getPartialCanonicalIdPath = require('./id-utils').getPartialCanonicalIdPath;
+const findProgram = require('./id-utils').findProgram;
+
+const fs = require('fs');
+const path = require('path');
 
 // path to the lineup file
-var running_dir = process.argv[2];
-var lineupFilePath = fs.readFileSync(running_dir + "/lineups/current", 'utf8');
-var media_dir = process.argv[3];
-var currentClipFilePath = process.argv[4];
+let cwd = process.argv[2];
+let mediaDir = process.argv[3];
+let startedClip = process.argv[4];
 
-var lineup = null;
+// The rovolving lineup
+let liveLineup = JSON.parse(fs.readFileSync(cwd + '/run/live/live-lineup.json'));
 
-if (fs.existsSync(running_dir + "/liquidsoap-handlers/notify-clip-start.js")) {
-	var CustomHandler = require(running_dir + "/liquidsoap-handlers/notify-clip-start");
-	customApplicationHandler = new CustomHandler(running_dir);
+let startedProgramIdPath = null;
+// In order, we check interrupting preshow and regular box
+// playback to see what is being played. We don't care about interrupting show
+// as interrupting program is actually started with preshow and not the show
+let channels = [
+    '/run/interrupting-preshow-playback.liquidsoap.lock',
+    '/run/box-playback.liquidsoap.lock',
+];
+
+for (let channel of channels) {
+    if (fs.existsSync(cwd + channel)) {
+        let programIdPath = fs.readFileSync(
+            cwd + '/run/interrupting-show-playback.liquidsoap.lock'
+        );
+        if (isProgramStartedNow(programIdPath)) {
+            startedProgramIdPath = programIdPath;
+            break;
+        }
+    }
 }
 
-var findClip = function(programIdx, clipAbsolutePath) {
-	var program = lineup.Programs[programIdx];	
-	
-	if (program) {
-		if (program.PreShow) {
-			for (var i = 0; i < program.PreShow.Clips.length; i++) {
-				var cAbsolutePath = path.resolve(media_dir, program.PreShow.Clips[i].Path);
-				if (clipAbsolutePath == cAbsolutePath) {
-					return program.PreShow.Clips[i];
-				}
-			}
-			// it might be the filler clip
-			if (program.PreShow.FillerClip) {
-				var cAbsolutePath = path.resolve(media_dir, program.PreShow.FillerClip.Path);
-				if (clipAbsolutePath == cAbsolutePath) {
-					return program.PreShow.FillerClip;
-				}			
-			}
+let newLiveStatus = null;
+if (startedProgramIdPath) {
+    // OK. we found a match. do notify
+    newLiveStatus = {
+        MostRecentProgram: startedProgramIdPath,
+        IsCurrentlyPlaying: true,
+    };
+} else if (startedClip.contains('/no-program.mp3')) {
+    // Program playback ended. Keep the most recent program, end playback
+    if (fs.existsSync(cwd + '/run/live/status.json')) {
+        newLiveStatus = JSON.parse(fs.readFileSync(cwd + '/run/live/status.json'));
+    }
+    newLiveStatus.IsCurrentlyPlaying = false;
+} // else nothing new happened. Do nothing
 
-		}
-		for (var i = 0; i < program.Show.Clips.length; i++) {
-			var cAbsolutePath = path.resolve(media_dir, program.Show.Clips[i].Path);
-			if (clipAbsolutePath == cAbsolutePath) {
-				return program.Show.Clips[i];
-			}		
-		}
-	}
-
-	return null;
+if (newLiveStatus) {
+    fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(newLiveStatus));
 }
 
-if (fs.existsSync(lineupFilePath)) {
-	var status = {};
-	var oldStatus = {};
+/**
+ * Checks if a program is started with this clip
+ * @param {String} programIdPath the Id of the program being tested
+ * @return {Program} the started program if any. returns null otherwise
+ */
+let isProgramStartedNow = (programIdPath) => {
+    let lineupId = getPartialCanonicalIdPath(programIdPath, 'Lineup');
+    try {
+        let program = findProgram(liveLineup[lineupId], programIdPath);
+        let programFirstClip = program.PreShow
+            ? program.PreShow.Clips[0].Media.Path
+            : program.Show.Clips[0].Media.Path;
+        let cAbsolutePath = path.resolve(mediaDir, programFirstClip);
+        if (cAbsolutePath == startedClip) {
+            return true;
+        }
+    } catch (e) {
+        // No problem, continue searching
+    }
+    return null;
+};
 
-	if (fs.existsSync(running_dir + "/web/status.json")) {
-		oldStatus = JSON.parse(fs.readFileSync(running_dir + "/web/status.json"));
-	}
-
-	lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf8'));
-	var currentProgramIdx = parseInt(fs.readFileSync(lineupFilePath + ".program.iter", 'utf8'));
-
-	clip = findClip(currentProgramIdx, currentClipFilePath);
-
-	// might be the first clip of the next program
-	if (!clip) {
-		if (lineup.Programs[currentProgramIdx + 1]) {			
-			upcomingClipAbsolutePath = path.resolve(media_dir, lineup.Programs[currentProgramIdx + 1].Show.Clips[0].Path);
-
-			if (currentClipFilePath == upcomingClipAbsolutePath) {
-				// In case of back-to-back programs, we need to move program iter when the first 
-				// media of the next program begins to play.
-				// Lets shift the current program iterator
-				currentProgramIdx++;
-				clip = findClip(currentProgramIdx, currentClipFilePath);
-
-				// update the current program
-				fs.writeFileSync(lineupFilePath + ".program.iter", currentProgramIdx);
-			}
-		}
-	}
-
-	if (clip) {
-		// We have program playing
-		status.isCurrentlyPlaying = true;
-		status.currentBox = lineup.Programs[currentProgramIdx].BoxId;
-		status.currentProgram = lineup.Programs[currentProgramIdx].Title;
-		status.currentClip = clip.Description ? clip.Description : "";
-
-		fs.writeFileSync(running_dir + "/web/status.json", JSON.stringify(status));
-
-	} else {
-		// No programs right now (this is propapbly the blank clip playing)!  Instead publish the countdown
-		status.isCurrentlyPlaying = false;
-		status.currentProgram = "BLANK";
-
-		if (lineup.Programs[currentProgramIdx + 1]) {
-			
-			nextProgram = lineup.Programs[currentProgramIdx + 1];
-			status.nextBoxId = nextProgram.BoxId;
-			status.nextBoxStartTime = nextProgram.PreShow ? 
-										nextProgram.PreShow.Meta.TentativeStartTime : 
-										nextProgram.Show.Meta.TentativeStartTime;
-		} else {
-			// TODO
-			// Todays programs is over, we should check the next days lineup 
-		}
-
-		fs.writeFileSync(running_dir + "/web/status.json", JSON.stringify(status));
-	}
-
-	console.log(status.currentProgram);
-
-	if (customApplicationHandler) {
-		if (status.currentProgram != oldStatus.currentProgram) {
-			customApplicationHandler.perform(status.currentProgram, status.currentClip);
-		}
-	}
-
-} 
+// console.log(status.currentProgram);
+// if (customApplicationHandler) {
+//   if (status.currentProgram != oldStatus.currentProgram) {
+//     customApplicationHandler.perform(status.currentProgram, status.currentClip);
+//   }
+// }
