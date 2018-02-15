@@ -77,6 +77,6 @@ class PlaybackClip extends SerializableObject {
 }
 
 module.exports = {
-    PlaybackClipQueue: PlaybackClipQueue,
-    PlaybackQueue: PlaybackClip,
+    'PlaybackClipQueue': PlaybackClipQueue,
+    'PlaybackClip': PlaybackClip,
 };
