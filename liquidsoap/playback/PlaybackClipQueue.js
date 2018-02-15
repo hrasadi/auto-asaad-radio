@@ -41,7 +41,8 @@ class PlaybackClipQueue extends SerializableObject {
     }
 
     get Queue() {
-        return this.getOrElse(this._queue, []);
+        this._queue = this.getOrElse(this._queue, []);
+        return this._queue;
     }
 
     set Queue(value) {
