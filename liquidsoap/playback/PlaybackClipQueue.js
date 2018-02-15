@@ -31,7 +31,7 @@ class PlaybackClipQueue extends SerializableObject {
 
     dequeueClip() {
         if (this.Queue.length > 0) {
-            return this.Queue.splice(0, 1);
+            return this.Queue.splice(0, 1)[0];
         }
         return null;
     }
