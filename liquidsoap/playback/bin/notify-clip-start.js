@@ -1,3 +1,5 @@
+const PlaybackClipQueue = require('../PlaybackClipQueue').PlaybackClipQueue;
+
 const fs = require('fs');
 
 // path to the lineup file
@@ -20,30 +22,25 @@ if (fs.existsSync(cwd + '/run/live/status.json')) {
     );
 }
 
-if (preshowShadowQueue.peakClip() === startedClipAbsolutePath) {
+if (preshowShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath) {
     // Found! dequeue and notify
-    preshowShadowQueue.
-}
+    let clip = preshowShadowQueue.dequeueClip();
+    if (clip.MarksStartOfProgram) {
+        liveStatus.IsCurrentlyPlaying = true;
+        liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
+        // TODO: notify
+    }
+} else if (boxshadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath) {
+    // Found! dequeue and notify
+    let clip = boxshadowQueue.dequeueClip();
+    if (clip.MarksStartOfProgram) {
+        liveStatus.IsCurrentlyPlaying = true;
+        liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
+        // TODO: notify
+    }
+} else if (startedClipAbsolutePath.indexOf('/no-program.mp3') != -1) {
+    // playback stopped
+    liveStatus.IsCurrentlyPlaying = false;
+} // Else, propably a clip from interrupting show is started (we can improve here!)
 
-let newLiveStatus = null;
-if (startedProgramIdPath) {
-    // OK. we found a match. do notify
-    newLiveStatus = {
-        MostRecentProgram: startedProgramIdPath,
-        IsCurrentlyPlaying: true,
-    };
-} else if (startedClip.indexOf('/no-program.mp3') != -1) {
-    // Program playback ended. Keep the most recent program, end playback
-    newLiveStatus.IsCurrentlyPlaying = false;
-} // else nothing new happened. Do nothing
-
-if (newLiveStatus) {
-    fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(newLiveStatus));
-}
-
-// console.log(status.currentProgram);
-// if (customApplicationHandler) {
-//   if (status.currentProgram != oldStatus.currentProgram) {
-//     customApplicationHandler.perform(status.currentProgram, status.currentClip);
-//   }
-// }
+fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(liveStatus));
