@@ -9,6 +9,28 @@ let cwd = process.argv[2];
 let mediaDir = process.argv[3];
 let startedClip = process.argv[4];
 
+/**
+ * Checks if a program is started with this clip
+ * @param {String} programIdPath the Id of the program being tested
+ * @return {Program} the started program if any. returns null otherwise
+ */
+let isProgramStartedNow = (programIdPath) => {
+    let lineupId = getPartialCanonicalIdPath(programIdPath, 'Lineup');
+    try {
+        let program = findProgram(liveLineup[lineupId], programIdPath);
+        let programFirstClip = program.PreShow
+            ? program.PreShow.Clips[0].Media.Path
+            : program.Show.Clips[0].Media.Path;
+        let cAbsolutePath = path.resolve(mediaDir, programFirstClip);
+        if (cAbsolutePath == startedClip) {
+            return true;
+        }
+    } catch (e) {
+        // No problem, continue searching
+    }
+    return null;
+};
+
 // The rovolving lineup
 let liveLineup = JSON.parse(fs.readFileSync(cwd + '/run/live/live-lineup.json'));
 
@@ -51,28 +73,6 @@ if (startedProgramIdPath) {
 if (newLiveStatus) {
     fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(newLiveStatus));
 }
-
-/**
- * Checks if a program is started with this clip
- * @param {String} programIdPath the Id of the program being tested
- * @return {Program} the started program if any. returns null otherwise
- */
-let isProgramStartedNow = (programIdPath) => {
-    let lineupId = getPartialCanonicalIdPath(programIdPath, 'Lineup');
-    try {
-        let program = findProgram(liveLineup[lineupId], programIdPath);
-        let programFirstClip = program.PreShow
-            ? program.PreShow.Clips[0].Media.Path
-            : program.Show.Clips[0].Media.Path;
-        let cAbsolutePath = path.resolve(mediaDir, programFirstClip);
-        if (cAbsolutePath == startedClip) {
-            return true;
-        }
-    } catch (e) {
-        // No problem, continue searching
-    }
-    return null;
-};
 
 // console.log(status.currentProgram);
 // if (customApplicationHandler) {
