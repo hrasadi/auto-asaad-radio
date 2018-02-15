@@ -19,7 +19,7 @@ let queueClipsForPlayback = () => {
         // find the program
         let program = IdUtils.findProgram(lineup, programCanonicalIdPath);
 
-        program.PreShow.Clips.forEach((clip, index) => {
+        program.Show.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
             pushToLiquidsoapQueue('interrupting_show_q', clip.Media.Path);
         });
