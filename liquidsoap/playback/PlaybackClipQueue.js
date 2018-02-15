@@ -55,6 +55,10 @@ class PlaybackClipQueue extends SerializableObject {
 }
 
 class PlaybackClip extends SerializableObject {
+    constructor(jsonOrOther) {
+        super(jsonOrOther);
+    }
+
     get ClipAbsolutePath() {
         return this.getOrNull(this._clipAbsolutePath);
     }
