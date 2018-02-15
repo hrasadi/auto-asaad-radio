@@ -31,6 +31,7 @@ if (
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
         // TODO: notify
     }
+    preShowShadowQueue.persist();
 } else if (
     boxShadowQueue.peakClip() &&
     boxShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath
@@ -42,9 +43,12 @@ if (
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
         // TODO: notify
     }
+    boxShadowQueue.persist();
 } else if (startedClipAbsolutePath.indexOf('/no-program.mp3') != -1) {
     // playback stopped
     liveStatus.IsCurrentlyPlaying = false;
 } // Else, propably a clip from interrupting show is started (we can improve here!)
+
+
 
 fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(liveStatus));
