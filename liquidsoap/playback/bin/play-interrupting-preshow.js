@@ -23,7 +23,7 @@ let queueClipsForPlayback = () => {
         let shadowQueue = PlaybackClipQueue.buildQueue(
             'interrupting-preshow-clips.liquidsoap.queue'
         );
-        program.PreShow.Clips.foreach((clip, index) => {
+        program.PreShow.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
             let playbackClip = new PlaybackClip();
             playbackClip.ClipAbsolutePath = clip.Media.Path;
@@ -34,6 +34,9 @@ let queueClipsForPlayback = () => {
 
             // TODO: add to liquidsoap queue
         });
+
+        // Commit changes
+        shadowQueue.persist();
 
         if (program.PreShow.FillerClip) {
             // Also, save the preshow filler media, so that it could be accessed later
