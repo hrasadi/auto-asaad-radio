@@ -1,0 +1,59 @@
+const P = require('../PlaybackClipQueue');
+const PlaybackClipQueue = P.PlaybackClipQueue;
+const PlaybackClip = P.PlaybackClip;
+
+const IdUtils = require('../IdUtils');
+const delay = require('./commons').delay;
+const pushToLiquidsoapQueue = require('./commons').pushToLiquidsoapQueue;
+const execCustomLiquidsoapCommand = require('./commons').execCustomLiquidsoapCommand;
+
+const fs = require('fs');
+const moment = require('moment');
+
+const cwd = process.argv[2];
+// path to the lineup file
+const lineupFilePath = process.argv[3];
+const boxCanonicalIdPath = process.argv[4];
+
+let queueClipsForPlayback = () => {
+    if (fs.existsSync(lineupFilePath)) {
+        let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf8'));
+        // find the box
+        let box = IdUtils.findBox(lineup, boxCanonicalIdPath);
+
+        let shadowQueue = PlaybackClipQueue.buildQueue(
+            cwd + '/run/liquidsoap/box-clips.liquidsoap.queue'
+        );
+
+        for (let program of box.Programs) {
+            program.Show.Clips.forEach((clip, index) => {
+                // Enqueue in our shadowQueue
+                let playbackClip = new PlaybackClip();
+                playbackClip.ClipAbsolutePath = clip.Media.Path;
+                playbackClip.MarksStartOfProgram =
+                    index == 0 ? program.CanonicalIdPath : null;
+
+                shadowQueue.enqueueClip(playbackClip);
+
+                pushToLiquidsoapQueue('show_q', clip.Media.Path);
+            });
+        }
+
+        // Commit changes
+        shadowQueue.persist();
+    } else {
+        throw Error(`Fatal error! Cannot find lineup ${lineupFilePath}`);
+    }
+};
+
+// Precise start of the target minute
+let schedule = async () => {
+    await delay(200); // Avoid running on xx:59, if cron starts immediately.
+    let secondsToGo = 60 - moment().seconds();
+    await delay(secondsToGo * 100); // to millis
+
+    // Time to fire!
+    queueClipsForPlayback();
+};
+
+schedule();

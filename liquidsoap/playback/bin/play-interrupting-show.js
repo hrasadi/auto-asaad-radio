@@ -1,6 +1,4 @@
 const P = require('../PlaybackClipQueue');
-const PlaybackClipQueue = P.PlaybackClipQueue;
-const PlaybackClip = P.PlaybackClip;
 
 const IdUtils = require('../IdUtils');
 const delay = require('./commons').delay;
@@ -21,39 +19,13 @@ let queueClipsForPlayback = () => {
         // find the program
         let program = IdUtils.findProgram(lineup, programCanonicalIdPath);
 
-        // Skip current liquidsoap queue item
-        execCustomLiquidsoapCommand('interrupting_preshow_q.skip');
-
-        let shadowQueue = PlaybackClipQueue.buildQueue(
-            cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
-        );
         program.PreShow.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
-            let playbackClip = new PlaybackClip();
-            playbackClip.ClipAbsolutePath = clip.Media.Path;
-            playbackClip.MarksStartOfProgram =
-                index == 0 ? program.CanonicalIdPath : null;
-
-            shadowQueue.enqueueClip(playbackClip);
-
-            pushToLiquidsoapQueue('interrupting_preshow_q', clip.Media.Path);
+            pushToLiquidsoapQueue('interrupting_show_q', clip.Media.Path);
         });
 
-        // Commit changes
-        shadowQueue.persist();
-
-        if (program.PreShow.FillerClip) {
-            // Also, save the preshow filler media, so that it could be accessed later
-            // by liquidsoap
-            fs.writeFile(
-                cwd + '/run/liquidsoap/interrupting-preshow-filler.lock',
-                program.PreShow.FillerClip.Media.Path,
-                () => {}
-            );
-        }
-
         // start playback of the preshow
-        execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = true');
+        execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
     } else {
         throw Error(`Fatal error! Cannot find lineup ${lineupFilePath}`);
     }
