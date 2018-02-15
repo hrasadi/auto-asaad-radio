@@ -25,8 +25,9 @@ let queueClipsForPlayback = () => {
             cwd + '/run/liquidsoap/box-clips.liquidsoap.queue'
         );
 
+        let clipsPath = [];
         for (let program of box.Programs) {
-            program.Show.Clips.forEach((clip, index) => {
+            program.Show.Clips.forEach(async (clip, index) => {
                 // Enqueue in our shadowQueue
                 let playbackClip = new PlaybackClip();
                 playbackClip.ClipAbsolutePath = clip.Media.Path;
@@ -34,10 +35,11 @@ let queueClipsForPlayback = () => {
                     index == 0 ? program.CanonicalIdPath : null;
 
                 shadowQueue.enqueueClip(playbackClip);
-
-                pushToLiquidsoapQueue('show_q', clip.Media.Path);
+                clipsPath.push(clip.Media.Path);
             });
         }
+        // Push them all together
+        pushToLiquidsoapQueue('show_q', clipsPath);
 
         // Commit changes
         shadowQueue.persist();

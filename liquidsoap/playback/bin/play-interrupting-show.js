@@ -19,10 +19,11 @@ let queueClipsForPlayback = () => {
         // find the program
         let program = IdUtils.findProgram(lineup, programCanonicalIdPath);
 
-        program.Show.Clips.forEach((clip, index) => {
-            // Enqueue in our shadowQueue
-            pushToLiquidsoapQueue('interrupting_show_q', clip.Media.Path);
-        });
+        // Enqueue in our shadowQueue
+        pushToLiquidsoapQueue(
+            'interrupting_show_q',
+            program.Show.Clips.map((clip) => clip.Media.Path)
+        );
 
         // start playback of the preshow
         execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');

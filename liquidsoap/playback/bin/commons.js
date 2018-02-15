@@ -4,19 +4,18 @@ let delay = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
+let telnetParams = {
+    host: 'localhost',
+    negotiationMandatory: false,
+    shellPrompt: '',
+    port: 1221,
+    timeout: 1500,
+};
+
 let execCustomLiquidsoapCommand = async (cmd) => {
     let connection = new Telnet();
-
-    let params = {
-        host: 'localhost',
-        negotiationMandatory: false,
-        shellPrompt: '',
-        port: 1221,
-        timeout: 1500,
-    };
-
     try {
-        await connection.connect(params);
+        await connection.connect(telnetParams);
         await connection.exec(cmd);
         connection.end();
     } catch (e) {
@@ -24,8 +23,17 @@ let execCustomLiquidsoapCommand = async (cmd) => {
     }
 };
 
-let pushToLiquidsoapQueue = async (queueName, clipFilePath) => {
-    await execCustomLiquidsoapCommand(queueName + '.push ' + clipFilePath);
+let pushToLiquidsoapQueue = async (queueName, clipsFilePath) => {
+    let connection = new Telnet();
+    try {
+        await connection.connect(telnetParams);
+        for (let clipFilePath of clipsFilePath) {
+            await connection.exec(queueName + '.push ' + clipFilePath);
+        }
+        connection.end();
+    } catch (e) {
+        console.log(e);
+    }
 };
 
 module.exports = {

@@ -27,6 +27,8 @@ let queueClipsForPlayback = () => {
         let shadowQueue = PlaybackClipQueue.buildQueue(
             cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
         );
+
+        let clipsPath = []
         program.PreShow.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
             let playbackClip = new PlaybackClip();
@@ -35,9 +37,9 @@ let queueClipsForPlayback = () => {
                 index == 0 ? program.CanonicalIdPath : null;
 
             shadowQueue.enqueueClip(playbackClip);
-
-            pushToLiquidsoapQueue('interrupting_preshow_q', clip.Media.Path);
+            clipsPath.push(clip.Media.Path);
         });
+        pushToLiquidsoapQueue('interrupting_preshow_q', clipsPath);
 
         // Commit changes
         shadowQueue.persist();
