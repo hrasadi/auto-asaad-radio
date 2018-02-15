@@ -21,7 +21,7 @@ let queueClipsForPlayback = () => {
         let program = IdUtils.findProgram(lineup, programCanonicalIdPath);
 
         let shadowQueue = PlaybackClipQueue.buildQueue(
-            'interrupting-preshow-clips.liquidsoap.queue'
+            cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
         );
         program.PreShow.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
