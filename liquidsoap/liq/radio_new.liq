@@ -40,7 +40,13 @@ def update_metadata(m) =
 	[("title","#{description}"), ("artist", "")]	
 end
 
+def reset_state() =
+	print("Resetting shadow queues")
+	get_process_lines("cd "^script_dir^"; node ./reset-server-state.js "^running_dir)
+end
+
 # Logic flow
+reset_state()
 
 interrupting_preshow_queue = request.queue(id = "interrupting_preshow_q")
 # Attach a skip command to the source s:

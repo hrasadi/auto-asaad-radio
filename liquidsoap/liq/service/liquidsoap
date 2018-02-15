@@ -63,8 +63,6 @@ case "$1" in
         MEDIA_DIR="${liq_name}_MEDIA_DIR"
         ICECAST_PASSWORD="${liq_name}_ICECAST_PASSWORD"
         # Clear the shadow playback queues
-        rm "${!LS_SCRIPT_DIR}/run/liquidsoap/interrupting-preshow-clips.queue"
-        rm "${!LS_SCRIPT_DIR}/run/liquidsoap/box-show-clips.queue"
         start-stop-daemon --start --quiet --pidfile $rundir/${liq%.liq}.pid \
                 --chuid $user:$group --exec $liquidsoap -- -d $confdir/$liq -- ${!LS_SCRIPT_DIR} ${!RUNNING_DIR} ${!MEDIA_DIR} ${!ICECAST_PASSWORD} 
       fi

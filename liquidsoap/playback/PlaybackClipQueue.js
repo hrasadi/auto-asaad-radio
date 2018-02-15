@@ -36,6 +36,13 @@ class PlaybackClipQueue extends SerializableObject {
         return null;
     }
 
+    peakClip() {
+        if (this.Queue.length > 0) {
+            return this.Queue[0];
+        }
+        return null;
+    }
+
     persist() {
         fs.writeFileSync(this._queueFilePath, JSON.stringify(this));
     }

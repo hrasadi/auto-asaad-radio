@@ -5,7 +5,6 @@ const PlaybackClip = P.PlaybackClip;
 const IdUtils = require('../IdUtils');
 const delay = require('./commons').delay;
 const pushToLiquidsoapQueue = require('./commons').pushToLiquidsoapQueue;
-const execCustomLiquidsoapCommand = require('./commons').execCustomLiquidsoapCommand;
 
 const fs = require('fs');
 const moment = require('moment');

@@ -1,56 +1,28 @@
-const getPartialCanonicalIdPath = require('./id-utils').getPartialCanonicalIdPath;
-const findProgram = require('./id-utils').findProgram;
-
 const fs = require('fs');
-const path = require('path');
 
 // path to the lineup file
 let cwd = process.argv[2];
-let mediaDir = process.argv[3];
-let startedClip = process.argv[4];
+// let mediaDir = process.argv[3];
+let startedClipAbsolutePath = process.argv[4];
 
-/**
- * Checks if a program is started with this clip
- * @param {String} programIdPath the Id of the program being tested
- * @return {Program} the started program if any. returns null otherwise
- */
-let isProgramStartedNow = (programIdPath) => {
-    let lineupId = getPartialCanonicalIdPath(programIdPath, 'Lineup');
-    try {
-        let program = findProgram(liveLineup[lineupId], programIdPath);
-        let programFirstClip = program.PreShow
-            ? program.PreShow.Clips[0].Media.Path
-            : program.Show.Clips[0].Media.Path;
-        let cAbsolutePath = path.resolve(mediaDir, programFirstClip);
-        if (cAbsolutePath == startedClip) {
-            return true;
-        }
-    } catch (e) {
-        // No problem, continue searching
-    }
-    return null;
-};
+// check two queues
+let preshowShadowQueue = PlaybackClipQueue.buildQueue(
+    cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
+);
+let boxshadowQueue = PlaybackClipQueue.buildQueue(
+    cwd + '/run/liquidsoap/box-clips.liquidsoap.queue'
+);
 
-// The rovolving lineup
-let liveLineup = JSON.parse(fs.readFileSync(cwd + '/run/live/live-lineup.json'));
+let liveStatus = {};
+if (fs.existsSync(cwd + '/run/live/status.json')) {
+    liveStatus = JSON.parse(
+        fs.readFileSync(cwd + '/run/live/status.json', 'utf-8')
+    );
+}
 
-let startedProgramIdPath = null;
-// In order, we check interrupting preshow and regular box
-// playback to see what is being played. We don't care about interrupting show
-// as interrupting program is actually started with preshow and not the show
-let channels = [
-    cwd + '/run/interrupting-preshow-playback.liquidsoap.lock',
-    cwd + '/run/box-playback.liquidsoap.lock',
-];
-
-for (let channel of channels) {
-    if (fs.existsSync(channel)) {
-        let programIdPath = fs.readFileSync(channel, 'utf-8');
-        if (isProgramStartedNow(programIdPath)) {
-            startedProgramIdPath = programIdPath;
-            break;
-        }
-    }
+if (preshowShadowQueue.peakClip() === startedClipAbsolutePath) {
+    // Found! dequeue and notify
+    preshowShadowQueue.
 }
 
 let newLiveStatus = null;
@@ -62,11 +34,6 @@ if (startedProgramIdPath) {
     };
 } else if (startedClip.indexOf('/no-program.mp3') != -1) {
     // Program playback ended. Keep the most recent program, end playback
-    if (fs.existsSync(cwd + '/run/live/status.json')) {
-        newLiveStatus = JSON.parse(
-            fs.readFileSync(cwd + '/run/live/status.json', 'utf-8')
-        );
-    }
     newLiveStatus.IsCurrentlyPlaying = false;
 } // else nothing new happened. Do nothing
 
