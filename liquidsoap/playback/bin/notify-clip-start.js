@@ -7,6 +7,10 @@ let cwd = process.argv[2];
 // let mediaDir = process.argv[3];
 let startedClipAbsolutePath = process.argv[4];
 
+if (!startedClipAbsolutePath) {
+    process.exit(0);
+}
+
 // check two queues
 let preShowShadowQueue = PlaybackClipQueue.buildQueue(
     cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
@@ -48,7 +52,5 @@ if (
     // playback stopped
     liveStatus.IsCurrentlyPlaying = false;
 } // Else, propably a clip from interrupting show is started (we can improve here!)
-
-
 
 fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(liveStatus));
