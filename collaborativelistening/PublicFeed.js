@@ -20,13 +20,15 @@ class PublicFeed extends Feed {
             'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
-                'ExpirationTimestamp REAL, unique(Id))'
+                'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
         await this._db.runAsync(
             'CREATE TABLE IF NOT EXISTS UPVOTES ' +
                 '(UserId TEXT, ' +
-                'ProgramId TEXT, Timestamp REAL,' +
-                'PRIMARY KEY(UserId, ProgramId), unique(UserId), unique(ProgramId))'
+                'ProgramId TEXT, Timestamp REAL, ' +
+                'PRIMARY KEY(UserId, ProgramId), ' +
+                'FOREIGN KEY(UserId) REFERENCES User(Id), ' +
+                'UNIQUE(UserId), UNIQUE(ProgramId))'
         );
 
         if (this._historyProdiver) {
@@ -34,13 +36,15 @@ class PublicFeed extends Feed {
                 'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                     '(Id TEXT PRIMARY_KEY, ' +
                     'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
-                    'ExpirationTimestamp REAL, unique(Id))'
+                    'ExpirationTimestamp REAL, UNIQUE(Id))'
             );
             await this._historyProdiver._db.runAsync(
                 'CREATE TABLE IF NOT EXISTS UPVOTES ' +
                     '(UserId TEXT ,' +
                     'ProgramId TEXT, Timestamp REAL,' +
-                    'PRIMARY KEY(UserId, ProgramId), unique(UserId), unique(ProgramId))'
+                    'PRIMARY KEY(UserId, ProgramId), ' +
+                    'FOREIGN KEY(UserId) REFERENCES User(Id), ' +
+                    'UNIQUE(UserId), UNIQUE(ProgramId))'
             );
         }
 

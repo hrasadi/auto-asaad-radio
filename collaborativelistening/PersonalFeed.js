@@ -23,16 +23,18 @@ class PersonalFeed extends Feed {
         await this._db.runAsync(
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
-                'Program TEXT, UserId INTEGER, ReleaseTimestamp REAL,' +
-                'ExpirationTimestamp REAL, unique(Id))'
+                'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
+                'ExpirationTimestamp REAL,' +
+                ' FOREIGN KEY(UserId) REFERENCES User(Id), UNIQUE(Id))'
         );
 
         if (this._historyProdiver) {
             await this._historyProdiver._db.runAsync(
                 'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                     '(Id TEXT PRIMARY_KEY, ' +
-                    'Program TEXT, UserId INTEGER, ReleaseTimestamp REAL,' +
-                    'ExpirationTimestamp REAL, unique(Id))'
+                    'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
+                    'ExpirationTimestamp REAL,' +
+                    ' FOREIGN KEY(UserId) REFERENCES User(Id), UNIQUE(Id))'
             );
         }
 
