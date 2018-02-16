@@ -13,7 +13,7 @@ class UserManager extends DBProvider {
     async init1() {
         await this.init0();
         this._db.runAsync(
-            'CREATE TABLE IF NOT EXISTS "User" (Id TEXT PRIMARY_KEY, ' +
+            'CREATE TABLE IF NOT EXISTS "USER" (Id TEXT PRIMARY_KEY, ' +
                 'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
                 'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
                 'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +

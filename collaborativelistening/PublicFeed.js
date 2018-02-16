@@ -27,7 +27,7 @@ class PublicFeed extends Feed {
                 '(UserId TEXT, ' +
                 'ProgramId TEXT, Timestamp REAL, ' +
                 'PRIMARY KEY(UserId, ProgramId), ' +
-                'FOREIGN KEY(UserId) REFERENCES User(Id), ' +
+                'FOREIGN KEY(UserId) REFERENCES USER(Id), ' +
                 'UNIQUE(UserId), UNIQUE(ProgramId))'
         );
 
@@ -43,7 +43,7 @@ class PublicFeed extends Feed {
                     '(UserId TEXT ,' +
                     'ProgramId TEXT, Timestamp REAL,' +
                     'PRIMARY KEY(UserId, ProgramId), ' +
-                    'FOREIGN KEY(UserId) REFERENCES User(Id), ' +
+                    'FOREIGN KEY(UserId) REFERENCES USER(Id), ' +
                     'UNIQUE(UserId), UNIQUE(ProgramId))'
             );
         }

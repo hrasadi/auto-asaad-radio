@@ -25,7 +25,7 @@ class PersonalFeed extends Feed {
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
                 'ExpirationTimestamp REAL,' +
-                ' FOREIGN KEY(UserId) REFERENCES User(Id), UNIQUE(Id))'
+                ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
         );
 
         if (this._historyProdiver) {
@@ -34,7 +34,7 @@ class PersonalFeed extends Feed {
                     '(Id TEXT PRIMARY_KEY, ' +
                     'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
                     'ExpirationTimestamp REAL,' +
-                    ' FOREIGN KEY(UserId) REFERENCES User(Id), UNIQUE(Id))'
+                    ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
             );
         }
 
