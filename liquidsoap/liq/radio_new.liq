@@ -13,17 +13,21 @@ print("Scripts dir: "^script_dir)
 print("Running dir: "^running_dir)
 print("Media dir: "^media_dir)
 
-def add_skip_command(s) =
+def add_clear_queue_command(s) =
  # A command to skip
- def skip(_) =
-   source.skip(s)
+ def clear_queue(queue) =
+	ret = server.execute(queue + '.queue')
+	ret = list.hd(ret)
+	ret = string.split(separator=" ",ret)
+	list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end, ret)
+	source.skip(s)
    "Done!"
  end
  # Register the command:
- server.register(namespace="#{source.id(s)}",
-                 usage="skip",
-                 description="Skip the current song.",
-                 "skip",skip)
+ server.register(namespace="interrupting_preshow_q",
+                 usage="clear_queue",
+                 description="Clear a given queue",
+                 "clear_queue", clear_queue)
 end
 
 def get_preshow_filler() =
@@ -75,14 +79,3 @@ main = map_metadata(strip=true, update_metadata, main)
 main = audio_to_stereo(main)
 
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
-
-# TODO use this code snippet to also clear the pre-show queue in addition to skipping the current song
-# for better fault tolerance (although it is very rare to happen)
-#def clear_queue(s) =
-#        ret = server.execute("req.queue")
-#        ret = list.hd(ret)
-#        ret = string.split(separator=" ",ret)
-#        list.iter(fun(x) -> begin foo = server.execute("req.ignore
-#{x}") end,ret)
-#        source.skip(s)
-#end
