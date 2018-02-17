@@ -46,7 +46,6 @@ class LiquidsoapProgram extends Program {
                 ' "' +
                 this.CanonicalIdPath +
                 '" ' +
-                (this.PreShow.FillerClip ? this.PreShow.FillerClip.Media.Path : '') +
                 '\' | at -t ' +
                 preShowStartTimeString +
                 ' 2>&1';
