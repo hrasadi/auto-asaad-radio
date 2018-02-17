@@ -50,7 +50,7 @@ ignore(reset_state())
 
 
 interrupting_preshow_enabled = interactive.bool("interrupting_preshow_enabled", false)
-interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler", false)
+interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler")
 #interrupting_preshow_filler = request.queue(id = "interrupting_preshow_filler")
 
 interrupting_preshow_playlist = switch(track_sensitive=false, [
@@ -80,8 +80,9 @@ main = audio_to_stereo(main)
 
 
 def add_removall_command(s) =
-	def removeall(_) =
-		ret = list.hd(server.execute(s^".queue"))
+  def removeall(_) =
+    sid = source.id(s)
+		ret = list.hd(server.execute(sid^".queue"))
 		ret = string.split(separator=" ",ret)
 		list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
 		source.skip(s)
