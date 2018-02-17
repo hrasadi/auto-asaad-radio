@@ -121,9 +121,11 @@ class FeedWatcher {
                 self._feed.notifyProgramStart(feedEntry);
             }
         );
-        AppContext.getInstance().Logger.info(
-            `${startedProgramsCount} new program(s) started. Notifying users`
-        );
+        if (startedProgramsCount > 0) {
+            AppContext.getInstance().Logger.info(
+                `${startedProgramsCount} new program(s) started. Notifying users`
+            );
+        }
 
         // Check for expired programs
         self._feed.foreachProgramEndingUntilNow(

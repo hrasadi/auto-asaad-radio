@@ -91,7 +91,7 @@ class DBProvider {
         return this._db.eachAsync(query.statement, query.values, onRow);
     }
 
-    entryListForAll(fromType, whereClause) {
+    entryListAll(fromType, whereClause) {
         let query = DBObject.getSelectPreStatement(fromType, whereClause);
         return this._db.allAsync(query.statement, query.values);
     }
