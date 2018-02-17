@@ -83,7 +83,7 @@ def add_removall_command(s) =
     ret = server.execute(sid^".queue")
     ret = list.hd(ret)
     ret = string.split(separator=" ",ret)
-    list.iter(fun(x) -> begin igonore(foo) = server.execute("req.ignore #{x}") end, ret)
+    list.iter(fun(x) -> begin ignore(server.execute("req.ignore #{x}")) end, ret)
     source.skip(s)
     "Done!"
 	end
