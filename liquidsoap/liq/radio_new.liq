@@ -50,9 +50,8 @@ ignore(reset_state())
 
 
 interrupting_preshow_enabled = interactive.bool("interrupting_preshow_enabled", false)
-
-interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler")
-request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)
+interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler", false)
+#interrupting_preshow_filler = request.queue(id = "interrupting_preshow_filler")
 
 interrupting_preshow_playlist = switch(track_sensitive=false, [
 		(interrupting_preshow_enabled, fallback(track_sensitive=false, [
@@ -65,8 +64,6 @@ interrupting_preshow_playlist = switch(track_sensitive=false, [
 #add_skip_command(interrupting_preshow_queue)
 
 interrupting_show_playlist = request.equeue(id = "interrupting_show_q")
-
-
 show_playlist = request.equeue(id = "show_q")
 
 lineup = fallback(track_sensitive=false, [
@@ -80,18 +77,25 @@ main = mksafe(lineup)
 main = map_metadata(strip=true, update_metadata, main)
 main = audio_to_stereo(main)
 
-def removeall() =
-	ret = list.hd(interrupting_preshow_playlist)
-	ret = string.split(separator=" ",ret)
-	list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
-    source.skip(interrupting_preshow_playlist)
+
+
+def add_removall_command(s) =
+	def removeall(_) =
+		ret = list.hd(server.execute(s^".queue"))
+		ret = string.split(separator=" ",ret)
+		list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
+		source.skip(s)
+	end
+	
+	# Register the command:
+	server.register(namespace="#{source.id(s)}",
+				usage="removeall",
+				description="remove all items in preshow list",
+				"removeall", removeall)
 end
 
-#  # Register the command:
-#  server.register(namespace="preshow",
-#                  usage="removeall",
-#                  description="remove all items in preshow list",
-#                  "removeall", removeall)
+# get rid of unplayed items
+add_removall_command(interrupting_preshow_filler)
 
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
 

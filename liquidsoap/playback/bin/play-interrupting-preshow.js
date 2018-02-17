@@ -28,7 +28,7 @@ let queueClipsForPlayback = () => {
             cwd + '/run/liquidsoap/interrupting-preshow-clips.liquidsoap.queue'
         );
 
-        let clipsPath = []
+        let clipsPath = [];
         program.PreShow.Clips.forEach((clip, index) => {
             // Enqueue in our shadowQueue
             let playbackClip = new PlaybackClip();
@@ -47,11 +47,17 @@ let queueClipsForPlayback = () => {
         if (program.PreShow.FillerClip) {
             // Also, save the preshow filler media, so that it could be accessed later
             // by liquidsoap
-            fs.writeFile(
-                cwd + '/run/liquidsoap/interrupting-preshow-filler.lock',
-                program.PreShow.FillerClip.Media.Path,
-                () => {}
-            );
+            // TODO: This is a test. 10 should be changed
+            for (let i = 0; i < 10; i++) {
+                pushToLiquidsoapQueue(
+                    'interrupting_preshow_filler',
+                    program.PreShow.FillerClip.Media.Path
+                );
+            }
+            // fs.writeFile(
+            //     cwd + '/run/liquidsoap/interrupting-preshow-filler.lock',
+            //     () => {}
+            // );
         }
 
         // start playback of the preshow
