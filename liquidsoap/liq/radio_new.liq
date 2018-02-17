@@ -57,7 +57,7 @@ interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler")
 interrupting_preshow_playlist = switch(track_sensitive=false, [
 		(interrupting_preshow_enabled, fallback(track_sensitive=false, [
 			request.equeue(id = "interrupting_preshow_q"),
-			interrupting_preshow_filler)])])
+			interrupting_preshow_filler]))])
 
 
 # Attach a skip command to the source s:
