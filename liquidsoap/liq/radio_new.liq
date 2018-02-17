@@ -71,8 +71,8 @@ lineup = fallback(track_sensitive=false, [
 ])
 
 main = mksafe(lineup)
-main = audio_to_stereo(main)
 main = map_metadata(strip=true, update_metadata, main)
+main = audio_to_stereo(main)
 
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
 
