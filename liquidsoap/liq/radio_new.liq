@@ -84,14 +84,14 @@ def add_removall_command(s) =
     ret = list.hd(ret)
 		ret = string.split(separator=" ",ret)
 		list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
-		source.skip(s)
+    source.skip(s)
+    "Done!"
 	end
 	
 	# Register the command:
 	server.register(namespace="#{source.id(s)}",
 				usage="removeall",
-				description="remove all items in preshow list",
-				"removeall", removeall)
+				description="remove all items in preshow list", "removeall", removeall)
 end
 
 # get rid of unplayed items
