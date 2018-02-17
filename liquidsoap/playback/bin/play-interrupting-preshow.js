@@ -45,7 +45,7 @@ let queueClipsForPlayback = () => {
         shadowQueue.persist();
 
         if (program.PreShow.FillerClip) {
-            // Also, save the preshow filler media, so that it could be accessed later
+            // Also, queue the preshow filler media, so that it could be accessed later
             // by liquidsoap
             // TODO: This is a test. 10 should be changed
             let fillers = [];
@@ -53,11 +53,6 @@ let queueClipsForPlayback = () => {
                 fillers.push(program.PreShow.FillerClip.Media.Path);
             }
             pushToLiquidsoapQueue('interrupting_preshow_filler', fillers);
-
-            // fs.writeFile(
-            //     cwd + '/run/liquidsoap/interrupting-preshow-filler.lock',
-            //     () => {}
-            // );
         }
 
         // start playback of the preshow

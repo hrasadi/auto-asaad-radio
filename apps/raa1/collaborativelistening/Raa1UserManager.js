@@ -61,27 +61,41 @@ class Raa1UserManager extends UserManager {
 
     async notifyUser(userId, alert, program) {
         // Notify iOS
-        let iosUsers = await this.entryListForAll({
+        let iosUsers = await this.entryListAll({
             statement:
                 'UserId = ? and DeviceType = ? and NotifyOnPersonalProgram = 1' +
                 ' and NotificationToken != ""',
             params: [userId, DeviceTypeEnum.iOS],
         });
-        this.notifyAPNS(iosUsers.map((entry) => entry.Id), alert, program);
+        if (iosUsers.length > 0) {
+            this.notifyAPNS(iosUsers.map((user) => user.Id), alert, program);
+            AppContext.getInstance().Logger.debug(
+                `Custom APNS notification sent to ${userId} with content ${alert}`
+            );
+        } else {
+            AppContext.getInstance().Logger.debug(
+                `User ${userId} settings didn't not allow to send` +
+                `notification with content ${alert}.`
+            );
+        }
     }
 
     async notifyAllUsers(alert, program) {
         // Notify iOS
-        let iosUsers = await this.entryListForAll({
+        let iosUsers = await this.entryListAll({
             statement:
                 'DeviceType = ? and NotifyOnPublicProgram = 1' +
                 ' and NotificationToken != ""',
             params: DeviceTypeEnum.iOS,
         });
-        this.notifyAPNS(iosUsers.map((entry) => entry.Id), alert, program);
+        this.notifyAPNS(iosUsers.map((user) => user.Id), alert, program);
+        AppContext.getInstance().Logger.debug(
+            `APNS notification with content ${alert}` +
+            ` sent to ${iosUsers.length} user(s)`
+        );
 
         // Notify FCM
-        let fcmUsers = await this.entryListForAll({
+        let fcmUsers = await this.entryListAll({
             statement: 'DeviceType = ?',
             params: DeviceTypeEnum.Android,
         });

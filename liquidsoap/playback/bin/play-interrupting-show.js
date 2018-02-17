@@ -27,11 +27,8 @@ let queueClipsForPlayback = () => {
 
         // start playback of the preshow
         execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
+        // remove all queued filler clips (d)
         execCustomLiquidsoapCommand('interrupting_preshow_filler.removeall');
-        // We no longer need this file. By removing it, we prevent liquidsoap
-        // from pushing extra instances into the queue
-        // TODO:
-        // fs.unlinkSync(cwd + '/run/liquidsoap/interrupting-preshow-filler.lock');
     } else {
         throw Error(`Fatal error! Cannot find lineup ${lineupFilePath}`);
     }

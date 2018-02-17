@@ -48,7 +48,7 @@ class Feed extends DBProvider {
         return this.entryListForEach(
             this._type,
             {
-                statement: 'ReleaseTimestamp <= ? AND ReleaseTimestamp >= ?',
+                statement: 'ReleaseTimestamp <= ? AND ReleaseTimestamp > ?',
                 values: [nowEpoch, nowEpoch - 60],
             },
             onFeedEntry
@@ -112,7 +112,7 @@ class FeedWatcher {
         }
         // One minute in (success path).
         // Check for programs released now. Notify listeners
-        self._feed.foreachProgramStartingWithinMinute(
+        let startedProgramsCount = self._feed.foreachProgramStartingWithinMinute(
             currentTimeEpoch,
             (err, feedEntry) => {
                 if (err) {
@@ -121,6 +121,10 @@ class FeedWatcher {
                 self._feed.notifyProgramStart(feedEntry);
             }
         );
+        AppContext.getInstance().Logger.info(
+            `${startedProgramsCount} new program(s) started. Notifying users`
+        );
+
         // Check for expired programs
         self._feed.foreachProgramEndingUntilNow(currentTimeEpoch, (err, feedEntry) => {
             if (err) {
