@@ -26,10 +26,10 @@ class Raa1LiveLineupPublisher extends LiveLineupPublisher {
     }
 
     commit(vodTargetDate) {
-        // We overwrite the target date to the current date - 2
+        // We overwrite the target date to the current date - 1
         // (we keep TWO more day of programs to take care of timezone difference)
         let targetDate = DateUtils.getTodayString();
-        targetDate = moment(targetDate).subtract(2, 'day').format('YYYY-MM-DD');
+        targetDate = moment(targetDate).subtract(1, 'day').format('YYYY-MM-DD');
 
         for (let feedName in this._rollingListsDict) {
             if (this._rollingListsDict.hasOwnProperty(feedName)) {
