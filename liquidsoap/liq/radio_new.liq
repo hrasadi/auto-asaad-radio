@@ -51,10 +51,13 @@ ignore(reset_state())
 
 interrupting_preshow_enabled = interactive.bool("interrupting_preshow_enabled", false)
 
+request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)])
+interrupting_preshow_filler = request.equeue(id = "interrupting_preshow_filler")
+
 interrupting_preshow_playlist = switch(track_sensitive=false, [
 		(interrupting_preshow_enabled, fallback(track_sensitive=false, [
 			request.equeue(id = "interrupting_preshow_q"),
-			request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)]))])
+			interrupting_preshow_filler)])
 
 
 # Attach a skip command to the source s:
@@ -62,6 +65,7 @@ interrupting_preshow_playlist = switch(track_sensitive=false, [
 #add_skip_command(interrupting_preshow_queue)
 
 interrupting_show_playlist = request.equeue(id = "interrupting_show_q")
+
 
 show_playlist = request.equeue(id = "show_q")
 
@@ -83,12 +87,11 @@ def removeall() =
     source.skip(interrupting_preshow_playlist)
 end
 
- # Register the command:
- server.register(namespace="preshow",
-                 usage="removeall",
-                 description="remove all items in preshow list",
-                 "removeall", removeall)
-
+#  # Register the command:
+#  server.register(namespace="preshow",
+#                  usage="removeall",
+#                  description="remove all items in preshow list",
+#                  "removeall", removeall)
 
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
 
