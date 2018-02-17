@@ -112,7 +112,7 @@ class FeedWatcher {
         }
         // One minute in (success path).
         // Check for programs released now. Notify listeners
-        let startedProgramsCount = self._feed.foreachProgramStartingWithinMinute(
+        let startedProgramsCount = await self._feed.foreachProgramStartingWithinMinute(
             currentTimeEpoch,
             (err, feedEntry) => {
                 if (err) {
@@ -126,12 +126,15 @@ class FeedWatcher {
         );
 
         // Check for expired programs
-        self._feed.foreachProgramEndingUntilNow(currentTimeEpoch, (err, feedEntry) => {
-            if (err) {
-                throw err;
+        self._feed.foreachProgramEndingUntilNow(
+            currentTimeEpoch,
+            (err, feedEntry) => {
+                if (err) {
+                    throw err;
+                }
+                self._feed.deregisterFeedEntry(feedEntry);
             }
-            self._feed.deregisterFeedEntry(feedEntry);
-        });
+        );
         // Persist new epoch
         self.LastProcessedEpoch = currentTimeEpoch;
     }
