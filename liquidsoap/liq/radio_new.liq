@@ -77,12 +77,11 @@ main = mksafe(lineup)
 main = map_metadata(strip=true, update_metadata, main)
 main = audio_to_stereo(main)
 
-
-
 def add_removall_command(s) =
   def removeall(_) =
     sid = source.id(s)
-		ret = list.hd(server.execute(sid^".queue"))
+    ret = server.execute(sid^".queue")
+    ret = list.hd(ret)
 		ret = string.split(separator=" ",ret)
 		list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
 		source.skip(s)
