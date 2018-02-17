@@ -63,9 +63,9 @@ let queueClipsForPlayback = () => {
 
 // Precise start of the target minute
 let schedule = async () => {
-    await delay(200); // Avoid running on xx:59, if cron starts immediately.
+    await delay(2000); // Avoid running on xx:59, if cron starts immediately.
     let secondsToGo = 60 - moment().seconds();
-    await delay(secondsToGo * 100); // to millis
+    await delay(secondsToGo * 1000); // to millis
 
     // Time to fire!
     queueClipsForPlayback();
