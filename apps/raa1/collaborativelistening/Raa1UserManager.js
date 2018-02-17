@@ -25,8 +25,9 @@ class Raa1UserManager extends UserManager {
         this._apnProvider.shutdown();
         // Handle node-apn shutdown bug
         // https://github.com/node-apn/node-apn/issues/543
-        this._apnProvider.client.endpointManager.
-                _endpoints.forEach((endpoint) => endpoint.destroy()); // will do
+        this._apnProvider.client.endpointManager._endpoints.forEach((endpoint) =>
+            endpoint.destroy()
+        ); // will do
         this._firebase.app().delete();
 
         this.shutdown0();
@@ -38,33 +39,43 @@ class Raa1UserManager extends UserManager {
             production: true,
         };
 
-        apnProviderOptions.cert = AppContext.getInstance().CWD + '/' +
-                                                this._credentials.APNS.cert;
-        apnProviderOptions.key = AppContext.getInstance().CWD + '/' +
-                                                this._credentials.APNS.key;
+        apnProviderOptions.cert =
+            AppContext.getInstance().CWD + '/' + this._credentials.APNS.cert;
+        apnProviderOptions.key =
+            AppContext.getInstance().CWD + '/' + this._credentials.APNS.key;
 
         this._apnProvider = new apn.Provider(apnProviderOptions);
     }
 
     initFCM() {
         this._firebase = require('firebase-admin');
-        let serviceAccount = require(AppContext.getInstance().CWD + '/' +
-                                                this._credentials.Firebase);
+        let serviceAccount = require(AppContext.getInstance().CWD +
+            '/' +
+            this._credentials.Firebase);
 
         this._firebase.initializeApp({
-          credential: this._firebase.credential.cert(serviceAccount),
-          databaseURL: 'https://raa-android.firebaseio.com',
+            credential: this._firebase.credential.cert(serviceAccount),
+            databaseURL: 'https://raa-android.firebaseio.com',
         });
     }
 
-    notifyUser(userId, message) {
-
+    async notifyUser(userId, alert, program) {
+        // Notify iOS
+        let iosUsers = await this.entryListForAll({
+            statement:
+                'UserId = ? and DeviceType = ? and NotifyOnPersonalProgram = 1' +
+                ' and NotificationToken != ""',
+            params: [userId, DeviceTypeEnum.iOS],
+        });
+        this.notifyAPNS(iosUsers.map((entry) => entry.Id), alert, program);
     }
 
     async notifyAllUsers(alert, program) {
         // Notify iOS
         let iosUsers = await this.entryListForAll({
-            statement: 'DeviceType = ?',
+            statement:
+                'DeviceType = ? and NotifyOnPublicProgram = 1' +
+                ' and NotificationToken != ""',
             params: DeviceTypeEnum.iOS,
         });
         this.notifyAPNS(iosUsers.map((entry) => entry.Id), alert, program);
@@ -85,7 +96,7 @@ class Raa1UserManager extends UserManager {
             topic: 'raa.raa-ios-player',
             contentAvailable: 1,
             payload: {
-                'sender': 'raa1',
+                sender: 'raa1',
             },
         });
 
@@ -115,8 +126,10 @@ class Raa1UserManager extends UserManager {
             payload.data.program = program;
         }
 
-        this._firebase.messaging().sendToDevice(recipientIds, payload)
-                                    .then((response) => {});
+        this._firebase
+            .messaging()
+            .sendToDevice(recipientIds, payload)
+            .then((response) => {});
     }
 }
 

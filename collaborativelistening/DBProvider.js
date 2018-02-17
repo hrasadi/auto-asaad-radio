@@ -38,6 +38,23 @@ class DBProvider {
         return this._db.runAsync(query.statement, query.values);
     }
 
+    async persistOrUpdate(dbObject) {
+        let existsQuery = DBObject.getSelectPreStatement(dbObject.constructor.name, {
+            statement: 'Id = ?',
+            values: dbObject.Id,
+        });
+        let persistedObject = await this._db.getAsync(
+            existsQuery.statement,
+            existsQuery.values
+        );
+
+        if (persistedObject) {
+            return this.update(dbObject);
+        } else {
+            return this.persist(dbObject);
+        }
+    }
+
     persistList(dbObjects) {
         let query = DBObject.getListInsertPreStatement(dbObjects);
         return this._db.runAsync(query.statement, query.values);
