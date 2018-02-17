@@ -51,10 +51,10 @@ ignore(reset_state())
 
 interrupting_preshow_enabled = interactive.bool("interrupting_preshow_enabled", false)
 
-interrupting_preshow_playlist = fallback.skip(switch(track_sensitive=false, [
+interrupting_preshow_playlist = switch(track_sensitive=false, [
 		(interrupting_preshow_enabled, fallback(track_sensitive=false, [
 			request.equeue(id = "interrupting_preshow_q"),
-			request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)]))]))
+			request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)]))])
 
 
 # Attach a skip command to the source s:
