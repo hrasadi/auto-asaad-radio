@@ -13,21 +13,17 @@ print("Scripts dir: "^script_dir)
 print("Running dir: "^running_dir)
 print("Media dir: "^media_dir)
 
-def add_clear_queue_command(s) =
+def add_skip_command(s) =
  # A command to skip
- def clear_queue(queue) =
-	ret = server.execute(queue + '.queue')
-	ret = list.hd(ret)
-	ret = string.split(separator=" ",ret)
-	list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end, ret)
-	source.skip(s)
+ def skip(_) =
+   source.skip(s)
    "Done!"
  end
  # Register the command:
- server.register(namespace="interrupting_preshow_q",
-                 usage="clear_queue",
-                 description="Clear a given queue",
-                 "clear_queue", clear_queue)
+ server.register(namespace="#{source.id(s)}",
+                 usage="skip",
+                 description="Skip the current song.",
+                 "skip",skip)
 end
 
 def get_preshow_filler() =
@@ -52,16 +48,18 @@ end
 # Logic flow
 ignore(reset_state())
 
-interrupting_preshow_queue = request.queue(id = "interrupting_preshow_q")
-# Attach a skip command to the source s:
-add_skip_command(interrupting_preshow_queue)
 
 interrupting_preshow_enabled = interactive.bool("interrupting_preshow_enabled", false)
 
 interrupting_preshow_playlist = switch(track_sensitive=false, [
-		(interrupting_preshow_enabled, fallback(track_sensitive=false, [
+		(interrupting_preshow_enabled, fallback.skip(track_sensitive=false, [
 			request.equeue(id = "interrupting_preshow_q"),
 			request.dynamic(id = "interrupting_preshow_filler", get_preshow_filler)]))])
+
+
+# Attach a skip command to the source s:
+#interrupting_preshow_queue = request.queue(id = "interrupting_preshow_q")
+#add_skip_command(interrupting_preshow_queue)
 
 interrupting_show_playlist = request.equeue(id = "interrupting_show_q")
 
@@ -78,4 +76,19 @@ main = mksafe(lineup)
 main = map_metadata(strip=true, update_metadata, main)
 main = audio_to_stereo(main)
 
+def removeall() =
+	ret = list.hd(interrupting_preshow_playlist)
+	ret = string.split(separator=" ",ret)
+	list.iter(fun(x) -> begin foo = server.execute("req.ignore {x}") end,ret)
+    source.skip(interrupting_preshow_playlist)
+end
+
+ # Register the command:
+ server.register(namespace="preshow",
+                 usage="removeall",
+                 description="remove all items in preshow list",
+                 "removeall", removeall)
+
+
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
+
