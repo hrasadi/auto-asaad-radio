@@ -10,6 +10,7 @@ class Raa1PublicFeed extends PublicFeed {
     }
 
     notifyProgramStart(feedEntry) {
+        feedEntry = JSON.parse(feedEntry);
         let message = 'برنامه‌‌ای جدید منتشر شده: ' + feedEntry.Program.Title;
         AppContext.getInstance('Raa1CLWatcher').UserManager
                                     .notifyAllUsers(message, feedEntry);
