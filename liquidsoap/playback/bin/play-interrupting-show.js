@@ -29,6 +29,7 @@ let queueClipsForPlayback = () => {
         execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
         // remove all queued filler clips (d)
         execCustomLiquidsoapCommand('interrupting_preshow_filler.removeall');
+        execCustomLiquidsoapCommand('interrupting_preshow_q.removeall');
     } else {
         throw Error(`Fatal error! Cannot find lineup ${lineupFilePath}`);
     }

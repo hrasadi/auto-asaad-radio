@@ -89,6 +89,7 @@ end
 
 # get rid of unplayed items
 add_removall_command(interrupting_preshow_filler)
+add_removall_command(interrupting_preshow_q)
 
 output.icecast(%mp3(bitrate=96), host="localhost", port=8000, password=icecast_password, mount="raa1_new.ogg", icy_metadata="true", description="Radio Auto-asaad", url="http://raa.media", main)
 
