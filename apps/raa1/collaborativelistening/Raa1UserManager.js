@@ -66,7 +66,7 @@ class Raa1UserManager extends UserManager {
             statement:
                 'UserId = ? and DeviceType = ? and NotifyOnPersonalProgram = 1' +
                 ' and NotificationToken != ""',
-            params: [userId, DeviceTypeEnum.iOS],
+            values: [userId, DeviceTypeEnum.iOS],
         });
         if (iosUsers.length > 0) {
             this.notifyAPNS(iosUsers.map((user) => user.Id), alert, program);
@@ -87,7 +87,7 @@ class Raa1UserManager extends UserManager {
             statement:
                 'DeviceType = ? and NotifyOnPublicProgram = ?' +
                 ' and NotificationToken != ?',
-            params: [DeviceTypeEnum.iOS, 1, ''],
+            values: [DeviceTypeEnum.iOS, 1, ''],
         });
         this.notifyAPNS(iosUsers.map((user) => user.Id), alert, program);
         AppContext.getInstance().Logger.debug(
@@ -98,7 +98,7 @@ class Raa1UserManager extends UserManager {
         // Notify FCM
         // let fcmUsers = await this.entryListAll(User, {
         //     statement: 'DeviceType = ?',
-        //     params: DeviceTypeEnum.Android,
+        //     values: DeviceTypeEnum.Android,
         // });
         // this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
     }
