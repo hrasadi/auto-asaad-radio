@@ -9,11 +9,11 @@ const path = require('path');
 const fs = require('fs');
 
 class LiveProgramNotifier extends AppContext {
-    constructor(program) {
+    constructor(cwd) {
         super();
 
         this._productionMode = (process.env.NODE_ENV == 'production') ? true : false;
-        this._cwd = path.resolve('../');
+        this._cwd = cwd;
 
         this._confFilePath = this._cwd + '/conf/raa1-cl.conf';
 
@@ -45,8 +45,8 @@ class LiveProgramNotifier extends AppContext {
     }
 }
 
-async function perform(liveStatus) {
-    let notifier = new LiveProgramNotifier();
+async function perform(cwd, liveStatus) {
+    let notifier = new LiveProgramNotifier(cwd);
     await notifier.init();
 
     let message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
