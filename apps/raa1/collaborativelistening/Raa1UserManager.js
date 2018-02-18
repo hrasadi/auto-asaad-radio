@@ -69,14 +69,18 @@ class Raa1UserManager extends UserManager {
             values: [userId, DeviceTypeEnum.iOS],
         });
         if (iosUsers.length > 0) {
-            this.notifyAPNS(iosUsers.map((user) => user.NotificationToken), alert, program);
+            this.notifyAPNS(
+                iosUsers.map((user) => user.NotificationToken),
+                alert,
+                program
+            );
             AppContext.getInstance().Logger.debug(
                 `Custom APNS notification sent to ${userId} with content ${alert}`
             );
         } else {
             AppContext.getInstance().Logger.debug(
                 `User ${userId} settings didn't not allow to send` +
-                `notification with content ${alert}.`
+                    `notification with content ${alert}.`
             );
         }
     }
@@ -92,7 +96,7 @@ class Raa1UserManager extends UserManager {
         this.notifyAPNS(iosUsers.map((user) => user.NotificationToken), alert, program);
         AppContext.getInstance().Logger.debug(
             `APNS notification with content ${alert}` +
-            ` sent to ${iosUsers.length} user(s)`
+                ` sent to ${iosUsers.length} user(s)`
         );
 
         // Notify FCM
@@ -126,7 +130,13 @@ class Raa1UserManager extends UserManager {
             notification.badge = 0;
         }
 
-        this._apnProvider.send(notification, recipientIds).then((response) => {});
+        this._apnProvider.send(notification, recipientIds).then((response) => {
+            if (response.failed.length > 0) {
+                AppContext.getInstance().Logger.info(
+                    `Failed APNS messages: ${response.failed}`
+                );
+            }
+        });
     }
 
     notifyFCM(recipientIds, alert, program) {
