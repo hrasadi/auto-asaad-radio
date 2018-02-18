@@ -41,9 +41,9 @@ class LiveProgramNotifier extends AppContext {
     };
 }
 
-function perform(liveStatus) {
+async function perform(liveStatus) {
     let notifier = new LiveProgramNotifier();
-    notifier.init();
+    await notifier.init();
 
     let message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
     AppContext.getInstance('LiveProgramNotifier').UserManager.notifyAllUsers(
