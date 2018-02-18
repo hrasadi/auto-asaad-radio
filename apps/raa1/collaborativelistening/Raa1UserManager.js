@@ -12,13 +12,13 @@ class Raa1UserManager extends UserManager {
         super(dbFileName);
     }
 
-    init(credentials) {
+    async init(credentials) {
         this._credentials = credentials;
 
         this.initAPNS();
         this.initFCM();
 
-        this.init1();
+        await this.init1();
     }
 
     shutdown() {
