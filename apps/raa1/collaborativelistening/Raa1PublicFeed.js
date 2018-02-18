@@ -10,10 +10,10 @@ class Raa1PublicFeed extends PublicFeed {
     }
 
     notifyProgramStart(feedEntry) {
-        feedEntry = JSON.parse(feedEntry);
-        let message = 'برنامه‌‌ای جدید منتشر شده: ' + feedEntry.Program.Title;
+        let program = JSON.parse(feedEntry.Program);
+        let message = 'برنامه‌‌ای جدید منتشر شده: ' + program.Title;
         AppContext.getInstance('Raa1CLWatcher').UserManager
-                                    .notifyAllUsers(message, feedEntry);
+                                    .notifyAllUsers(message, program);
     }
 }
 
