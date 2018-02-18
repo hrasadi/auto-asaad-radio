@@ -30,6 +30,7 @@ if (
 ) {
     // Found! dequeue and notify
     let clip = preShowShadowQueue.dequeueClip();
+    preShowShadowQueue.persist();
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
@@ -37,21 +38,21 @@ if (
 
         notifyProgrmStart(liveStatus);
     }
-    preShowShadowQueue.persist();
 } else if (
     boxShadowQueue.peakClip() &&
     boxShadowQueue.peakClip().ClipAbsolutePath === startedClipAbsolutePath
 ) {
     // Found! dequeue and notify
     let clip = boxShadowQueue.dequeueClip();
+    boxShadowQueue.persist();
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
         notifyProgrmStart(liveStatus);
     }
-    boxShadowQueue.persist();
 } else if (startedClipAbsolutePath.indexOf('/no-program.mp3') != -1) {
     // playback stopped
+    // TODO: notify end of playback
     liveStatus.IsCurrentlyPlaying = false;
 } // Else, propably a clip from interrupting show is started (we can improve here!)
 
