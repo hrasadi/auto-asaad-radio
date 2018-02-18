@@ -85,9 +85,9 @@ class Raa1UserManager extends UserManager {
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
-                'DeviceType = ? and NotifyOnPublicProgram = 1' +
-                ' and NotificationToken != ""',
-            params: DeviceTypeEnum.iOS,
+                'DeviceType = ? and NotifyOnPublicProgram = ?' +
+                ' and NotificationToken != ?',
+            params: [DeviceTypeEnum.iOS, 1, ''],
         });
         this.notifyAPNS(iosUsers.map((user) => user.Id), alert, program);
         AppContext.getInstance().Logger.debug(
