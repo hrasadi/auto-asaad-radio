@@ -26,13 +26,6 @@ def add_skip_command(s) =
                  "skip",skip)
 end
 
-def get_preshow_filler() =
-	# Get the URI
-	file = list.hd(get_process_lines("cd "^script_dir^"; node ./get-preshow-filler-item.js "^running_dir))
-	
-	request.create(file)
-end
-
 def update_metadata(m) =
 	filename = m["filename"]
 	print("Obtaining title for #{filename}.")

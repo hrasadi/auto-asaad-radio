@@ -7,7 +7,8 @@ const Raa1PublicFeed = UF.Raa1PublicFeed;
 const SF = require('./collaborativelistening/Raa1PersonalFeed');
 const Raa1PersonalFeed = SF.Raa1PersonalFeed;
 
-const Raa1UserManager = require('./collaborativelistening/Raa1UserManager');
+const R = require('./collaborativelistening/Raa1UserManager');
+const Raa1UserManager = R.Raa1UserManager;
 
 const program = require('commander');
 const path = require('path');

@@ -60,11 +60,12 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    async notifyUser(userId, alert, program) {
+    async notifyUser(userId, alert, program, requiredNotificationPermission) {
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
-                'UserId = ? and DeviceType = ? and NotifyOnPersonalProgram = 1' +
+                'UserId = ? and DeviceType = ? and ' +
+                requiredNotificationPermission + ' = 1' +
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.iOS],
         });
@@ -85,13 +86,13 @@ class Raa1UserManager extends UserManager {
         }
     }
 
-    async notifyAllUsers(alert, program) {
+    async notifyAllUsers(alert, program, requiredNotificationPermission) {
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
-                'DeviceType = ? and NotifyOnPublicProgram = ?' +
-                ' and NotificationToken != ?',
-            values: [DeviceTypeEnum.iOS, 1, ''],
+                'DeviceType = ? and ' + requiredNotificationPermission + ' = 1' +
+                ' and NotificationToken != ""',
+            values: DeviceTypeEnum.iOS,
         });
         this.notifyAPNS(iosUsers.map((user) => user.NotificationToken), alert, program);
         AppContext.getInstance().Logger.debug(
@@ -133,7 +134,7 @@ class Raa1UserManager extends UserManager {
         this._apnProvider.send(notification, recipientIds).then((response) => {
             if (response.failed.length > 0) {
                 AppContext.getInstance().Logger.info(
-                    `Failed APNS messages: ${response.failed}`
+                    `Failed APNS messages: ${JSON.stringify(response.failed)}`
                 );
             }
         });
@@ -158,4 +159,13 @@ class Raa1UserManager extends UserManager {
     }
 }
 
-module.exports = Raa1UserManager;
+const RequiredNotificationPermission = {
+    'Public': 'NotifyOnPublicProgram',
+    'Personal': 'NotifyOnPersonalProgram',
+    'Live': 'NotifyOnLiveProgram',
+};
+
+module.exports = {
+    'Raa1UserManager': Raa1UserManager,
+    'RequiredNotificationPermission': RequiredNotificationPermission,
+};

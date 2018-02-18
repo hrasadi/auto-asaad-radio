@@ -33,7 +33,7 @@ if (
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
-        // TODO: notify
+        notifyProgrmStart(liveStatus);
     }
     preShowShadowQueue.persist();
 } else if (
@@ -45,7 +45,7 @@ if (
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
-        // TODO: notify
+        notifyProgrmStart(liveStatus);
     }
     boxShadowQueue.persist();
 } else if (startedClipAbsolutePath.indexOf('/no-program.mp3') != -1) {
@@ -54,3 +54,10 @@ if (
 } // Else, propably a clip from interrupting show is started (we can improve here!)
 
 fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(liveStatus));
+
+function notifyProgrmStart(liveStatus) {
+    if (fs.existsSync(cwd + '/liquidsoap-handlers/notify-clip-start.js')) {
+        let handler = require(cwd + '/liquidsoap-handlers/notify-clip-start.js');
+        handler.perform(liveStatus);
+    }
+}

@@ -9,7 +9,8 @@ const Raa1PersonalFeed = SF.Raa1PersonalFeed;
 
 const ProgramInfoDirectory = require('../../entities/programinfo/ProgramInfoDirectory');
 
-const Raa1UserManager = require('./collaborativelistening/Raa1UserManager');
+const R = require('./collaborativelistening/Raa1UserManager');
+const Raa1UserManager = R.Raa1UserManager;
 const U = require('../../collaborativelistening/UserManager');
 const User = U.User;
 

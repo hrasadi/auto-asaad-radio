@@ -32,6 +32,7 @@ let queueClipsForPlayback = () => {
                 playbackClip.ClipAbsolutePath = clip.Media.Path;
                 playbackClip.MarksStartOfProgram =
                     index == 0 ? program.CanonicalIdPath : null;
+                playbackClip.StartedProgramTitle = program.Title;
 
                 shadowQueue.enqueueClip(playbackClip);
                 clipsPath.push(clip.Media.Path);
