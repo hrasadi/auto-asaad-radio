@@ -2,6 +2,7 @@ const AppContext = require('../../../AppContext');
 
 const U = require('../../../collaborativelistening/UserManager');
 const UserManager = U.UserManager;
+const User = U.User;
 const DeviceTypeEnum = U.DeviceTypeEnum;
 
 const apn = require('apn');
@@ -61,7 +62,7 @@ class Raa1UserManager extends UserManager {
 
     async notifyUser(userId, alert, program) {
         // Notify iOS
-        let iosUsers = await this.entryListAll({
+        let iosUsers = await this.entryListAll(User, {
             statement:
                 'UserId = ? and DeviceType = ? and NotifyOnPersonalProgram = 1' +
                 ' and NotificationToken != ""',
@@ -82,7 +83,7 @@ class Raa1UserManager extends UserManager {
 
     async notifyAllUsers(alert, program) {
         // Notify iOS
-        let iosUsers = await this.entryListAll({
+        let iosUsers = await this.entryListAll(User, {
             statement:
                 'DeviceType = ? and NotifyOnPublicProgram = 1' +
                 ' and NotificationToken != ""',
@@ -95,11 +96,11 @@ class Raa1UserManager extends UserManager {
         );
 
         // Notify FCM
-        let fcmUsers = await this.entryListAll({
-            statement: 'DeviceType = ?',
-            params: DeviceTypeEnum.Android,
-        });
-        this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
+        // let fcmUsers = await this.entryListAll(User, {
+        //     statement: 'DeviceType = ?',
+        //     params: DeviceTypeEnum.Android,
+        // });
+        // this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
     }
 
     notifyAPNS(recipientIds, alert, program) {

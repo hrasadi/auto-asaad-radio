@@ -36,6 +36,10 @@ class UserManager extends DBProvider {
     getUser(userId) {
         return this.loadById(User, userId);
     }
+
+    // implemented in subclasses
+    notifyUser(userId, alert, program) {}
+    notifyAllUsers(alert, program) {}
 }
 
 class User extends DBObject {

@@ -100,7 +100,7 @@ class PublicFeed extends Feed {
 
     renderFeed() {
         let now = DateUtils.getEpochSeconds(moment());
-        return this.entryListForAll(PublicFeedEntry, {
+        return this.entryListAll(PublicFeedEntry, {
             statement: 'ReleaseTimestamp < ?', // skip programs planned for future
             values: now,
         });
