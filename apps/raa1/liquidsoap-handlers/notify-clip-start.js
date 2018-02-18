@@ -1,5 +1,5 @@
 const AppContext = require('../../../AppContext');
-const Logger = require('../../logger');
+const Logger = require('../../../logger');
 
 const R = require('../collaborativelistening/Raa1UserManager');
 const Raa1UserManager = R.Raa1UserManager;
