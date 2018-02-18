@@ -40,8 +40,8 @@ class LiveProgramNotifier extends AppContext {
         this.UserManager.shutdown();
     };
 
-    get UserManager() {
-        return this._userManager;
+    notify(liveStatus) {
+        this._userManager.notifyAllUsers(liveStatus);
     }
 }
 
@@ -50,7 +50,7 @@ async function perform(liveStatus) {
     await notifier.init();
 
     let message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
-    AppContext.getInstance('LiveProgramNotifier').UserManager.notifyAllUsers(
+    notifier.notify(
         message,
         null,
         RequiredNotificationPermission.Live
