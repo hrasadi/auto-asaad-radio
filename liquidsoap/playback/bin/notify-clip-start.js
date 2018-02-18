@@ -59,7 +59,7 @@ fs.writeFileSync(cwd + '/run/live/status.json', JSON.stringify(liveStatus));
 
 function notifyProgrmStart(liveStatus) {
     if (fs.existsSync(cwd + '/liquidsoap-handlers/notify-clip-start.js')) {
-        let handler = require(cwd + '/liquidsoap-handlers/notify-clip-start.js');
+        let handler = require(cwd + '/liquidsoap-handlers/notify-clip-start');
         handler.perform(liveStatus);
     }
 }
