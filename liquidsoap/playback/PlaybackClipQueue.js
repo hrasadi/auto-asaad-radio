@@ -82,6 +82,15 @@ class PlaybackClip extends SerializableObject {
     set MarksStartOfProgram(value) {
         this._marksStartOfProgram = value;
     }
+
+    get StartedProgramTitle() {
+        return this.getOrNull(this._startedProgramTitle);
+    }
+
+    set StartedProgramTitle(value) {
+        this._startedProgramTitle = value;
+    }
+
 }
 
 module.exports = {

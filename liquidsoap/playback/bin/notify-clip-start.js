@@ -33,6 +33,8 @@ if (
     if (clip.MarksStartOfProgram) {
         liveStatus.IsCurrentlyPlaying = true;
         liveStatus.MostRecentProgram = clip.MarksStartOfProgram;
+        liveStatus.StartedProgramTitle = clip.StartedProgramTitle;
+
         notifyProgrmStart(liveStatus);
     }
     preShowShadowQueue.persist();
