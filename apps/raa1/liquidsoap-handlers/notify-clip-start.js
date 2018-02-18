@@ -46,7 +46,7 @@ function perform(liveStatus) {
     notifier.init();
 
     let message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
-    AppContext.getInstance('Raa1CLWatcher').UserManager.notifyAllUsers(
+    AppContext.getInstance('LiveProgramNotifier').UserManager.notifyAllUsers(
         message,
         null,
         RequiredNotificationPermission.Live
