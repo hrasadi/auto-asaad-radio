@@ -39,6 +39,10 @@ class LiveProgramNotifier extends AppContext {
     shutdown() {
         this.UserManager.shutdown();
     };
+
+    get UserManager() {
+        return this._userManager;
+    }
 }
 
 async function perform(liveStatus) {
