@@ -55,7 +55,6 @@ async function perform(liveStatus) {
         null,
         RequiredNotificationPermission.Live
     );
-
     notifier.shutdown();
 }
 
