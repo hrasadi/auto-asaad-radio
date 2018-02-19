@@ -412,7 +412,7 @@ class Program extends BaseProgram {
         this._parentBox = parent;
     }
 
-    publish() {
+    async publish() {
         let targetDate = this._parentBox._parentLineup.LineupId;
 
         // Publish the live broadcast data (under all circumstances)
@@ -496,13 +496,13 @@ class Program extends BaseProgram {
         // Publish to public feed
         if (this.Publishing.CollaborativeListeningFeed === 'Public') {
             // We release all programs on the start time of their boxes
-            AppContext.getInstance('LineupGenerator').PublicFeed.registerProgram(
+            await AppContext.getInstance('LineupGenerator').PublicFeed.registerProgram(
                 programToPublish,
                 this._parentBox.StartTime
             );
         } else if (this.Publishing.CollaborativeListeningFeed === 'Personal') {
             // Schedule for personal feed
-            AppContext.getInstance('LineupGenerator').PersonalFeed.registerProgram(
+            await AppContext.getInstance('LineupGenerator').PersonalFeed.registerProgram(
                 programToPublish,
                 targetDate
             );

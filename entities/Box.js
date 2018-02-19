@@ -194,9 +194,9 @@ class Box extends BaseBox {
         }
     }
 
-    publish() {
+    async publish() {
         for (let program of this.Programs) {
-            program.publish();
+            await program.publish();
         }
     }
 

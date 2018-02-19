@@ -52,10 +52,10 @@ class LineupManager {
         }
     }
 
-    publishLineup(targetDate) {
+    async publishLineup(targetDate) {
         let lineup = this.getLineup(targetDate);
         if (lineup) {
-            lineup.publish();
+            await lineup.publish();
         } else {
             throw Error('Lineup not found for date ' + targetDate);
         }
