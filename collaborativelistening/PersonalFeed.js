@@ -42,9 +42,9 @@ class PersonalFeed extends Feed {
         this._tableName = 'PersonalFeedEntry';
     }
 
-    registerProgram(program, targetDate) {
+    async registerProgram(program, targetDate) {
         let self = this;
-        this.entryListForEach(User, null, (err, user) => {
+        await this.entryListForEach(User, null, (err, user) => {
             let releaseMoment = program._parentBox.Schedule.calculateStartTime(
                 targetDate,
                 user
