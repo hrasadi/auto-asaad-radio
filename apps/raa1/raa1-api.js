@@ -175,7 +175,7 @@ class Raa1API extends AppContext {
                         'Please come back later'
                 );
         });
-        this._webApp.listen(this._conf.Port, () => {
+        this._webApp.listen(this._conf.PublicAPIPort, () => {
             AppContext.getInstance().Logger.info(
                 'Raa API started on port ' + this._conf.Port
             );
