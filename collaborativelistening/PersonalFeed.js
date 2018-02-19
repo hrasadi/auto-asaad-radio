@@ -44,13 +44,17 @@ class PersonalFeed extends Feed {
 
     async registerProgram(program, targetDate) {
         let self = this;
-        await this.entryListForEach(User, null, async (err, user) => {
+
+        // We don't use foreach becuase of concurrency problems
+        let users = await this.entryListAll(User, null);
+
+        for (let user of users) {
             let releaseMoment = program._parentBox.Schedule.calculateStartTime(
                 targetDate,
                 user
             );
             await self.registerProgramForUser(program, releaseMoment, user.Id);
-        });
+        }
     }
 
     async registerProgramForUser(program, releaseMoment, userId) {
