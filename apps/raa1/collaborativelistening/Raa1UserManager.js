@@ -66,7 +66,8 @@ class Raa1UserManager extends UserManager {
         let iosUsers = await this.entryListAll(User, {
             statement:
                 'Id = ? and DeviceType = ? and ' +
-                requiredNotificationPermission + ' = 1' +
+                requiredNotificationPermission +
+                ' = 1' +
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.iOS],
         });
@@ -88,15 +89,23 @@ class Raa1UserManager extends UserManager {
         }
     }
 
-    async notifyAllUsers(alert, program, requiredNotificationPermission) {
+    async notifyAllUsers(alert, program, programType) {
+        let requiredNotificationPermission = RequiredNotificationPermission[programType];
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
-                'DeviceType = ? and ' + requiredNotificationPermission + ' = 1' +
+                'DeviceType = ? and ' +
+                requiredNotificationPermission +
+                ' = 1' +
                 ' and NotificationToken != ""',
             values: DeviceTypeEnum.iOS,
         });
-        this.notifyAPNS(iosUsers.map((user) => user.NotificationToken), alert, program);
+        this.notifyAPNS(
+            iosUsers.map((user) => user.NotificationToken),
+            alert,
+            program,
+            programType
+        );
         AppContext.getInstance().Logger.debug(
             `APNS notification with content ${alert}` +
                 ` sent to ${iosUsers.length} user(s)`
@@ -162,12 +171,12 @@ class Raa1UserManager extends UserManager {
 }
 
 const RequiredNotificationPermission = {
-    'Public': 'NotifyOnPublicProgram',
-    'Personal': 'NotifyOnPersonalProgram',
-    'Live': 'NotifyOnLiveProgram',
+    Public: 'NotifyOnPublicProgram',
+    Personal: 'NotifyOnPersonalProgram',
+    Live: 'NotifyOnLiveProgram',
 };
 
 module.exports = {
-    'Raa1UserManager': Raa1UserManager,
-    'RequiredNotificationPermission': RequiredNotificationPermission,
+    Raa1UserManager: Raa1UserManager,
+    RequiredNotificationPermission: RequiredNotificationPermission,
 };
