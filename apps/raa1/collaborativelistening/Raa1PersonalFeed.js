@@ -13,7 +13,8 @@ class Raa1PersonalFeed extends PersonalFeed {
     }
 
     notifyProgramStart(feedEntry) {
-        let message = 'برنامه‌ی مخصوص شما: ' + feedEntry.Program.Title;
+        let program = JSON.parse(feedEntry.Program);
+        let message = 'برنامه‌ی مخصوص شما: ' + program.Title;
         AppContext.getInstance('Raa1CLWatcher').UserManager.notifyUser(
             feedEntry.UserId,
             message,
