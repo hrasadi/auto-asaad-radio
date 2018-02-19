@@ -92,7 +92,7 @@ class Raa1InternalAPI extends AppContext {
         });
         this._webApp.listen(this._conf.InternalAPIPort, () => {
             AppContext.getInstance().Logger.info(
-                'Raa internal API started on port ' + this._conf.Port
+                'Raa internal API started on port ' + this._conf.InternalAPIPort
             );
         });
     }
