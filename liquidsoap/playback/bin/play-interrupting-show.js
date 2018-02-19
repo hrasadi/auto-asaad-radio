@@ -25,12 +25,12 @@ let queueClipsForPlayback = async () => {
             program.Show.Clips.map((clip) => clip.Media.Path)
         );
 
-        // start playback of the preshow
-        execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
-
         // Let things sync in and show playback starts before making changes in queue
         await delay(2000);
-        // remove all queued filler clips (d)
+
+        // start playback of the preshow
+        execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
+        // remove all queued filler clips (and preshow)
         execCustomLiquidsoapCommand('interrupting_preshow_filler.removeall');
         execCustomLiquidsoapCommand('interrupting_preshow_q.removeall');
     } else {
