@@ -103,7 +103,7 @@ class PersonalFeed extends Feed {
                     JSON.stringify(feedEntry, null, 2)
             );
         } else {
-            this.persist(feedEntry);
+            await this.persist(feedEntry);
         }
     }
 
