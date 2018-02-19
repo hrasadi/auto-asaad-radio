@@ -50,11 +50,15 @@ async function perform(cwd, liveStatus) {
     await notifier.init();
 
     let message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
-    await notifier.UserManager.notifyAllUsers(
-        message,
-        null,
-        RequiredNotificationPermission.Live
-    );
+    try {
+        await notifier.UserManager.notifyAllUsers(
+            message,
+            null,
+            RequiredNotificationPermission.Live
+        );
+    } catch (e) {
+        // Whatever happened is logged. and we should not return error back.
+    }
     notifier.shutdown();
 }
 
