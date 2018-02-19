@@ -64,7 +64,7 @@ class Raa1InternalAPI extends AppContext {
     registerAPI() {
         let self = this;
 
-        this._webApp.get('/notifyAllUsersWithMessage', (req, res) => {
+        this._webApp.post('/notifyAllUsersWithMessage', (req, res) => {
             let message = req.query['message'];
             // We want our api to return immediately, so create another promise
             (async () => {
