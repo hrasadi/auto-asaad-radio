@@ -55,10 +55,10 @@ class Feed extends DBProvider {
         );
     }
 
-    foreachProgramEndingUntilNow(nowEpoch, onFeedEntry) {
+    async foreachProgramEndingUntilNow(nowEpoch, onFeedEntry) {
         // Do not use foreach becuase of concurrency (and that we are planning on
         // db operations here )
-        let feedEntries = this.entryListAll(
+        let feedEntries = await this.entryListAll(
             this._type,
             {
                 statement: 'ExpirationTimestamp <= ?',
