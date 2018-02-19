@@ -44,12 +44,12 @@ class PersonalFeed extends Feed {
 
     async registerProgram(program, targetDate) {
         let self = this;
-        await this.entryListForEach(User, null, (err, user) => {
+        await this.entryListForEach(User, null, async (err, user) => {
             let releaseMoment = program._parentBox.Schedule.calculateStartTime(
                 targetDate,
                 user
             );
-            self.registerProgramForUser(program, releaseMoment, user.Id);
+            await self.registerProgramForUser(program, releaseMoment, user.Id);
         });
     }
 
