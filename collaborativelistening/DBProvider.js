@@ -86,13 +86,6 @@ class DBProvider {
         return this._db.getAsync(query.statement, query.values);
     }
 
-    /**
-     * DO NOT CALL DB FUNCTION IN THE 'OnRow' CALLBACK.
-     * @param {Sring} fromType type
-     * @param {Object} whereClause query
-     * @param {Function} onRow DO NOT CALL DB FUNCTION IN THE 'ONROW' CALLBACK.
-     * @return {Promise} The promise with the number of rows effected
-     */
     entryListForEach(fromType, whereClause, onRow) {
         let query = DBObject.getSelectPreStatement(fromType, whereClause);
         return this._db.eachAsync(query.statement, query.values, onRow);
