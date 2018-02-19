@@ -39,7 +39,7 @@ class DBProvider {
     }
 
     async persistOrUpdate(dbObject) {
-        let existsQuery = DBObject.getSelectPreStatement(dbObject.constructor.name, {
+        let existsQuery = DBObject.getSelectPreStatement(dbObject.constructor, {
             statement: 'Id = ?',
             values: dbObject.Id,
         });
