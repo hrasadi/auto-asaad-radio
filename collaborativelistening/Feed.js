@@ -44,15 +44,20 @@ class Feed extends DBProvider {
     // implemented in subclasses
     async renderFeed(userId) {}
 
-    foreachProgramStartingWithinMinute(nowEpoch, onFeedEntry) {
-        return this.entryListForEach(
+    async foreachProgramStartingWithinMinute(nowEpoch, onFeedEntry) {
+        // Do not use foreach becuase of concurrency (and that we are planning on
+        // db operations here )
+        let feedEntries = await this.entryListAll(
             this._type,
             {
                 statement: 'ReleaseTimestamp <= ? AND ReleaseTimestamp > ?',
                 values: [nowEpoch, nowEpoch - 60],
-            },
-            onFeedEntry
+            }
         );
+
+        for (let feedEntry of feedEntries) {
+            onFeedEntry(null, feedEntry);
+        }
     }
 
     async foreachProgramEndingUntilNow(nowEpoch, onFeedEntry) {

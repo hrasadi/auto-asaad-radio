@@ -64,7 +64,7 @@ class Raa1UserManager extends UserManager {
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
-                'UserId = ? and DeviceType = ? and ' +
+                'Id = ? and DeviceType = ? and ' +
                 requiredNotificationPermission + ' = 1' +
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.iOS],
