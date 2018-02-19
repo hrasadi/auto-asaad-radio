@@ -13,7 +13,7 @@ const cwd = process.argv[2];
 const lineupFilePath = process.argv[3];
 const programCanonicalIdPath = process.argv[4];
 
-let queueClipsForPlayback = () => {
+let queueClipsForPlayback = async () => {
     if (fs.existsSync(lineupFilePath)) {
         let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf8'));
         // find the program
@@ -27,6 +27,9 @@ let queueClipsForPlayback = () => {
 
         // start playback of the preshow
         execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
+
+        // Let things sync in and show playback starts before making changes in queue
+        await delay(2000);
         // remove all queued filler clips (d)
         execCustomLiquidsoapCommand('interrupting_preshow_filler.removeall');
         execCustomLiquidsoapCommand('interrupting_preshow_q.removeall');
