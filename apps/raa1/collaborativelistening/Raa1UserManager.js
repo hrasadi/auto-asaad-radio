@@ -60,7 +60,8 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    async notifyUser(userId, alert, program, requiredNotificationPermission) {
+    async notifyUser(userId, alert, program, programType) {
+        let requiredNotificationPermission = RequiredNotificationPermission[programType];
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
@@ -73,7 +74,8 @@ class Raa1UserManager extends UserManager {
             this.notifyAPNS(
                 iosUsers.map((user) => user.NotificationToken),
                 alert,
-                program
+                program,
+                programType
             );
             AppContext.getInstance().Logger.debug(
                 `Custom APNS notification sent to ${userId} with content ${alert}`
@@ -108,11 +110,11 @@ class Raa1UserManager extends UserManager {
         // this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
     }
 
-    notifyAPNS(recipientIds, alert, program) {
+    notifyAPNS(recipientIds, alert, program, programType) {
         let notification = new apn.Notification({
             mutableContent: 1,
             expiry: Math.floor(Date.now() / 1000) + 3600,
-            category: 'media.raa.general',
+            category: 'media.raa.' + programType,
             topic: 'raa.raa-ios-player',
             contentAvailable: 1,
             payload: {

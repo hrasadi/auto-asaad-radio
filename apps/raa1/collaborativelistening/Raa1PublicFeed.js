@@ -4,9 +4,6 @@ const P = require('../../../collaborativelistening/PublicFeed');
 const PublicFeed = P.PublicFeed;
 const PublicFeedWatcher = P.PublicFeedWatcher;
 
-const RequiredNotificationPermission = require('./Raa1UserManager')
-    .RequiredNotificationPermission;
-
 class Raa1PublicFeed extends PublicFeed {
     getWatcher() {
         return new Raa1PublicFeedWatcher(this);
@@ -18,7 +15,7 @@ class Raa1PublicFeed extends PublicFeed {
         AppContext.getInstance('Raa1CLWatcher').UserManager.notifyAllUsers(
             message,
             program,
-            RequiredNotificationPermission.Public
+            'Public'
         );
     }
 }

@@ -4,9 +4,6 @@ const P = require('../../../collaborativelistening/PersonalFeed');
 const PersonalFeed = P.PersonalFeed;
 const PersonalFeedWatcher = P.PersonalFeedWatcher;
 
-const RequiredNotificationPermission = require('./Raa1UserManager')
-    .RequiredNotificationPermission;
-
 class Raa1PersonalFeed extends PersonalFeed {
     getWatcher() {
         return new Raa1PersonalFeedWatcher(this);
@@ -19,7 +16,7 @@ class Raa1PersonalFeed extends PersonalFeed {
             feedEntry.UserId,
             message,
             feedEntry,
-            RequiredNotificationPermission.Personal
+            'Personal'
         );
     }
 }
