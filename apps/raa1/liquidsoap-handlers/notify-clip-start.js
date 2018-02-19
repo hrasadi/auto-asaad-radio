@@ -1,7 +1,7 @@
 const request = require('request-promise');
 const queryString = require('query-string');
 
-function perform(cwd, liveStatus) {
+function perform(liveStatus) {
     let qs = {};
     qs.message = 'در حال پخش زنده: ' + liveStatus.StartedProgramTitle;
 
