@@ -26,7 +26,7 @@ class UserManager extends DBProvider {
     }
 
     registerUser(user) {
-        this.persist(user);
+        this.persistOrUpdate(user);
     }
 
     updateUser(user) {

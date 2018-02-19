@@ -59,6 +59,7 @@ class BaseProgram extends Entity {
         }
     }
 }
+
 class ProgramTemplate extends BaseProgram {
     static createTemplate(json, parent) {
         if (json.ProgramType === 'Premiere') {
@@ -94,6 +95,7 @@ class ProgramTemplate extends BaseProgram {
         }
     }
 }
+
 class PremiereProgramTemplate extends ProgramTemplate {
     constructor(jsonOrOther, parent) {
         super(jsonOrOther, parent);
