@@ -53,6 +53,15 @@ class PersonalFeed extends Feed {
                 targetDate,
                 user
             );
+            // Take into effect the preshow and pull release time back by it's length
+            if (program.PreShow) {
+                let offset = moment(program.Metadata.ShowStartTime).diff(
+                    program.Metadata.PreShowStartTime,
+                    'seconds'
+                );
+                releaseMoment = moment(releaseMoment).subtract(offset, 'seconds');
+            }
+
             await self.registerProgramForUser(program, releaseMoment, user.Id);
         }
     }
