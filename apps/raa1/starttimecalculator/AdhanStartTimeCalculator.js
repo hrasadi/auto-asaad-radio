@@ -39,10 +39,13 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     }
 
     readAdhanTimings(targetDate, user) {
+        // There is a bug in aladhan API and that results in
+        // errorneous city detection if there is space in city name
+        // surround values in "" to workaround this.
         let qs = queryString.stringify({
-            country: user.Country,
-            state: user.State,
-            city: user.City,
+            country: `"${user.Country}"`,
+            state: `"${user.State}"`,
+            city: `"${user.City}"`,
             method: this._adhanConf.CalculationMethod,
         });
         qs = DateUtils.getEpochSeconds(targetDate) + '?' + qs;

@@ -30,7 +30,7 @@ let queueClipsForPlayback = async () => {
 
         // start playback of the preshow
         execCustomLiquidsoapCommand('var.set interrupting_preshow_enabled = false');
-        // remove all queued filler clips (and preshow)
+        // Remove all queued filler clips (and preshow)
         execCustomLiquidsoapCommand('interrupting_preshow_filler.removeall');
         execCustomLiquidsoapCommand('interrupting_preshow_q.removeall');
     } else {
