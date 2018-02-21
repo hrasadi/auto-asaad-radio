@@ -30,6 +30,8 @@ let pushToLiquidsoapQueue = async (queueName, clipsFilePath) => {
         for (let clipFilePath of clipsFilePath) {
             await connection.exec(queueName + '.push ' + clipFilePath);
         }
+        // Wait for things to sink in
+        await delay(1000);
         connection.end();
     } catch (e) {
         console.log(e);
