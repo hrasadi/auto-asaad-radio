@@ -213,10 +213,12 @@ class Box extends BaseBox {
             'LineupGenerator'
         ).LineupManager.getScheduledLineupFilePath(this._parentLineup.LineupId);
 
+        let oldScheduledBox = null;
         if (fs.existsSync(oldLineupFilePath)) {
             let oldLineup = JSON.parse(fs.readFileSync(oldLineupFilePath));
             for (let oldBox of oldLineup.Boxes) {
                 if (oldBox.BoxId == this.BoxId) {
+                    oldScheduledBox = oldBox;
                     this.unscheduleBox(
                         AppContext.getInstance().ObjectBuilder.buildOfType(Box, oldBox)
                     );
@@ -225,13 +227,25 @@ class Box extends BaseBox {
         }
 
         if (!this.IsFloating) {
+            if (oldScheduledBox) {
+                this.LivePlaybackSchedulerMeta =
+                    oldScheduledBox.LivePlaybackSchedulerMeta;
+            }
             this.doScheduleBox();
         }
         // Also schedule any program with high priority
         // Note that if the box is floating, we expect it
         // only to have high priority programs
-        for (let program of this.Programs) {
+        for (let i = 0; i < this.Programs.length; i++) {
+            let program = this.Programs[i];
             if (program.Priority == 'High') {
+                if (
+                    oldScheduledBox &&
+                    oldScheduledBox.Programs[i].CanonicalIdPath == program.CanonicalIdPath
+                ) {
+                    program.LivePlaybackSchedulerMeta =
+                        oldScheduledBox.Programs[i].LivePlaybackSchedulerMeta;
+                }
                 program.schedule();
             }
         }

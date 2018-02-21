@@ -54,7 +54,9 @@ class LiquidsoapBox extends Box {
                 encoding: 'utf-8',
             });
 
-            this.LivePlaybackSchedulerMeta = new LivePlaybackSchedulerMeta();
+            if (!this.LivePlaybackSchedulerMeta) {
+                this.LivePlaybackSchedulerMeta = new LivePlaybackSchedulerMeta();
+            }
             this.LivePlaybackSchedulerMeta.ShowAt = this.StartTime;
 
             // The second token (e.g. "job xxx at Thu Jun 29 20:24:58 2017")
@@ -62,7 +64,7 @@ class LiquidsoapBox extends Box {
         }
     }
 
-    doUnscheduleBox(oldBox) {
+    doUnscheduleBox() {
         if (!this.LivePlaybackSchedulerMeta || !this.LivePlaybackSchedulerMeta.ShowId) {
             return;
         }
