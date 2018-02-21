@@ -343,7 +343,7 @@ class ProgramPlan extends BaseProgram {
             compiledProgramMetadata.PreShowStartTime = moment(startTimeMoment).subtract(
                 compiledPreShow.Duration,
                 'seconds'
-            );
+            ).seconds(0); // Round off the seconds
         }
         compiledProgramMetadata.ShowStartTime = moment(startTimeMoment);
         // End time is only dependent to show

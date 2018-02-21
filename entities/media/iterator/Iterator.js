@@ -61,9 +61,9 @@ class Iterator {
 
         let requesterTag = new this._CountableType(requesterTagValue);
 
-        // Easy case, same as before
+        // Easy case, same as before (and offset with future offset)
         if (this._tag.equals(requesterTag)) {
-            return this._iteratorPos;
+            return this.adjustByOffset(this._iteratorPos, offset);
         }
 
         if (requesterTag.diff(this._tag) > 0) {
