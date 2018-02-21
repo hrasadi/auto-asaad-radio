@@ -18,7 +18,10 @@ class LiquidsoapProgram extends Program {
             this._parentBox._parentLineup.LineupId
         );
 
-        this.LivePlaybackSchedulerMeta = new LivePlaybackSchedulerMeta();
+        // Copy previous data in case we want to reschedule later
+        this.LivePlaybackSchedulerMeta = new LivePlaybackSchedulerMeta(
+            this.LivePlaybackSchedulerMeta
+        );
 
         if (this.PreShow) {
             let preShowStartTime = moment(this.Metadata.PreShowStartTime).subtract(
