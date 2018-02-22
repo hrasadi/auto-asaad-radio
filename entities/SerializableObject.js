@@ -14,7 +14,7 @@ class SerializableObject {
     validate() {}
 
     getOrNull(prop) {
-        if (typeof prop !== 'undefined' && prop) {
+        if (typeof prop !== 'undefined' && prop !== null) {
             return prop;
         } else {
             return null;
@@ -22,7 +22,7 @@ class SerializableObject {
     }
 
     getOrElse(prop, onElse) {
-        if (typeof prop !== 'undefined' && prop) {
+        if (typeof prop !== 'undefined' && prop !== null) {
             return prop;
         } else {
             return onElse;
