@@ -45,6 +45,7 @@ class Raa1InternalAPI extends AppContext {
             this.registerAPI();
 
             process.on('SIGINT', () => this.shutdown());
+            process.on('warning', (e) => console.warn(e.stack));
             process.on('unhandledRejection', (e) => console.log(e));
         } catch (error) {
             this._logger.error('Uncaught Error: ' + error.stack);
