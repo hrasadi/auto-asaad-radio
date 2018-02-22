@@ -143,10 +143,20 @@ class Raa1UserManager extends UserManager {
         }
 
         this._apnProvider.send(notification, recipientIds).then((response) => {
-            if (response.failed.length > 0) {
+            if (response.failed && response.failed.length > 0) {
                 AppContext.getInstance().Logger.info(
                     `Failed APNS messages: ${JSON.stringify(response.failed)}`
                 );
+                // Remove user if we have BadToken error (removed the app. etc.)
+                for (let failure of response.failed) {
+                    if (failure.response.reason == 'BadDeviceToken') {
+                        AppContext.getInstance().Logger.info(
+                            `Device "${failure.device}" marked for deletion as ` +
+                            `it seems not to be running RAA anymore.`
+                        );
+                        this.removeUserByNotificationToken(failure.device);
+                    }
+                }
             }
         });
     }

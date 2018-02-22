@@ -37,6 +37,18 @@ class UserManager extends DBProvider {
         return this.loadById(User, userId);
     }
 
+    removeUser(userId) {
+        return this.unpersistById(User, userId);
+    }
+
+    removeUserByNotificationToken(notificationToken) {
+        let query = DBObject.getDeletePreStatement(User, {
+            statement: 'NotificationToken = ?',
+            values: notificationToken,
+        });
+        return this._db.runAsync(query.statement, query.values);
+    }
+
     // implemented in subclasses
     notifyUser(userId, alert, program) {}
     notifyAllUsers(alert, program) {}
