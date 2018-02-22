@@ -116,12 +116,17 @@ class PersonalFeed extends Feed {
         }
     }
 
+    /*
+        The conditional for this query used to be:
+        'ReleaseTimestamp < ? and UserId = ?'
+        We pushed the filtering responsibility to client app (for flexibility)
+        and render the whole feed
+     */
     renderFeed(userId) {
-        let now = DateUtils.getEpochSeconds(moment());
         // skip programs planned for future
         return this.entryListAll(PersonalFeedEntry, {
-            statement: 'ReleaseTimestamp < ? and UserId = ?',
-            values: [now, userId],
+            statement: 'UserId = ?',
+            values: userId,
         });
     }
 

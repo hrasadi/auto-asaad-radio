@@ -60,8 +60,8 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    async notifyUser(userId, alert, program, programType) {
-        let requiredNotificationPermission = RequiredNotificationPermission[programType];
+    async notifyUser(userId, alert, feedEntry, entryType) {
+        let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
@@ -75,8 +75,8 @@ class Raa1UserManager extends UserManager {
             this.notifyAPNS(
                 iosUsers.map((user) => user.NotificationToken),
                 alert,
-                program,
-                programType
+                feedEntry.Id,
+                entryType
             );
             AppContext.getInstance().Logger.debug(
                 `Custom APNS notification sent to ${userId} with content ${alert}`
@@ -89,8 +89,8 @@ class Raa1UserManager extends UserManager {
         }
     }
 
-    async notifyAllUsers(alert, program, programType) {
-        let requiredNotificationPermission = RequiredNotificationPermission[programType];
+    async notifyAllUsers(alert, feedEntry, entryType) {
+        let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
             statement:
@@ -103,8 +103,8 @@ class Raa1UserManager extends UserManager {
         this.notifyAPNS(
             iosUsers.map((user) => user.NotificationToken),
             alert,
-            program,
-            programType
+            feedEntry.Id,
+            entryType
         );
         AppContext.getInstance().Logger.debug(
             `APNS notification with content ${alert}` +
@@ -119,11 +119,11 @@ class Raa1UserManager extends UserManager {
         // this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
     }
 
-    notifyAPNS(recipientIds, alert, program, programType) {
+    notifyAPNS(recipientIds, alert, feedEntryId, entryType) {
         let notification = new apn.Notification({
             mutableContent: 1,
             expiry: Math.floor(Date.now() / 1000) + 3600,
-            category: 'media.raa.' + programType,
+            category: 'media.raa.' + entryType,
             topic: 'raa.raa-ios-player',
             contentAvailable: 1,
             payload: {
@@ -134,7 +134,7 @@ class Raa1UserManager extends UserManager {
         if (alert != null) {
             notification.alert = alert;
             notification.badge = 1;
-            notification.payload.program = program;
+            notification.payload['feedEntryId'] = feedEntryId;
             notification.sound = 'ProgramStart.caf';
         } else {
             // otherwise deliver empty alert which indicates
