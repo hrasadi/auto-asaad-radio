@@ -103,7 +103,7 @@ class Raa1UserManager extends UserManager {
         this.notifyAPNS(
             iosUsers.map((user) => user.NotificationToken),
             alert,
-            feedEntry.Id,
+            (feedEntry != null) ? feedEntry.Id : null, // Live programs dont have entryId
             entryType
         );
         AppContext.getInstance().Logger.debug(
