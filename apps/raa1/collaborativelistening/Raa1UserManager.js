@@ -89,7 +89,7 @@ class Raa1UserManager extends UserManager {
         }
     }
 
-    async notifyAllUsers(alert, feedEntry, entryType) {
+    async notifyAllUsers(alert, feedEntry, program, entryType) {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = await this.entryListAll(User, {
@@ -100,6 +100,19 @@ class Raa1UserManager extends UserManager {
                 ' and NotificationToken != ""',
             values: DeviceTypeEnum.iOS,
         });
+        // Make sure user does not exclude this program from notifications
+        if (entryType == 'Public') {
+            iosUsers = iosUsers.filter((user) => {
+                if (user.NotificationExcludedPublicPrograms) {
+                    let excluded = JSON.parse(user.NotificationExcludedPublicPrograms);
+                    if (excluded[program.ProgramId]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+
         this.notifyAPNS(
             iosUsers.map((user) => user.NotificationToken),
             alert,

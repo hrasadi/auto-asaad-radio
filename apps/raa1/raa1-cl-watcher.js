@@ -62,6 +62,8 @@ class Raa1CLWatcher extends AppContext {
 
             await this._userManager.init(this._conf.Credentials);
 
+            this.Logger.info('CollaborationListening watcher daemon initiated!');
+
             process.on('SIGINT', () => this.shutdown());
             process.on('warning', (e) => console.warn(e.stack));
             process.on('unhandledRejection', (e) => console.log(e));

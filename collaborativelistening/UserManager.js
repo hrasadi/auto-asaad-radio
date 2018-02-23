@@ -28,8 +28,19 @@ class UserManager extends DBProvider {
         this._tableName = 'User';
     }
 
-    registerUser(user) {
-        this.persistOrUpdate(user);
+    async registerUser(user) {
+        user = await this.loadById(User, user.Id);
+        if (user) {
+            // User exists, update
+            this.update(user);
+        } else {
+            // This is a new user, if this user was registered before (with same token),
+            // remove it first and reregister
+            if (user.NotificationToken) {
+                await this.removeUserByNotificationToken(user.NotificationToken);
+            }
+            this.persist(user); // And save
+        }
     }
 
     updateUser(user) {
@@ -54,7 +65,7 @@ class UserManager extends DBProvider {
 
     // implemented in subclasses
     notifyUser(userId, alert, program) {}
-    notifyAllUsers(alert, program) {}
+    notifyAllUsers(alert, feedEntry, program, entryType) {}
 }
 
 class User extends DBObject {

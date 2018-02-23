@@ -15,6 +15,7 @@ class Raa1PublicFeed extends PublicFeed {
         AppContext.getInstance('Raa1CLWatcher').UserManager.notifyAllUsers(
             message,
             feedEntry,
+            program,
             'Public'
         );
     }
