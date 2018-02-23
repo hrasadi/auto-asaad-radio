@@ -12,6 +12,9 @@ class UserManager extends DBProvider {
 
     async init1() {
         await this.init0();
+
+        // CREATE INDEX user_notification_token_idx ON user(notificationtoken);
+        // CREATE INDEX user_id_idx ON user(id);
         this._db.runAsync(
             'CREATE TABLE IF NOT EXISTS "USER" (Id TEXT PRIMARY_KEY, ' +
                 'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +

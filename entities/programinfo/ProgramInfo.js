@@ -67,6 +67,14 @@ class ProgramInfo extends SerializableObject {
     set Banner(value) {
         this._banner = value;
     }
+
+    get Feed() {
+        return this.getOrNull(this._feed);
+    }
+
+    set Feed(value) {
+        this._feed = value;
+    }
 }
 
 module.exports = ProgramInfo;

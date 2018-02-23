@@ -20,6 +20,8 @@ class PersonalFeed extends Feed {
         // Wait until the all promises are resolved
         await this.init1();
 
+        // TODO:
+        // CREATE INDEX personalfeedentry_id_idx ON personalfeedentry(id);
         await this._db.runAsync(
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +

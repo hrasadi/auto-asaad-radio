@@ -16,6 +16,8 @@ class PublicFeed extends Feed {
     async init() {
         await this.init1();
 
+        // TODO:
+        // CREATE INDEX publicfeedentry_id_idx ON publicfeedentry(id);
         await this._db.runAsync(
             'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
