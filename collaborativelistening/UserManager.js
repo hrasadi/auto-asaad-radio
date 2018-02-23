@@ -29,8 +29,8 @@ class UserManager extends DBProvider {
     }
 
     async registerUser(user) {
-        user = await this.loadById(User, user.Id);
-        if (user) {
+        let currentUser = await this.loadById(User, user.Id);
+        if (currentUser) {
             // User exists, update
             this.update(user);
         } else {
