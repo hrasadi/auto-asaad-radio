@@ -169,7 +169,7 @@ class User extends DBObject {
     }
 
     get NotificationExcludedPublicPrograms() {
-        return this.getOrElse(this._notificationExcludedPublicPrograms, 0);
+        return this.getOrElse(this._notificationExcludedPublicPrograms, null);
     }
 
     set NotificationExcludedPublicPrograms(value) {
