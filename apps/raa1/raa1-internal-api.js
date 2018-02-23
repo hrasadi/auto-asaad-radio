@@ -73,6 +73,7 @@ class Raa1InternalAPI extends AppContext {
                     await self.UserManager.notifyAllUsers(
                         message,
                         null,
+                        null,
                         'Live'
                     );
                 } catch (error) {
