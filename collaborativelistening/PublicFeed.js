@@ -75,7 +75,7 @@ class PublicFeed extends Feed {
         // If the feed is already expired, why publish?
         // This case might happen when we are replanning
         // dates from the past.
-        if (feedEntry.ExpirationTimestamp < moment.unix()) {
+        if (feedEntry.ExpirationTimestamp < moment().unix()) {
             return;
         }
 
