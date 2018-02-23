@@ -20,8 +20,8 @@ class UserManager extends DBProvider {
                 'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
                 'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
                 'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +
-                'NotifyOnPublicProgram TEXT, NotifyOnLiveProgram INTEGER, ' +
-                'UNIQUE(Id))'
+                'NotifyOnPublicProgram TEXT, NotificationExcludedPublicPrograms TEXT, ' +
+                'NotifyOnLiveProgram INTEGER, UNIQUE(Id))'
         );
 
         this._type = User;
@@ -155,6 +155,14 @@ class User extends DBObject {
 
     set NotifyOnPublicProgram(value) {
         this._notifyOnPublicProgram = value;
+    }
+
+    get NotificationExcludedPublicPrograms() {
+        return this.getOrElse(this._notificationExcludedPublicPrograms, 0);
+    }
+
+    set NotificationExcludedPublicPrograms(value) {
+        this._notificationExcludedPublicPrograms = value;
     }
 
     get NotifyOnLiveProgram() {
