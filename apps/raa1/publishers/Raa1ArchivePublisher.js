@@ -23,7 +23,7 @@ class Raa1ArchivePublisher extends ArchivePublisher {
     doPublish(program, targetDate) {
         if (!this._programDictionary[program.ProgramId]) {
             this._programDictionary[program.ProgramId] =
-                                    'archive/' + program.ProgramId + '.json';
+                                    program.ProgramId + '.json';
         }
 
         if (!this._rollingListsDict[program.ProgramId]) {
