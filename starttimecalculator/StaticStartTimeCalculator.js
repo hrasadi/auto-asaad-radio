@@ -22,7 +22,7 @@ class StaticStartTimeCalculator extends StartTimeCalculator {
         // Server timezone if user not set
         let targetTZ = (user ? user.TimeZone : moment.tz.guess());
         let startTime = moment.tz(scheduleObj.Params.At, ['h:m:s', 'H:m:s'], targetTZ);
-        let startTimeMoment = moment(targetDate)
+        let startTimeMoment = moment.tz(targetDate, targetTZ)
             .hours(startTime.hours())
             .minutes(startTime.minutes())
             .seconds(startTime.seconds());
