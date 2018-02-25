@@ -1,6 +1,6 @@
 const StartTimeCalculator = require('./StartTimeCalculator');
 
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 class StaticStartTimeCalculator extends StartTimeCalculator {
     validate(scheduleObj) {
@@ -19,7 +19,9 @@ class StaticStartTimeCalculator extends StartTimeCalculator {
     calculate(targetDate, scheduleObj, user) {
         this.validate(scheduleObj);
 
-        let startTime = moment(scheduleObj.Params.At, ['h:m:s', 'H:m:s']);
+        // Server timezone if user not set
+        let targetTZ = (user ? user.TimeZone : moment.tz.guess());
+        let startTime = moment.tz(scheduleObj.Params.At, ['h:m:s', 'H:m:s'], targetTZ);
         let startTimeMoment = moment(targetDate)
             .hours(startTime.hours())
             .minutes(startTime.minutes())
