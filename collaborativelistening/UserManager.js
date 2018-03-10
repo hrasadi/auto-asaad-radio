@@ -21,7 +21,7 @@ class UserManager extends DBProvider {
                 'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
                 'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +
                 'NotifyOnPublicProgram TEXT, NotificationExcludedPublicPrograms TEXT, ' +
-                'NotifyOnLiveProgram INTEGER, UNIQUE(Id))'
+                'NotifyOnLiveProgram INTEGER, LastActive REAL, UNIQUE(Id))'
         );
 
         this._type = User;
@@ -182,6 +182,14 @@ class User extends DBObject {
 
     set NotifyOnLiveProgram(value) {
         this._notifyOnLiveProgram = value;
+    }
+
+    get LastActive() {
+        return this.getOrNull(this._lastActive);
+    }
+
+    set LastActive(value) {
+        this._lastActive = value;
     }
 }
 

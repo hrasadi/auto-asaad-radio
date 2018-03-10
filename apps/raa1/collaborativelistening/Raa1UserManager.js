@@ -125,11 +125,37 @@ class Raa1UserManager extends UserManager {
         );
 
         // Notify FCM
-        // let fcmUsers = await this.entryListAll(User, {
-        //     statement: 'DeviceType = ?',
-        //     values: DeviceTypeEnum.Android,
-        // });
-        // this.notifyFCM(fcmUsers.map((entry) => entry.Id), alert, program);
+        let fcmUsers = await this.entryListAll(User, {
+            statement:
+                'DeviceType = ? and ' +
+                requiredNotificationPermission +
+                ' = 1' +
+                ' and NotificationToken != ""',
+            values: DeviceTypeEnum.Android,
+        });
+        // Make sure user does not exclude this program from notifications
+        if (entryType == 'Public') {
+            fcmUsers = fcmUsers.filter((user) => {
+                if (user.NotificationExcludedPublicPrograms) {
+                    let excluded = JSON.parse(user.NotificationExcludedPublicPrograms);
+                    if (excluded[program.ProgramId]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+
+        this.notifyFCM(
+            fcmUsers.map((user) => user.NotificationToken),
+            alert,
+            (feedEntry != null) ? feedEntry.Id : null, // Live programs dont have entryId
+            entryType
+        );
+        AppContext.getInstance().Logger.debug(
+            `FCM notification with content ${alert}` +
+                ` sent to ${fcmUsers.length} user(s)`
+        );
     }
 
     notifyAPNS(recipientIds, alert, feedEntryId, entryType) {
@@ -174,7 +200,7 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    notifyFCM(recipientIds, alert, program) {
+    notifyFCM(recipientIds, alert, feedEntryId, entryType) {
         let payload = {
             data: {
                 sender: 'raa1',
@@ -182,14 +208,19 @@ class Raa1UserManager extends UserManager {
         };
 
         if (alert != null) {
-            payload.data.alert = alert;
-            payload.data.program = program;
+            payload.notification.title = alert;
+            payload.notification.icon = 'ic_raa_logo_round_24dp';
+            payload.notification.sound = 'program_start';
+
+            payload.data.feedEntryId = feedEntryId;
         }
 
         this._firebase
             .messaging()
             .sendToDevice(recipientIds, payload)
-            .then((response) => {});
+            .then((response) => {
+                AppContext.getInstance().Logger.info('FCM response ' + response);
+            });
     }
 }
 
