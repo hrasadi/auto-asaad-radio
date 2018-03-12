@@ -87,6 +87,32 @@ class Raa1UserManager extends UserManager {
                     `notification with content ${alert}.`
             );
         }
+
+        // Notify FCM
+        let fcmUsers = await this.entryListAll(User, {
+            statement:
+                'Id = ? and DeviceType = ? and ' +
+                requiredNotificationPermission +
+                ' = 1' +
+                ' and NotificationToken != ""',
+            values: [userId, DeviceTypeEnum.Android],
+        });
+        if (fcmUsers.length > 0) {
+            this.notifyFCM(
+                fcmUsers.map((user) => user.NotificationToken),
+                alert,
+                feedEntry.Id,
+                entryType
+            );
+            AppContext.getInstance().Logger.debug(
+                `Custom FCM notification sent to ${userId} with content ${alert}`
+            );
+        } else {
+            AppContext.getInstance().Logger.debug(
+                `User ${userId} settings didn't not allow to send` +
+                    `notification with content ${alert}.`
+            );
+        }
     }
 
     async notifyAllUsers(alert, feedEntry, program, entryType) {
