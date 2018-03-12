@@ -231,13 +231,14 @@ class Raa1UserManager extends UserManager {
             data: {
                 sender: 'raa1',
             },
+            notification: {
+                icon: 'ic_raa_logo_round_24dp',
+                sound: 'program_start',
+            },
         };
 
         if (alert != null) {
             payload.notification.title = alert;
-            payload.notification.icon = 'ic_raa_logo_round_24dp';
-            payload.notification.sound = 'program_start';
-
             payload.data.feedEntryId = feedEntryId;
         }
 
