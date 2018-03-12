@@ -246,6 +246,23 @@ class Raa1UserManager extends UserManager {
             .messaging()
             .sendToDevice(recipientIds, payload)
             .then((response) => {
+                if (response.failureCount > 0) {
+                    AppContext.getInstance().Logger.info(
+                        `Failed FCM messages: ${JSON.stringify(response.results)}`
+                    );
+                    // Remove user if token is not valid error (removed the app. etc.)
+                    for (let failure of response.results) {
+                        if (failure.canonicalRegistrationToken) {
+                            AppContext.getInstance().Logger.info(
+                                `Device "${failure.canonicalRegistrationToken}"` +
+                                `marked for deletion as ` +
+                                `it seems not to be running RAA anymore.`
+                            );
+                            // TODO:
+                            // this.removeUserByNotificationToken(failure.device);
+                        }
+                    }
+                }
                 AppContext.getInstance().Logger.info('FCM response ' + response);
             });
     }
