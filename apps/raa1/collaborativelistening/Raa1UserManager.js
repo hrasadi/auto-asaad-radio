@@ -263,7 +263,7 @@ class Raa1UserManager extends UserManager {
                         }
                     }
                 }
-                AppContext.getInstance().Logger.info('FCM response ' + response);
+                AppContext.getInstance().Logger.info('FCM response ' + JSON.stringify(response));
             });
     }
 }
