@@ -6,15 +6,30 @@ class SyncDB {
     }
 
     runSync(stmt, values) {
-        this._db.prepare(stmt).run(values);
+        let ps = this._db.prepare(stmt);
+        if (values) {
+            ps.run(values);
+        } else {
+            ps.run();
+        }
     }
 
     getSync(stmt, values) {
-        return this._db.prepare(stmt).get(values);
+        let ps = this._db.prepare(stmt);
+        if (values) {
+            ps.get(values);
+        } else {
+            ps.get();
+        }
     }
 
     allSync(stmt, values) {
-        return this._db.prepare(stmt).all(values);
+        let ps = this._db.prepare(stmt);
+        if (values) {
+            ps.all(values);
+        } else {
+            ps.all();
+        }
     }
 
     eachSync(stmt, values, callback) {
