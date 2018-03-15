@@ -13,18 +13,18 @@ class PublicFeed extends Feed {
         super(dbFileName, historyDbFileName);
     }
 
-    async init() {
-        await this.init1();
+    init() {
+        this.init1();
 
         // TODO:
         // CREATE INDEX publicfeedentry_id_idx ON publicfeedentry(id);
-        await this._db.runAsync(
+        this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
                 'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
-        await this._db.runAsync(
+        this._db.runSync(
             'CREATE TABLE IF NOT EXISTS UPVOTES ' +
                 '(UserId TEXT, ' +
                 'ProgramId TEXT, Timestamp REAL, ' +
@@ -34,13 +34,13 @@ class PublicFeed extends Feed {
         );
 
         if (this._historyProdiver) {
-            await this._historyProdiver._db.runAsync(
+            this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                     '(Id TEXT PRIMARY_KEY, ' +
                     'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
                     'ExpirationTimestamp REAL, UNIQUE(Id))'
             );
-            await this._historyProdiver._db.runAsync(
+            this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS UPVOTES ' +
                     '(UserId TEXT ,' +
                     'ProgramId TEXT, Timestamp REAL,' +
@@ -54,7 +54,7 @@ class PublicFeed extends Feed {
         this._tableName = 'PublicFeedEntry';
     }
 
-    async registerProgram(program, releaseMoment) {
+    registerProgram(program, releaseMoment) {
         let feedEntry = new PublicFeedEntry();
         if (releaseMoment) {
             feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(releaseMoment);
@@ -81,7 +81,7 @@ class PublicFeed extends Feed {
 
         // Delete any entries with same Id exists from before (old onces)
         // We will continue on complete callback from deregister (note async func)
-        await this.deregisterFeedEntry(feedEntry);
+        this.deregisterFeedEntry(feedEntry);
 
         if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
             AppContext.getInstance().Logger.debug(
@@ -89,7 +89,7 @@ class PublicFeed extends Feed {
                     JSON.stringify(feedEntry, null, 2)
             );
         } else {
-            await this.persist(feedEntry);
+            this.persist(feedEntry);
         }
     }
 

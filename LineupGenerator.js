@@ -48,9 +48,9 @@ class LineupGenerator extends AppContext {
     init() {
     }
 
-    async run() {
+    run() {
         try {
-            await this.init();
+            this.init();
 
             // If admin locks a lineup plan, we skip planning it
             if (this.GeneratorOptions.ActiveStages.Plan &&
@@ -74,7 +74,7 @@ class LineupGenerator extends AppContext {
                                         this.GeneratorOptions.PlanAheadDays);
             }
 
-            Array(daysToCompile).fill().map(async (_, i) => {
+            Array(daysToCompile).fill().map((_, i) => {
                 let tdate = moment(this._targetDate).add(i, 'days').format('YYYY-MM-DD');
 
                 if (this.GeneratorOptions.ActiveStages.Compile) {
@@ -84,7 +84,7 @@ class LineupGenerator extends AppContext {
                 }
 
                 if (this.GeneratorOptions.ActiveStages.Publish) {
-                    await this.LineupManager.publishLineup(tdate);
+                    this.LineupManager.publishLineup(tdate);
                 } else {
                     this.Logger.debug('Skipped stage "Publish" due to options settings');
                 }

@@ -95,7 +95,7 @@ class Raa1LineupGenerator extends LineupGenerator {
         this._pinfoDirectoryFilePath = program.args[1];
     }
 
-    async init() {
+    init() {
         // Pull conf git repo!
         execSync(
             'git -C ' + path.resolve(path.dirname(this._confFilePath)) + ' pull --no-edit'
@@ -154,8 +154,8 @@ class Raa1LineupGenerator extends LineupGenerator {
         this._personalFeed = new Raa1PersonalFeed(
             this._conf.CollaborativeListening.FeedDBFile
         );
-        await this._publicFeed.init();
-        await this._personalFeed.init();
+        this._publicFeed.init();
+        this._personalFeed.init();
 
         /* REPRODUCE: Schedle generation for tomorrow */
         /* We use the exact same command that executed us for future executions too */

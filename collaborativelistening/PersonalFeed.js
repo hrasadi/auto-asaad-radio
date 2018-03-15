@@ -16,13 +16,13 @@ class PersonalFeed extends Feed {
         super(dbFileName, historyDbFileName);
     }
 
-    async init() {
+    init() {
         // Wait until the all promises are resolved
-        await this.init1();
+        this.init1();
 
         // TODO:
         // CREATE INDEX personalfeedentry_id_idx ON personalfeedentry(id);
-        await this._db.runAsync(
+        this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
@@ -31,7 +31,7 @@ class PersonalFeed extends Feed {
         );
 
         if (this._historyProdiver) {
-            await this._historyProdiver._db.runAsync(
+            this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                     '(Id TEXT PRIMARY_KEY, ' +
                     'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
@@ -44,11 +44,11 @@ class PersonalFeed extends Feed {
         this._tableName = 'PersonalFeedEntry';
     }
 
-    async registerProgram(program, targetDate) {
+    registerProgram(program, targetDate) {
         let self = this;
 
         // We don't use foreach becuase of concurrency problems
-        let users = await this.entryListAll(User, null);
+        let users = this.entryListAll(User, null);
 
         for (let user of users) {
             let releaseMoment = program._parentBox.Schedule.calculateStartTime(
@@ -64,16 +64,16 @@ class PersonalFeed extends Feed {
                 releaseMoment = moment(releaseMoment).subtract(offset, 'seconds');
             }
 
-            await self.registerProgramForUser(program, releaseMoment, user.Id);
+            self.registerProgramForUser(program, releaseMoment, user.Id);
         }
     }
 
-    async registerProgramForUser(program, releaseMoment, userId) {
+    registerProgramForUser(program, releaseMoment, userId) {
         let feedEntry = new PersonalFeedEntry();
 
         feedEntry.UserId = userId;
 
-        let user = await AppContext.getInstance('LineupGenerator').UserManager.getUser(
+        let user = AppContext.getInstance('LineupGenerator').UserManager.getUser(
             userId
         );
 
@@ -113,7 +113,7 @@ class PersonalFeed extends Feed {
 
         // Delete any entries with same Id exists from before (old onces)
         // We will continue on complete callback from deregister (note async func)
-        await this.deregisterFeedEntry(feedEntry);
+        this.deregisterFeedEntry(feedEntry);
 
         if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
             AppContext.getInstance().Logger.debug(
@@ -121,7 +121,7 @@ class PersonalFeed extends Feed {
                     JSON.stringify(feedEntry, null, 2)
             );
         } else {
-            await this.persist(feedEntry);
+            this.persist(feedEntry);
         }
     }
 

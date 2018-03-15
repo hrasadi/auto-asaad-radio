@@ -3,7 +3,6 @@ const AppContext = require('../../AppContext');
 
 const R = require('./collaborativelistening/Raa1UserManager');
 const Raa1UserManager = R.Raa1UserManager;
-const RequiredNotificationPermission = R.RequiredNotificationPermission;
 
 const program = require('commander');
 const path = require('path');
@@ -26,7 +25,7 @@ class Raa1InternalAPI extends AppContext {
         this._webApp = express();
     }
 
-    async init() {
+    init() {
         try {
             try {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
@@ -40,7 +39,7 @@ class Raa1InternalAPI extends AppContext {
                 this._conf.CollaborativeListening.FeedHistoryDBFile
             );
 
-            await this._userManager.init(this._conf.Credentials);
+            this._userManager.init(this._conf.Credentials);
 
             this.registerAPI();
 
@@ -68,18 +67,20 @@ class Raa1InternalAPI extends AppContext {
         this._webApp.post('/notifyAllUsersWithMessage', (req, res) => {
             let message = req.query['message'];
             // We want our api to return immediately, so create another promise
-            (async () => {
+            new Promise((resolve, reject) => {
                 try {
-                    await self.UserManager.notifyAllUsers(
+                    self.UserManager.notifyAllUsers(
                         message,
                         null,
                         null,
                         'Live'
                     );
+                    resolve();
                 } catch (error) {
                     AppContext.getInstance().Logger.error(error.stack);
+                    reject(error);
                 }
-            })();
+            });
             res.send();
         });
 

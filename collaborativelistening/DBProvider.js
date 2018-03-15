@@ -1,6 +1,6 @@
 const AppContext = require('../AppContext');
 
-const AsyncDB = require('../AsyncDB');
+const SyncDB = require('../SyncDB');
 
 const DBObject = require('./DBObject');
 
@@ -16,12 +16,9 @@ class DBProvider {
     init1() {}
 
     init0() {
-        let self = this;
-        return new AsyncDB(
+        this._db = new SyncDB(
             AppContext.getInstance().CWD + '/run/db/' + this._dbFileName
-        ).then((db) => {
-            self._db = db;
-        });
+        );
     }
 
     // implemented in subclasses
@@ -35,11 +32,11 @@ class DBProvider {
 
     persist(dbObject) {
         let query = dbObject.getInsertPreStatement();
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     async persistOrUpdate(dbObject) {
-        let persistedObject = await this.loadById(dbObject.constructor, dbObject.Id);
+        let persistedObject = this.loadById(dbObject.constructor, dbObject.Id);
 
         if (persistedObject) {
             return this.update(dbObject);
@@ -50,17 +47,17 @@ class DBProvider {
 
     persistList(dbObjects) {
         let query = DBObject.getListInsertPreStatement(dbObjects);
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     update(dbObject) {
         let query = dbObject.getUpdatePreStatement();
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     unpersist(dbObject) {
         let query = dbObject.getDeletePreStatement();
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     unpersistById(fromType, id) {
@@ -68,7 +65,7 @@ class DBProvider {
             statement: 'Id = ?',
             values: id,
         });
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     loadById(fromType, id) {
@@ -76,7 +73,7 @@ class DBProvider {
             statement: 'Id = ?',
             values: id,
         });
-        return this._db.getAsync(query.statement, query.values);
+        return this._db.getSync(query.statement, query.values);
     }
 
     /**
@@ -88,12 +85,12 @@ class DBProvider {
      */
     entryListForEach(fromType, whereClause, onRow) {
         let query = DBObject.getSelectPreStatement(fromType, whereClause);
-        return this._db.eachAsync(query.statement, query.values, onRow);
+        return this._db.eachSync(query.statement, query.values, onRow);
     }
 
     entryListAll(fromType, whereClause) {
         let query = DBObject.getSelectPreStatement(fromType, whereClause);
-        return this._db.allAsync(query.statement, query.values);
+        return this._db.allSync(query.statement, query.values);
     }
 }
 

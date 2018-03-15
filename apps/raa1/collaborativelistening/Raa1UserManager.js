@@ -12,13 +12,13 @@ class Raa1UserManager extends UserManager {
         super(dbFileName);
     }
 
-    async init(credentials) {
+    init(credentials) {
         this._credentials = credentials;
 
         this.initAPNS();
         this.initFCM();
 
-        await this.init1();
+        this.init1();
     }
 
     shutdown() {
@@ -60,10 +60,10 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    async notifyUser(userId, alert, feedEntry, entryType) {
+    notifyUser(userId, alert, feedEntry, entryType) {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
-        let iosUsers = await this.entryListAll(User, {
+        let iosUsers = this.entryListAll(User, {
             statement:
                 'Id = ? and DeviceType = ? and ' +
                 requiredNotificationPermission +
@@ -89,7 +89,7 @@ class Raa1UserManager extends UserManager {
         }
 
         // Notify FCM
-        let fcmUsers = await this.entryListAll(User, {
+        let fcmUsers = this.entryListAll(User, {
             statement:
                 'Id = ? and DeviceType = ? and ' +
                 requiredNotificationPermission +
@@ -115,10 +115,10 @@ class Raa1UserManager extends UserManager {
         }
     }
 
-    async notifyAllUsers(alert, feedEntry, program, entryType) {
+    notifyAllUsers(alert, feedEntry, program, entryType) {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
-        let iosUsers = await this.entryListAll(User, {
+        let iosUsers = this.entryListAll(User, {
             statement:
                 'DeviceType = ? and ' +
                 requiredNotificationPermission +
@@ -151,7 +151,7 @@ class Raa1UserManager extends UserManager {
         );
 
         // Notify FCM
-        let fcmUsers = await this.entryListAll(User, {
+        let fcmUsers = this.entryListAll(User, {
             statement:
                 'DeviceType = ? and ' +
                 requiredNotificationPermission +
@@ -263,7 +263,6 @@ class Raa1UserManager extends UserManager {
                         }
                     }
                 }
-                AppContext.getInstance().Logger.info('FCM response ' + JSON.stringify(response));
             });
     }
 }

@@ -26,7 +26,7 @@ let queueClipsForPlayback = () => {
 
         let clipsPath = [];
         for (let program of box.Programs) {
-            program.Show.Clips.forEach(async (clip, index) => {
+            program.Show.Clips.forEach((clip, index) => {
                 // Enqueue in our shadowQueue
                 let playbackClip = new PlaybackClip();
                 playbackClip.ClipAbsolutePath = clip.Media.Path;

@@ -193,11 +193,11 @@ class Lineup extends Entity {
      * The compiled program is ready to be published. We publish
      * our content before populating the live stream.
      */
-    async publish() {
+    publish() {
         AppContext.getInstance().Logger.info('Publishing lineup for ' + this._lineupId);
 
         for (let box of this.Boxes) {
-            await box.publish();
+            box.publish();
         }
 
         // commit all publishers

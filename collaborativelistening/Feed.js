@@ -26,12 +26,10 @@ class Feed extends DBProvider {
     init() {}
 
     init1() {
-        let historyProviderInitPromise = this._historyProdiver
-            ? this._historyProdiver.init0()
-            : Promise.resolve();
-
-        // return a promise of the time when both dbs are inited successfully
-        return Promise.all([this.init0(), historyProviderInitPromise]);
+        this.init0();
+        if (this._historyProdiver) {
+            this._historyProdiver.init0();
+        }
     }
 
     // implemented in subclasses
@@ -42,12 +40,12 @@ class Feed extends DBProvider {
     }
 
     // implemented in subclasses
-    async renderFeed(userId) {}
+    renderFeed(userId) {}
 
-    async foreachProgramStartingWithinMinute(nowEpoch, onFeedEntry) {
+    foreachProgramStartingWithinMinute(nowEpoch, onFeedEntry) {
         // Do not use foreach becuase of concurrency (and that we are planning on
         // db operations here )
-        let feedEntries = await this.entryListAll(
+        let feedEntries = this.entryListAll(
             this._type,
             {
                 statement: 'ReleaseTimestamp <= ? AND ReleaseTimestamp > ?',
@@ -60,10 +58,10 @@ class Feed extends DBProvider {
         }
     }
 
-    async foreachProgramEndingUntilNow(nowEpoch, onFeedEntry) {
+    foreachProgramEndingUntilNow(nowEpoch, onFeedEntry) {
         // Do not use foreach becuase of concurrency (and that we are planning on
         // db operations here )
-        let feedEntries = await this.entryListAll(
+        let feedEntries = this.entryListAll(
             this._type,
             {
                 statement: 'ExpirationTimestamp <= ?',
@@ -103,7 +101,7 @@ class FeedWatcher {
         this.tick(self);
     }
 
-    async tick(self) {
+    tick(self) {
         let currentTimeEpoch = DateUtils.getEpochSeconds(moment());
         // check last persisted time (should be one minute before)
         if (
@@ -122,7 +120,7 @@ class FeedWatcher {
         }
         // One minute in (success path).
         // Check for programs released now. Notify listeners
-        let startedProgramsCount = await self._feed.foreachProgramStartingWithinMinute(
+        let startedProgramsCount = self._feed.foreachProgramStartingWithinMinute(
             currentTimeEpoch,
             (err, feedEntry) => {
                 if (err) {

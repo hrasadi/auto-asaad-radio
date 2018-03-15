@@ -38,7 +38,7 @@ class Raa1API extends AppContext {
         this._webApp = express();
     }
 
-    async init() {
+    init() {
         try {
             try {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
@@ -63,9 +63,9 @@ class Raa1API extends AppContext {
                 this._conf.CollaborativeListening.FeedDBFile
             );
 
-            await this._publicFeed.init();
-            await this._personalFeed.init();
-            await this._userManager.init(this._conf.Credentials);
+            this._publicFeed.init();
+            this._personalFeed.init();
+            this._userManager.init(this._conf.Credentials);
 
             this.registerAPI();
 
@@ -96,13 +96,13 @@ class Raa1API extends AppContext {
         this._webApp.post('/registerDevice/:deviceType/', async (req, res) => {
             let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             let user = new User(req.body, req.params.deviceType, ip);
-            await self.UserManager.registerUser(user);
+            self.UserManager.registerUser(user);
             res.send('Success');
         });
 
         this._webApp.get('/publicFeed', async (req, res) => {
             try {
-                let feed = await this.PublicFeed.renderFeed();
+                let feed = this.PublicFeed.renderFeed();
                 res.send(feed);
             } catch (error) {
                 AppContext.getInstance.Logger.error(error.stack);
@@ -112,7 +112,7 @@ class Raa1API extends AppContext {
         this._webApp.get('/personalFeed/:userId', async (req, res) => {
             try {
                 let userId = req.params['userId'];
-                let feed = await this.PersonalFeed.renderFeed(userId);
+                let feed = this.PersonalFeed.renderFeed(userId);
                 res.send(feed);
             } catch (error) {
                 AppContext.getInstance().Logger.error(error.stack);

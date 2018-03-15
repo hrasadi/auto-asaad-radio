@@ -10,12 +10,12 @@ class UserManager extends DBProvider {
         this.init1();
     }
 
-    async init1() {
-        await this.init0();
+    init1() {
+        this.init0();
 
         // CREATE INDEX user_notification_token_idx ON user(notificationtoken);
         // CREATE INDEX user_id_idx ON user(id);
-        this._db.runAsync(
+        this._db.runSync(
             'CREATE TABLE IF NOT EXISTS "USER" (Id TEXT PRIMARY_KEY, ' +
                 'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
                 'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
@@ -28,8 +28,8 @@ class UserManager extends DBProvider {
         this._tableName = 'User';
     }
 
-    async registerUser(user) {
-        let currentUser = await this.loadById(User, user.Id);
+    registerUser(user) {
+        let currentUser = this.loadById(User, user.Id);
         if (currentUser) {
             // User exists, update
             this.update(user);
@@ -37,7 +37,7 @@ class UserManager extends DBProvider {
             // This is a new user, if this user was registered before (with same token),
             // remove it first and reregister
             if (user.NotificationToken) {
-                await this.removeUserByNotificationToken(user.NotificationToken);
+                this.removeUserByNotificationToken(user.NotificationToken);
             }
             this.persist(user); // And save
         }
@@ -60,7 +60,7 @@ class UserManager extends DBProvider {
             statement: 'NotificationToken = ?',
             values: notificationToken,
         });
-        return this._db.runAsync(query.statement, query.values);
+        return this._db.runSync(query.statement, query.values);
     }
 
     // implemented in subclasses

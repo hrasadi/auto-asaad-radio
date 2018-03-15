@@ -28,7 +28,7 @@ class Raa1CLWatcher extends AppContext {
         this._logger = new Logger(this._cwd + '/run/logs/' + myName + '.log');
     }
 
-    async init() {
+    init() {
         try {
             try {
                 this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
@@ -52,15 +52,15 @@ class Raa1CLWatcher extends AppContext {
                 this._conf.CollaborativeListening.FeedHistoryDBFile
             );
 
-            await this._publicFeed.init();
+            this._publicFeed.init();
             this._publicFeedWatcher = this._publicFeed.getWatcher();
             this._publicFeedWatcher.init();
 
-            await this._personalFeed.init();
+            this._personalFeed.init();
             this._personalFeedWatcher = this._personalFeed.getWatcher();
             this._personalFeedWatcher.init();
 
-            await this._userManager.init(this._conf.Credentials);
+            this._userManager.init(this._conf.Credentials);
 
             this.Logger.info('CollaborationListening watcher daemon initiated!');
 
