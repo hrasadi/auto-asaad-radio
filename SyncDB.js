@@ -8,27 +8,27 @@ class SyncDB {
     runSync(stmt, values) {
         let ps = this._db.prepare(stmt);
         if (values) {
-            ps.run(values);
+            return ps.run(values);
         } else {
-            ps.run();
+            return ps.run();
         }
     }
 
     getSync(stmt, values) {
         let ps = this._db.prepare(stmt);
         if (values) {
-            ps.get(values);
+            return ps.get(values);
         } else {
-            ps.get();
+            return ps.get();
         }
     }
 
     allSync(stmt, values) {
         let ps = this._db.prepare(stmt);
         if (values) {
-            ps.all(values);
+            return ps.all(values);
         } else {
-            ps.all();
+            return ps.all();
         }
     }
 
