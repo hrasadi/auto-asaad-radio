@@ -35,7 +35,7 @@ class DBProvider {
         return this._db.runSync(query.statement, query.values);
     }
 
-    async persistOrUpdate(dbObject) {
+    persistOrUpdate(dbObject) {
         let persistedObject = this.loadById(dbObject.constructor, dbObject.Id);
 
         if (persistedObject) {
