@@ -34,7 +34,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     calculate(targetDate, scheduleObj, user) {
         this.validate(scheduleObj);
 
-        if (!user || !user.city) {
+        if (!user || !user.City) {
             user = this._adhanConf;
         }
 
