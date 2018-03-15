@@ -34,7 +34,11 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     calculate(targetDate, scheduleObj, user) {
         this.validate(scheduleObj);
 
-        let timing = this.readAdhanTimings(targetDate, (user ? user : this._adhanConf));
+        if (!user || !user.city) {
+            user = this._adhanConf;
+        }
+
+        let timing = this.readAdhanTimings(targetDate, user);
         return timing[scheduleObj.Params.AdhanName];
     }
 
