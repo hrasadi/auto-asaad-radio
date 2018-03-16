@@ -97,19 +97,10 @@ class LineupGenerator extends AppContext {
                 }
             });
 
-            // Finalize
-            this.finalize();
-
             this.Logger.info('Lineup generation completed successfully!');
         } catch (error) {
             AppContext.getInstance().Logger.error(error.stack);
         }
-    }
-
-    // Calls on liveup generation completion to notify
-    // objects to commit anything uncommited
-    finalize() {
-        this._personalFeed.finalize();
     }
 
     get GeneratorOptions() {

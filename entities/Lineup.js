@@ -176,13 +176,13 @@ class Lineup extends Entity {
                 ) {
                     throw Error(
                         'Boxes are overlapping: Box: ' +
-                            this.Boxes[i - 1].BoxId +
-                            ' ending at: ' +
-                            moment(this.Boxes[i - 1].EndTime).toString() +
-                            ', with Box: ' +
-                            this.Boxes[i].BoxId +
-                            ' starting at: ' +
-                            moment(this.Boxes[i].StartTime).toString()
+                        this.Boxes[i - 1].BoxId +
+                        ' ending at: ' +
+                        moment(this.Boxes[i - 1].EndTime).toString() +
+                        ', with Box: ' +
+                        this.Boxes[i].BoxId +
+                        ' starting at: ' +
+                        moment(this.Boxes[i].StartTime).toString()
                     );
                 }
             }
@@ -211,15 +211,19 @@ class Lineup extends Entity {
                     publisherName
                 ].commit(
                     moment(this._lineupId)
-                        .subtract( // take vod publish delay into consideration
-                            AppContext.getInstance('LineupGenerator').GeneratorOptions
-                                .VODPulishDelay,
-                            'day'
-                        )
-                        .format('YYYY-MM-DD')
+                    .subtract( // take vod publish delay into consideration
+                        AppContext.getInstance('LineupGenerator').GeneratorOptions
+                        .VODPulishDelay,
+                        'day'
+                    )
+                    .format('YYYY-MM-DD')
                 );
             }
         }
+
+        // commit personal feed items
+        AppContext.getInstance('LineupGenerator')
+            .PersonalFeed.commitJournal(this._lineupId);
     }
 
     /**
@@ -273,9 +277,9 @@ class Lineup extends Entity {
                             // wrapped by the program box
                             AppContext.getInstance().Logger.info(
                                 'Box ' +
-                                    this.Boxes[i + 1].BoxId +
-                                    ' will be splitted to wrap box ' +
-                                    this.Boxes[i].BoxId
+                                this.Boxes[i + 1].BoxId +
+                                ' will be splitted to wrap box ' +
+                                this.Boxes[i].BoxId
                             );
                             this.wrapBox(i, i + 1);
                         }
@@ -290,9 +294,9 @@ class Lineup extends Entity {
                     ) {
                         AppContext.getInstance().Logger.info(
                             'Box ' +
-                                this.Boxes[i - 1].BoxId +
-                                ' will be splitted to wrap box ' +
-                                this.Boxes[i].BoxId
+                            this.Boxes[i - 1].BoxId +
+                            ' will be splitted to wrap box ' +
+                            this.Boxes[i].BoxId
                         );
                         this.wrapBox(i, i - 1);
                     }

@@ -43,9 +43,6 @@ class PersonalFeed extends Feed {
 
         this._type = PersonalFeedEntry;
         this._tableName = 'PersonalFeedEntry';
-
-        this._journalFilePath = AppContext.getInstance().CWD +
-            '/run/cl-workspace/current-personal-programs-journal.json';
     }
 
     registerProgram(program, targetDate) {
@@ -124,33 +121,57 @@ class PersonalFeed extends Feed {
         }
     }
 
-    addProgramToJournal(program, targetDate) {
+    addProgramToJournal(program) {
         this._shouldPersistJournal = true;
 
         if (this._currentPersonalProgramsJournal == null) {
             this._currentPersonalProgramsJournal = [];
         }
 
-        this._currentPersonalProgramsJournal.push({
-            'Program': program,
-            'TargetDate': targetDate,
-        });
+        this._currentPersonalProgramsJournal.push(program);
+    }
+
+    getJournalFilePath(targetDate) {
+        return AppContext.getInstance().CWD +
+            `/run/cl-workspace/personal-programs-journal-${targetDate}.json`;
+    }
+
+    commitJournal(targetDate) {
+        if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
+            // Write the current journal (if any) to disk
+            if (this._shouldPersistJournal) {
+                fs.writeFileSync(this.getJournalFilePath(targetDate),
+                    JSON.stringify(this._currentPersonalProgramsJournal, null, 2));
+            }
+        } else {
+            AppContext.getInstance().Logger.info(
+                `Personal feed journal for ${targetDate} is: ` +
+                `${JSON.stringify(this._currentPersonalProgramsJournal, null, 2)}`);
+        }
     }
 
     // This will regenerate all personal programs of a specific user every time user
     // re-registers with server
     generatePersonalFeed(user) {
-        if (fs.existsSync(this._journalFilePath)) {
-            let currentPersonalProgramsJournal =
-                JSON.parse(fs.readFileSync(this._journalFilePath, 'utf-8'));
+        // Remove all previous personal feed entries
+        this.deregisterUserPersonalFeedEntries(user);
 
-            // Remove all previous personal feed entries
-            this.deregisterUserPersonalFeedEntries(user);
+        // Re-generate items from yesterday onwards (to cover timezone difference)
+        let yesterday = DateUtils.getDateString(
+            DateUtils.getNowInTimeZone().subtract(1, 'days'));
+        let today = DateUtils.getDateString(DateUtils.getNowInTimeZone());
 
-            for (let cEntry of currentPersonalProgramsJournal) {
-                this.registerProgramForUser(cEntry.Program, cEntry.TargetDate, user);
+        for (let dateString of [yesterday, today]) {
+            let journalFilePath = this.getJournalFilePath(dateString);
+            if (fs.existsSync(journalFilePath)) {
+                let currentPersonalProgramsJournal =
+                    JSON.parse(fs.readFileSync(journalFilePath, 'utf-8'));
+
+                for (let program of currentPersonalProgramsJournal) {
+                    this.registerProgramForUser(program, dateString, user);
+                }
             }
-        } // Otherwise do not touch the current entries
+        }
     }
 
     deregisterUserPersonalFeedEntries(user) {
@@ -176,19 +197,6 @@ class PersonalFeed extends Feed {
 
     getWatcher() {
         return new PersonalFeedWatcher(this);
-    }
-
-    finalize() {
-        if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            // Write the current journal (if any) to disk
-            if (this._shouldPersistJournal) {
-                fs.writeFileSync(this._journalFilePath,
-                    JSON.stringify(this._currentPersonalProgramsJournal, null, 2));
-            }
-        } else {
-            AppContext.getInstance().Logger.info(`New persfonal feed journal is: ' +
-                    '${JSON.stringify(this._currentPersonalProgramsJournal, null, 2)}`);
-        }
     }
 }
 

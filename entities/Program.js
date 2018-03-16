@@ -509,8 +509,8 @@ class Program extends BaseProgram {
                     targetDate
                 );
             } else {
-                AppContext.getInstance().Logger.info(`Program` +
-                    `${programToPublish.CanonicalIdPath} registered in personal feed.`);
+                AppContext.getInstance().Logger.info(`Program ` +
+                    `${programToPublish.CanonicalIdPath} is in personal feed.`);
             }
         }
     }
