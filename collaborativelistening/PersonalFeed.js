@@ -43,6 +43,8 @@ class PersonalFeed extends Feed {
 
         this._type = PersonalFeedEntry;
         this._tableName = 'PersonalFeedEntry';
+
+        this._currentPersonalProgramsJournal = [];
     }
 
     registerProgram(program, targetDate) {
@@ -123,11 +125,6 @@ class PersonalFeed extends Feed {
 
     addProgramToJournal(program) {
         this._shouldPersistJournal = true;
-
-        if (this._currentPersonalProgramsJournal == null) {
-            this._currentPersonalProgramsJournal = [];
-        }
-
         this._currentPersonalProgramsJournal.push(program);
     }
 
@@ -148,6 +145,8 @@ class PersonalFeed extends Feed {
                 `Personal feed journal for ${targetDate} is: ` +
                 `${JSON.stringify(this._currentPersonalProgramsJournal, null, 2)}`);
         }
+        // Empty journal, another for another date to come
+        this._currentPersonalProgramsJournal = [];
     }
 
     // This will regenerate all personal programs of a specific user every time user
