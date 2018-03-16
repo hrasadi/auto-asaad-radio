@@ -74,6 +74,11 @@ class LineupGenerator extends AppContext {
                                         this.GeneratorOptions.PlanAheadDays);
             }
 
+            // Remove all personal entries first
+            if (daysToCompile > 0 && this.GeneratorOptions.ActiveStages.Publish) {
+                this._personalFeed.purgeEntries();
+            }
+
             Array(daysToCompile).fill().map((_, i) => {
                 let tdate = moment(this._targetDate).add(i, 'days').format('YYYY-MM-DD');
 
@@ -96,10 +101,19 @@ class LineupGenerator extends AppContext {
                 }
             });
 
+            // Finalize
+            this.finalize();
+
             this.Logger.info('Lineup generation completed successfully!');
         } catch (error) {
             AppContext.getInstance().Logger.error(error.stack);
         }
+    }
+
+    // Calls on liveup generation completion to notify
+    // objects to commit anything uncommited
+    finalize() {
+        this._personalFeed.finalize();
     }
 
     get GeneratorOptions() {

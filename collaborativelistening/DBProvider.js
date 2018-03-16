@@ -68,6 +68,11 @@ class DBProvider {
         return this._db.runSync(query.statement, query.values);
     }
 
+    unpersistByQuery(fromType, q) {
+        let query = DBObject.getDeletePreStatement(fromType, q);
+        return this._db.runSync(query.statement, query.values);
+    }
+
     loadById(fromType, id) {
         let query = DBObject.getSelectPreStatement(fromType, {
             statement: 'Id = ?',

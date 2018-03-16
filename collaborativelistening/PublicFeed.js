@@ -16,14 +16,14 @@ class PublicFeed extends Feed {
     init() {
         this.init1();
 
-        // TODO:
-        // CREATE INDEX publicfeedentry_id_idx ON publicfeedentry(id);
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
                 'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
+        this._db.runSync('CREATE INDEX publicfeedentry_id_idx ON PublicFeedEntry(Id)');
+
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS UPVOTES ' +
                 '(UserId TEXT, ' +

@@ -24,8 +24,8 @@ class UserManager extends DBProvider {
                 'NotifyOnLiveProgram INTEGER, LastActive REAL, UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS user_notification_token_idx ' +
-                                'ON user(notificationtoken)');
-        this._db.runSync('CREATE INDEX IF NOT EXISTS user_id_idx ON user(id)');
+                                                    'ON User(NotificationToken)');
+        this._db.runSync('CREATE INDEX IF NOT EXISTS user_id_idx ON User(Id)');
 
         this._type = User;
         this._tableName = 'User';
