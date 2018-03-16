@@ -176,7 +176,7 @@ class PersonalFeed extends Feed {
     deregisterUserPersonalFeedEntries(user) {
         return this.unpersistByQuery(this._type, {
             statement: 'UserId = ?',
-            values: user.id,
+            values: user.Id,
         });
     }
 
