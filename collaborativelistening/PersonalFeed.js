@@ -48,31 +48,6 @@ class PersonalFeed extends Feed {
             '/run/cl-workspace/current-personal-programs-journal.json';
     }
 
-    /**
-     * Remove all personal queries. Called when lineup generation is about to begin
-     * and all entries will be generated again
-     * @param {String} fromDate Remove items that belong to this date and all dates after
-     */
-    purgeEntries(fromDate) {
-        if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            if (fromDate) {
-                let fromDateInZoneEpoch =
-                    DateUtils.getEpochSeconds(
-                        DateUtils.getDateStartMomentInTimeZone(fromDate)
-                    );
-                this.unpersistByQuery(this._type, {
-                    statement: 'ReleaseTimestamp > ?',
-                    values: fromDateInZoneEpoch,
-                });
-            } else { // remove all
-                this.unpersistByQuery(this._type, null);
-            }
-        } else {
-            AppContext.getInstance().Logger.info('Current personal entries will not be ' +
-                'deleted because of test mode.');
-        }
-    }
-
     registerProgram(program, targetDate) {
         let self = this;
 
@@ -143,6 +118,8 @@ class PersonalFeed extends Feed {
                 JSON.stringify(feedEntry, null, 2)
             );
         } else {
+            // Remove old entry (if any)
+            this.unpersist(feedEntry);
             this.persist(feedEntry);
         }
     }
