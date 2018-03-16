@@ -52,7 +52,8 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
             city: `"${user.City}"`,
             method: this._adhanConf.CalculationMethod,
         });
-        qs = DateUtils.getEpochSeconds(targetDate) + '?' + qs;
+        qs = DateUtils.getEpochSeconds(
+                DateUtils.getDateStartMomentInUTC(targetDate)) + '?' + qs;
 
         if (this._timingsCache[md5(qs)]) {
             return this._timingsCache[md5(qs)];
@@ -61,16 +62,16 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         let res = request(
             'GET',
             'http://api.aladhan.com' +
-                '/timingsByCity/' +
-                qs
+            '/timingsByCity/' +
+            qs
         );
 
         if (res.statusCode > 400) {
             AppContext.getInstance().Logger.warn(
                 'Adhan API request failed with error: ' +
-                    res.statusCode +
-                    ' ' +
-                    res.getBody()
+                res.statusCode +
+                ' ' +
+                res.getBody()
             );
             return null;
         }

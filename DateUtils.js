@@ -22,6 +22,14 @@ class DateUtils {
         // .unix() returns timestamp is Epoch seconds
         return moment(m).seconds(0).unix();
     }
+
+    static getDateStartMomentInTimeZone(m) {
+        return moment(m).tz('Pacific/Kiritimati').hours(0).minutes(0).seconds(0);
+    }
+
+    static getDateStartMomentInUTC(m) {
+        return moment(m).tz('UTC').hours(0).minutes(0).seconds(0);
+    }
 }
 
 module.exports = DateUtils;

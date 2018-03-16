@@ -76,7 +76,8 @@ class LineupGenerator extends AppContext {
 
             // Remove all personal entries first
             if (daysToCompile > 0 && this.GeneratorOptions.ActiveStages.Publish) {
-                this._personalFeed.purgeEntries();
+                // Remove all entries from this day onwards
+                this._personalFeed.purgeEntries(this._targetDate);
             }
 
             Array(daysToCompile).fill().map((_, i) => {

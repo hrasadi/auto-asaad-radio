@@ -23,21 +23,21 @@ class PersonalFeed extends Feed {
 
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
-                '(Id TEXT PRIMARY_KEY, ' +
-                'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-                'ExpirationTimestamp REAL,' +
-                ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
+            '(Id TEXT PRIMARY_KEY, ' +
+            'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
+            'ExpirationTimestamp REAL,' +
+            ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS personalfeedentry_id_idx ON ' +
-                                                    'PersonalFeedEntry(Id)');
+            'PersonalFeedEntry(Id)');
 
         if (this._historyProdiver) {
             this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
-                    '(Id TEXT PRIMARY_KEY, ' +
-                    'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-                    'ExpirationTimestamp REAL,' +
-                    ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
+                '(Id TEXT PRIMARY_KEY, ' +
+                'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
+                'ExpirationTimestamp REAL,' +
+                ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
             );
         }
 
@@ -45,19 +45,31 @@ class PersonalFeed extends Feed {
         this._tableName = 'PersonalFeedEntry';
 
         this._journalFilePath = AppContext.getInstance().CWD +
-                            '/run/cl-workspace/current-personal-programs-journal.json';
+            '/run/cl-workspace/current-personal-programs-journal.json';
     }
 
     /**
      * Remove all personal queries. Called when lineup generation is about to begin
      * and all entries will be generated again
+     * @param {String} fromDate Remove items that belong to this date and all dates after
      */
-    purgeEntries() {
+    purgeEntries(fromDate) {
         if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            this.unpersistByQuery(this._type, null);
+            if (fromDate) {
+                let fromDateInZoneEpoch =
+                    DateUtils.getEpochSeconds(
+                        DateUtils.getDateStartMomentInTimeZone(fromDate)
+                    );
+                this.unpersistByQuery(this._type, {
+                    statement: 'ReleaseTimestamp > ?',
+                    values: fromDateInZoneEpoch,
+                });
+            } else { // remove all
+                this.unpersistByQuery(this._type, null);
+            }
         } else {
             AppContext.getInstance().Logger.info('Current personal entries will not be ' +
-                                                        'deleted because of test mode.');
+                'deleted because of test mode.');
         }
     }
 
@@ -113,8 +125,8 @@ class PersonalFeed extends Feed {
 
         feedEntry.ExpirationTimestamp = DateUtils.getEpochSeconds(
             moment
-                .unix(feedEntry.ReleaseTimestamp)
-                .add(program.Metadata.Duration, 'seconds')
+            .unix(feedEntry.ReleaseTimestamp)
+            .add(program.Metadata.Duration, 'seconds')
         );
         feedEntry.Program = program;
 
@@ -128,7 +140,7 @@ class PersonalFeed extends Feed {
         if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
             AppContext.getInstance().Logger.debug(
                 'Register program to personal feed with entry: ' +
-                    JSON.stringify(feedEntry, null, 2)
+                JSON.stringify(feedEntry, null, 2)
             );
         } else {
             this.persist(feedEntry);
