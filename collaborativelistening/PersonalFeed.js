@@ -28,7 +28,7 @@ class PersonalFeed extends Feed {
                 'ExpirationTimestamp REAL,' +
                 ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
         );
-        this._db.runSync('CREATE INDEX personalfeedentry_id_idx ON ' +
+        this._db.runSync('CREATE INDEX IF NOT EXISTS personalfeedentry_id_idx ON ' +
                                                     'PersonalFeedEntry(Id)');
 
         if (this._historyProdiver) {

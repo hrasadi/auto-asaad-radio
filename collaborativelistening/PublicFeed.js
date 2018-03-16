@@ -22,7 +22,8 @@ class PublicFeed extends Feed {
                 'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
                 'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
-        this._db.runSync('CREATE INDEX publicfeedentry_id_idx ON PublicFeedEntry(Id)');
+        this._db.runSync('CREATE INDEX IF NOT EXISTS publicfeedentry_id_idx ' +
+                                                            'ON PublicFeedEntry(Id)');
 
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS UPVOTES ' +
