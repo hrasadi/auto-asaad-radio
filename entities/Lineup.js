@@ -249,7 +249,7 @@ class Lineup extends Entity {
     fixFloatingBoxes() {
         for (let i = 0; i < this.Boxes.length; i++) {
             if (this.Boxes[i].IsFloating) {
-                if (i < this.Boxes.length) {
+                if (i < this.Boxes.length - 1) {
                     // floating box collides with next box
                     if (
                         moment(this.Boxes[i + 1].StartTime).isBefore(
