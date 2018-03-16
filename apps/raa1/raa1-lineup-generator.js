@@ -62,6 +62,9 @@ class Raa1LineupGenerator extends LineupGenerator {
         if (!program.planning) {
             this._generatorOptions.ActiveStages.Plan = false;
         }
+        if (!program.personalEntryRegister) {
+            this._generatorOptions.NoPersonalEntryRegister = true;
+        }
         if (!program.atJob) {
             this._generatorOptions.NoAtJob = true;
         }
@@ -211,6 +214,7 @@ program
         '-l --vod-publish-delay [integer]',
         'The delay between airing and VOD pulishing'
     )
+    .option('-n --no-personal-entry-register', 'Do not register personal entries')
     .option('-o --no-vod-upload', 'Do not upload Voice On Demand files to S3.')
     .option(
         '-j --no-at-job',

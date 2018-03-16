@@ -197,14 +197,13 @@ class ReplayProgramTemplate extends ProgramTemplate {
             );
 
             // If offset == 0, we are replaying from today
-            let originalAiringLineupPlan = !originalAiringOffset
-                ? parent._parentLineupPlan
-                : AppContext.getInstance('LineupGenerator').LineupManager.getLineupPlan(
-                      originalAiringDate
-                  );
+            let originalAiringLineupPlan = !originalAiringOffset ?
+                parent._parentLineupPlan :
+                AppContext.getInstance('LineupGenerator').LineupManager.getLineupPlan(
+                    originalAiringDate
+                );
 
-            if (
-                !originalAiringLineupPlan ||
+            if (!originalAiringLineupPlan ||
                 !originalAiringLineupPlan.Version ||
                 originalAiringLineupPlan.Version !== '3.0'
             ) {
@@ -217,10 +216,10 @@ class ReplayProgramTemplate extends ProgramTemplate {
             if (!originalBoxPlan) {
                 AppContext.getInstance().Logger.debug(
                     'Original box ' +
-                        this.OriginalBoxId +
-                        ' for ' +
-                        originalAiringOffset +
-                        ' days ago is not planned. Skipping replay.'
+                    this.OriginalBoxId +
+                    ' for ' +
+                    originalAiringOffset +
+                    ' days ago is not planned. Skipping replay.'
                 );
                 continue;
             }
@@ -263,11 +262,11 @@ class ReplayProgramTemplate extends ProgramTemplate {
 
         AppContext.getInstance().Logger.debug(
             'Programs planned for replay: ' +
-                replayProgramPlans
-                    .map((programPlan) => programPlan.ProgramId)
-                    .join(', ') +
-                ' offset(s) ' +
-                this.OriginalAiringOffset.join(', ')
+            replayProgramPlans
+            .map((programPlan) => programPlan.ProgramId)
+            .join(', ') +
+            ' offset(s) ' +
+            this.OriginalAiringOffset.join(', ')
         );
         return replayProgramPlans;
     }
@@ -424,8 +423,7 @@ class Program extends BaseProgram {
         );
 
         // Program is not being published
-        if (
-            !this.Publishing.Podcast &&
+        if (!this.Publishing.Podcast &&
             !this.Publishing.Archive &&
             this.Publishing.CollaborativeListeningFeed === 'None'
         ) {
@@ -463,16 +461,16 @@ class Program extends BaseProgram {
         if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
             AppContext.getInstance().Logger.debug(
                 'Program publishing called for program "' +
-                    this.ProgramId +
-                    '" with params: ' +
-                    JSON.stringify(this.Publishing)
+                this.ProgramId +
+                '" with params: ' +
+                JSON.stringify(this.Publishing)
             );
         } else {
             // We publish VOD with a delay (normally 1 day)
             let actualPublishDate = moment(targetDate)
                 .add(
                     AppContext.getInstance('LineupGenerator').GeneratorOptions
-                        .VODPublishDelay
+                    .VODPublishDelay
                 )
                 .format('YYYY-MM-DD');
 
@@ -504,10 +502,16 @@ class Program extends BaseProgram {
             );
         } else if (this.Publishing.CollaborativeListeningFeed === 'Personal') {
             // Schedule for personal feed
-            AppContext.getInstance('LineupGenerator').PersonalFeed.registerProgram(
-                programToPublish,
-                targetDate
-            );
+            if (!AppContext.getInstance('LineupGenerator')
+                .GeneratorOptions.NoPersonalEntryRegister) {
+                AppContext.getInstance('LineupGenerator').PersonalFeed.registerProgram(
+                    programToPublish,
+                    targetDate
+                );
+            } else {
+                AppContext.getInstance().Logger.info(`Program` +
+                    `${programToPublish.CanonicalIdPath} registered in personal feed.`);
+            }
         }
     }
 
@@ -523,7 +527,7 @@ class Program extends BaseProgram {
         if (this.Priority != 'High') {
             throw Error(
                 'Logic error: scheduling on programs is only valid' +
-                    'when program is interrrupting'
+                'when program is interrrupting'
             );
         }
         this.doScheduleProgram();

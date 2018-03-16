@@ -36,6 +36,7 @@ class LineupGenerator extends AppContext {
             'TestMode': false,
             'NoTTS': false,
             'VODPulishDelay': 2, // Note the timezones
+            'NoPersonalEntryRegister': false,
             'NoVODUpload': false,
             'NoAtJob': false,
             'PlanAheadDays': 5,
