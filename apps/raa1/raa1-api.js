@@ -53,7 +53,7 @@ class Raa1API extends AppContext {
             }
             // User manager
             this._userManager = new Raa1UserManager(
-                this._conf.CollaborativeListening.FeedDBFile
+                this._conf.CollaborativeListening.UserDBFile
             );
             // Feeds
             this._publicFeed = new Raa1PublicFeed(

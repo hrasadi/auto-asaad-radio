@@ -13,16 +13,19 @@ class UserManager extends DBProvider {
     init1() {
         this.init0();
 
-        // CREATE INDEX user_notification_token_idx ON user(notificationtoken);
-        // CREATE INDEX user_id_idx ON user(id);
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS "USER" (Id TEXT PRIMARY_KEY, ' +
                 'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
                 'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
                 'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +
-                'NotifyOnPublicProgram TEXT, NotificationExcludedPublicPrograms TEXT, ' +
+                'NotificationExcludedPersonalPrograms TEXT, ' +
+                'NotifyOnPublicProgram INTEGER, ' +
+                'NotificationExcludedPublicPrograms TEXT, ' +
                 'NotifyOnLiveProgram INTEGER, LastActive REAL, UNIQUE(Id))'
         );
+        this._db.runSync('CREATE INDEX IF NOT EXISTS user_notification_token_idx' +
+                                'ON user(notificationtoken)');
+        this._db.runSync('CREATE INDEX IF NOT EXISTS user_id_idx ON user(id)');
 
         this._type = User;
         this._tableName = 'User';

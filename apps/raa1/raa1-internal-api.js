@@ -35,10 +35,8 @@ class Raa1InternalAPI extends AppContext {
             }
             // User manager
             this._userManager = new Raa1UserManager(
-                this._conf.CollaborativeListening.FeedDBFile,
-                this._conf.CollaborativeListening.FeedHistoryDBFile
+                this._conf.CollaborativeListening.UserDBFile
             );
-
             this._userManager.init(this._conf.Credentials);
 
             this.registerAPI();

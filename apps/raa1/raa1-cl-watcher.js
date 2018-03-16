@@ -38,8 +38,7 @@ class Raa1CLWatcher extends AppContext {
             }
             // User manager
             this._userManager = new Raa1UserManager(
-                this._conf.CollaborativeListening.FeedDBFile,
-                this._conf.CollaborativeListening.FeedHistoryDBFile
+                this._conf.CollaborativeListening.UserDBFile,
             );
             // Feeds
             this._publicFeed = new Raa1PublicFeed(
@@ -52,6 +51,8 @@ class Raa1CLWatcher extends AppContext {
                 this._conf.CollaborativeListening.FeedHistoryDBFile
             );
 
+            this._userManager.init(this._conf.Credentials);
+
             this._publicFeed.init();
             this._publicFeedWatcher = this._publicFeed.getWatcher();
             this._publicFeedWatcher.init();
@@ -59,8 +60,6 @@ class Raa1CLWatcher extends AppContext {
             this._personalFeed.init();
             this._personalFeedWatcher = this._personalFeed.getWatcher();
             this._personalFeedWatcher.init();
-
-            this._userManager.init(this._conf.Credentials);
 
             this.Logger.info('CollaborationListening watcher daemon initiated!');
 

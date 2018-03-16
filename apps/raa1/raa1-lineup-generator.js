@@ -145,7 +145,7 @@ class Raa1LineupGenerator extends LineupGenerator {
         // This is becuase we do not need the push notification endpoints when
         // generating lineup but still need to create tables if needed, etc.
         // Therefore we need the barebone to be created
-        this._userManager = new UserManager(this._conf.CollaborativeListening.FeedDBFile);
+        this._userManager = new UserManager(this._conf.CollaborativeListening.UserDBFile);
         this._userManager.init();
         // Feeds
         this._publicFeed = new Raa1PublicFeed(
