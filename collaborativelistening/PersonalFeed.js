@@ -46,14 +46,6 @@ class PersonalFeed extends Feed {
 
         this._journalFilePath = AppContext.getInstance().CWD +
                             '/run/cl-workspace/current-personal-programs-journal.json';
-
-        if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            // Remove any previously generated program journal
-            fs.unlinkSync(this._journalFilePath);
-        } else {
-            AppContext.getInstance().Logger.info('Old Personal entries journal ' +
-                                            'file is not removed because of test mode.');
-        }
     }
 
     /**
@@ -202,11 +194,11 @@ class PersonalFeed extends Feed {
             // Write the current journal (if any) to disk
             if (this._shouldPersistJournal) {
                 fs.writeFileSync(this._journalFilePath,
-                    JSON.stringify(this._currentPersonalProgramsJournal));
+                    JSON.stringify(this._currentPersonalProgramsJournal, null, 2));
             }
         } else {
             AppContext.getInstance().Logger.info(`New persfonal feed journal is: ' +
-                            '${JSON.stringify(this._currentPersonalProgramsJournal)}`);
+                    '${JSON.stringify(this._currentPersonalProgramsJournal, null, 2)}`);
         }
     }
 }
