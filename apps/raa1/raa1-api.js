@@ -18,6 +18,9 @@ const LineupManager = require('../../LineupManager');
 
 const ObjectBuilder = require('../../entities/ObjectBuilder');
 
+const Raa1StartTimeCalculatorManager =
+                require('./starttimecalculator/Raa1StartTimeCalculatorManager');
+
 const LiquidsoapBox = require('../../liquidsoap/LiquidsoapBox');
 const LiquidsoapProgram = require('../../liquidsoap/LiquidsoapProgram');
 const LiquidsoapMedia = require('../../liquidsoap/LiquidsoapMedia');
@@ -74,6 +77,10 @@ class Raa1API extends AppContext {
             // We also use some utility funtions of LineupManager but we do not init it.
             this._lineupFileNamePrefix = 'raa1';
             this._lineupManager = new LineupManager();
+
+            this._startTimeCalculatorManager = new Raa1StartTimeCalculatorManager(
+                this._conf.Adhan
+            );
 
             this._objectBuilder = new ObjectBuilder({
                 Box: LiquidsoapBox,
@@ -217,6 +224,10 @@ class Raa1API extends AppContext {
 
     get LineupManager() {
         return this._lineupManager;
+    }
+
+    get StartTimeCalculatorManager() {
+        return this._startTimeCalculatorManager;
     }
 
     get LineupFileNamePrefix() {

@@ -40,9 +40,8 @@ class Schedule extends Entity {
         let calculatorObj = null;
 
         if (this._calculator) {
-            calculatorObj = AppContext.getInstance(
-                'LineupGenerator'
-            ).StartTimeCalculatorManager.getCalculator(this._calculator);
+            calculatorObj = AppContext.getInstance()
+                .StartTimeCalculatorManager.getCalculator(this._calculator);
 
             if (!calculatorObj) {
                 throw Error(
