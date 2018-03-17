@@ -105,7 +105,8 @@ class PersonalFeed extends Feed {
             return;
         }
 
-        if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
+        if (AppContext.getInstance('LineupGenerator') != null &&
+                AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
             AppContext.getInstance().Logger.debug(
                 'Register program to personal feed with entry: ' +
                 JSON.stringify(feedEntry, null, 2)
