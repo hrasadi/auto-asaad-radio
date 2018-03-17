@@ -105,17 +105,21 @@ class PersonalFeed extends Feed {
             return;
         }
 
-        if (AppContext.getInstance('LineupGenerator') != null &&
-                AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            AppContext.getInstance().Logger.debug(
-                'Register program to personal feed with entry: ' +
-                JSON.stringify(feedEntry, null, 2)
-            );
-        } else {
-            // Remove old entry (if any)
-            this.unpersist(feedEntry);
-            this.persist(feedEntry);
+        try {
+            if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
+                AppContext.getInstance().Logger.debug(
+                    'Register program to personal feed with entry: ' +
+                    JSON.stringify(feedEntry, null, 2)
+                );
+                return;
+            }
+        } catch (e) {
+            AppContext.getInstance
+                .Logger.info('Not a lineup generator context. Persist entry ...');
         }
+        // Remove old entry (if any)
+        this.unpersist(feedEntry);
+        this.persist(feedEntry);
     }
 
     // This will regenerate all personal programs of a specific user every time user
