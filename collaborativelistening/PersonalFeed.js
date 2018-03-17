@@ -114,7 +114,7 @@ class PersonalFeed extends Feed {
                 return;
             }
         } catch (e) {
-            AppContext.getInstance
+            AppContext.getInstance()
                 .Logger.info('Not a lineup generator context. Persist entry ...');
         }
         // Remove old entry (if any)
