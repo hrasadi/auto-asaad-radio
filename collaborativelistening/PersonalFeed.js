@@ -10,7 +10,6 @@ const U = require('../collaborativelistening/UserManager');
 const User = U.User;
 
 const moment = require('moment-timezone');
-const fs = require('fs');
 
 class PersonalFeed extends Feed {
     constructor(dbFileName, historyDbFileName) {
@@ -43,8 +42,6 @@ class PersonalFeed extends Feed {
 
         this._type = PersonalFeedEntry;
         this._tableName = 'PersonalFeedEntry';
-
-        this._currentPersonalProgramsJournal = [];
     }
 
     registerProgram(program, targetDate) {
@@ -54,9 +51,6 @@ class PersonalFeed extends Feed {
         for (let user of users) {
             self.registerProgramForUser(program, targetDate, user);
         }
-
-        // Save program info for later user registerations
-        this.addProgramToJournal(program, targetDate);
     }
 
     registerProgramForUser(program, targetDate, user) {
@@ -123,32 +117,6 @@ class PersonalFeed extends Feed {
         }
     }
 
-    addProgramToJournal(program) {
-        this._shouldPersistJournal = true;
-        this._currentPersonalProgramsJournal.push(program);
-    }
-
-    getJournalFilePath(targetDate) {
-        return AppContext.getInstance().CWD +
-            `/run/cl-workspace/personal-programs-journal-${targetDate}.json`;
-    }
-
-    commitJournal(targetDate) {
-        if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
-            // Write the current journal (if any) to disk
-            if (this._shouldPersistJournal) {
-                fs.writeFileSync(this.getJournalFilePath(targetDate),
-                    JSON.stringify(this._currentPersonalProgramsJournal, null, 2));
-            }
-        } else {
-            AppContext.getInstance().Logger.info(
-                `Personal feed journal for ${targetDate} is: ` +
-                `${JSON.stringify(this._currentPersonalProgramsJournal, null, 2)}`);
-        }
-        // Empty journal, another for another date to come
-        this._currentPersonalProgramsJournal = [];
-    }
-
     // This will regenerate all personal programs of a specific user every time user
     // re-registers with server
     generatePersonalFeed(user) {
@@ -161,13 +129,13 @@ class PersonalFeed extends Feed {
         let today = DateUtils.getDateString(DateUtils.getNowInTimeZone());
 
         for (let dateString of [yesterday, today]) {
-            let journalFilePath = this.getJournalFilePath(dateString);
-            if (fs.existsSync(journalFilePath)) {
-                let currentPersonalProgramsJournal =
-                    JSON.parse(fs.readFileSync(journalFilePath, 'utf-8'));
+            let lineup = AppContext.getInstance().LineupManager.getLineup(dateString);
 
-                for (let program of currentPersonalProgramsJournal) {
-                    this.registerProgramForUser(program, dateString, user);
+            for (let box of lineup.Boxes) {
+                for (let program of box.Programs) {
+                    if (program.Publishing.CollaborativeListeningFeed === 'Personal') {
+                        this.registerProgramForUser(program, dateString, user);
+                    }
                 }
             }
         }

@@ -14,6 +14,8 @@ const Raa1UserManager = R.Raa1UserManager;
 const U = require('../../collaborativelistening/UserManager');
 const User = U.User;
 
+const LineupManager = require('../../LineupManager');
+
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
@@ -62,6 +64,10 @@ class Raa1API extends AppContext {
             this._personalFeed = new Raa1PersonalFeed(
                 this._conf.CollaborativeListening.FeedDBFile
             );
+
+            // We also use some utility funtions of LineupManager but we do not init it.
+            this._lineupFileNamePrefix = 'raa1';
+            this._lineupManager = new LineupManager();
 
             this._publicFeed.init();
             this._personalFeed.init();
@@ -195,6 +201,14 @@ class Raa1API extends AppContext {
 
     get UserManager() {
         return this._userManager;
+    }
+
+    get LineupManager() {
+        return this._lineupManager;
+    }
+
+    get LineupFileNamePrefix() {
+        return this._lineupFileNamePrefix;
     }
 }
 

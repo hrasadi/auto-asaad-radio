@@ -79,7 +79,7 @@ class LineupManager {
 
     getLineupFileName(targetDate) {
         return (
-            AppContext.getInstance('LineupGenerator').LineupFileNamePrefix +
+            AppContext.getInstance().LineupFileNamePrefix +
             '-' +
             targetDate
         );
