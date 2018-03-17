@@ -16,6 +16,12 @@ const User = U.User;
 
 const LineupManager = require('../../LineupManager');
 
+const ObjectBuilder = require('../../entities/ObjectBuilder');
+
+const LiquidsoapBox = require('../../liquidsoap/LiquidsoapBox');
+const LiquidsoapProgram = require('../../liquidsoap/LiquidsoapProgram');
+const LiquidsoapMedia = require('../../liquidsoap/LiquidsoapMedia');
+
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
@@ -68,6 +74,12 @@ class Raa1API extends AppContext {
             // We also use some utility funtions of LineupManager but we do not init it.
             this._lineupFileNamePrefix = 'raa1';
             this._lineupManager = new LineupManager();
+
+            this._objectBuilder = new ObjectBuilder({
+                Box: LiquidsoapBox,
+                Program: LiquidsoapProgram,
+                Media: LiquidsoapMedia,
+            });
 
             this._publicFeed.init();
             this._personalFeed.init();
