@@ -24,8 +24,7 @@ class PersonalFeed extends Feed {
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
             '(Id TEXT PRIMARY_KEY, ' +
             'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-            'ExpirationTimestamp REAL,' +
-            ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
+            'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS personalfeedentry_id_idx ON ' +
             'PersonalFeedEntry(Id)');
@@ -35,8 +34,7 @@ class PersonalFeed extends Feed {
                 'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
                 'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-                'ExpirationTimestamp REAL,' +
-                ' FOREIGN KEY(UserId) REFERENCES USER(Id), UNIQUE(Id))'
+                'ExpirationTimestamp REAL, UNIQUE(Id))'
             );
         }
 
