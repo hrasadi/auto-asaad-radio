@@ -61,7 +61,12 @@ class Publishing extends Entity {
     }
 
     get CollaborativeListeningProps() {
-        let defaultCLProps =
+        if (this.getOrNull(this._collaborativeListeningProps) != null) {
+            // In cases other that lineup generation, we do not need the defaults to
+            // be loaded, and we know that props exist. So just return
+            return this._collaborativeListeningProps;
+        } else {
+            let defaultCLProps =
             this._collaborativeListeningFeed !== 'None'
                 ? Object.assign(
                       {},
@@ -69,7 +74,8 @@ class Publishing extends Entity {
                           .ColloborativeListening
                   )
                 : null;
-        return this.getOrElse(this._collaborativeListeningProps, defaultCLProps);
+            return this.getOrElse(this._collaborativeListeningProps, defaultCLProps);
+        }
     }
 
     set CollaborativeListeningProps(value) {
