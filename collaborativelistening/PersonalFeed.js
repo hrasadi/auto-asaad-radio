@@ -45,7 +45,7 @@ class PersonalFeed extends Feed {
     registerProgram(program, targetDate) {
         let self = this;
 
-        let users = this.entryListAll(User, null);
+        let users = AppContext.getInstance().UserManager.entryListAll(User, null);
         for (let user of users) {
             self.registerProgramForUser(program, targetDate, user);
         }
