@@ -220,10 +220,6 @@ class Lineup extends Entity {
                 );
             }
         }
-
-        // commit personal feed items
-        AppContext.getInstance('LineupGenerator')
-            .PersonalFeed.commitJournal(this._lineupId);
     }
 
     /**
