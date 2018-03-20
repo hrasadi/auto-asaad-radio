@@ -7,6 +7,7 @@ const Schedule = require('./Schedule');
 const LivePlaybackSchedulerMeta = require('./LivePlaybackSchedulerMeta');
 const P = require('./Program');
 const ProgramTemplate = P.ProgramTemplate;
+const ProgramPlan = P.ProgramPlan;
 const Program = P.Program;
 
 const fs = require('fs');
@@ -158,7 +159,12 @@ class BoxPlan extends BaseBox {
      * @param {ProgramPlan[]} values of ProgramPlan objects
      */
     set ProgramPlans(values) {
-        this._programPlans = values;
+        if (values) {
+            this._programPlans = [];
+            for (let pp of values) {
+                this._programPlans.push(new ProgramPlan(pp, this));
+            }
+        }
     }
 
     get StartTime() {
