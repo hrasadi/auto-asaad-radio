@@ -6,6 +6,7 @@ const MediaDirectory = require('./media/MediaDirectory');
 
 const B = require('./Box');
 const BoxTemplate = B.BoxTemplate;
+const BoxPlan = B.BoxPlan;
 const Box = B.Box;
 
 const moment = require('moment');
@@ -131,7 +132,12 @@ class LineupPlan extends Entity {
     }
 
     set BoxPlans(values) {
-        this._boxPlans = values;
+        if (values) {
+            this._boxPlans = [];
+            for (let box of values) {
+                this._boxPlans.push(new BoxPlan(box, this));
+            }
+        }
     }
 
     get Version() {
