@@ -19,6 +19,11 @@ class StaticStartTimeCalculator extends StartTimeCalculator {
     calculate(targetDate, scheduleObj, user) {
         this.validate(scheduleObj);
 
+        // Additional support for cases when we don't want program time to be reletive
+        // to user timezone, but an absolute moment
+        if (scheduleObj.Params.TimeAbsoluteToServer) {
+            user = null;
+        }
         // Server timezone if user not set
         let targetTZ = (user ? user.TimeZone : moment.tz.guess());
         let startTime = moment.tz(scheduleObj.Params.At, ['h:m:s', 'H:m:s'], targetTZ);

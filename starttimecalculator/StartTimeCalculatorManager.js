@@ -13,7 +13,7 @@ class StartTimeCalculatorManager {
 
     getCalculator(name) {
         return this._calculatorMap[name];
-    }   
+    }
 }
 
 module.exports = StartTimeCalculatorManager;
