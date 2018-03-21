@@ -91,6 +91,10 @@ class Raa1ClipPublisher extends ClipPublisher {
                         if (w.IsWrapped) {
                              fs.unlinkSync(w.AbsolutePath);
                         }
+                    } else {
+                        AppContext.getInstance()
+                            .Logger.debug('Not uploading this item.' +
+                                'Either not wrapped or already uploaded before.');
                     }
                 };
 
