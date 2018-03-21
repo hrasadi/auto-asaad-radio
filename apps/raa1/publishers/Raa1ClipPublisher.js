@@ -51,8 +51,7 @@ class Raa1ClipPublisher extends ClipPublisher {
             try {
                 let self = this;
                 // We want to block this part only, so we create surraounding closure
-                let uploadClosure = ((w) => {
-                    return function* uploader(clipData) {
+                let uploadClosure = function* uploader(w, clipData) {
                         // We upload programs if we are wrapping something
                         // (they might be updated). However, if original clip is
                         // being uploaded, we should only care to upload when
@@ -67,11 +66,10 @@ class Raa1ClipPublisher extends ClipPublisher {
                                 fs.unlinkSync(w.AbsolutePath);
                             }
                         }
-                    };
-                })(wrappedClip);
+                };
 
                 let clipData = fs.readFileSync(wrappedClip.AbsolutePath);
-                uploadClosure(clipData);
+                uploadClosure(wrappedClip, clipData);
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
