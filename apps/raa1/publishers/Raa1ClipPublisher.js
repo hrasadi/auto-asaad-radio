@@ -94,7 +94,7 @@ class Raa1ClipPublisher extends ClipPublisher {
                     }
                 };
 
-                runGenerator(uploadClosure);
+                runGenerator(uploadClosure, wrappedClip);
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
