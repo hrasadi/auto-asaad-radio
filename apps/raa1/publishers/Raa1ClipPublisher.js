@@ -94,7 +94,7 @@ class Raa1ClipPublisher extends ClipPublisher {
                     } else {
                         AppContext.getInstance()
                             .Logger.debug(`Not uploading ${w.RelativePath}. ` +
-                                'Either not wrapped or already uploaded before.');
+                                'Either not wrapped or already exists in S3.');
                     }
                 };
 
@@ -292,7 +292,7 @@ class AsyncS3 {
                     );
                 } else {
                     AppContext.getInstance().Logger.info(
-                        'Successfully uploaded item to S3:' + key);
+                        'Successfully uploaded item to S3: ' + key);
                 }
                 callback(err, data);
             });
