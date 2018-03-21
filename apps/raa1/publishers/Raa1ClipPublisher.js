@@ -59,28 +59,29 @@ class Raa1ClipPublisher extends ClipPublisher {
             wrappedClip.wrap();
             try {
                 let self = this;
-                fs.readFileAsync(wrappedClip.AbsolutePath).then(
-                    // We want to block this part only, so we create surraounding closure
-                    ((w) => {
-                        let uploadClosure = async function(clipData) {
-                            // We upload programs if we are wrapping something
-                            // (they might be updated). However, if original clip is
-                            // being uploaded, we should only care to upload when
-                            // the file does not exsit on S3.
-                            if (
-                                w.IsWrapped ||
-                                !await self._asyncS3.exists(w.RelativePath)
-                            ) {
-                                await self._asyncS3.putObject(w.RelativePath, clipData);
-                                // Remove the temp file
-                                if (w.IsWrapped) {
-                                    fs.unlinkSync(w.AbsolutePath);
-                                }
+                // We want to block this part only, so we create surraounding closure
+                let uploadClosure = ((w) => {
+                    return async (clipData) => {
+                        // We upload programs if we are wrapping something
+                        // (they might be updated). However, if original clip is
+                        // being uploaded, we should only care to upload when
+                        // the file does not exsit on S3.
+                        if (
+                            w.IsWrapped ||
+                            !await self._asyncS3.exists(w.RelativePath)
+                        ) {
+                            await self._asyncS3.putObject(w.RelativePath, clipData);
+                            // Remove the temp file
+                            if (w.IsWrapped) {
+                                fs.unlinkSync(w.AbsolutePath);
                             }
-                        };
-                        return uploadClosure;
-                    })(wrappedClip)
-                );
+                        }
+                    };
+                })(wrappedClip);
+
+                fs.readFileAsync(wrappedClip.AbsolutePath).then(async (clipData) => {
+                    await uploadClosure(clipData);
+                });
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
