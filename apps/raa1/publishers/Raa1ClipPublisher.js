@@ -32,7 +32,7 @@ let runGenerator = (generatorFunction, ...params) => {
         }
     };
     // create the iterator
-    let it = generatorFunction(params);
+    let it = generatorFunction(...params);
     return next();
 };
 
@@ -76,7 +76,7 @@ class Raa1ClipPublisher extends ClipPublisher {
             try {
                 let self = this;
                 // We want to block this part only, so we create surraounding closure
-                let uploadClosure = function* uploader(w, clipData) {
+                let uploadClosure = function* uploader(...[w]) {
                     // We upload programs if we are wrapping something
                     // (they might be updated). However, if original clip is
                     // being uploaded, we should only care to upload when
@@ -85,16 +85,16 @@ class Raa1ClipPublisher extends ClipPublisher {
                         w.IsWrapped ||
                         !(yield self._asyncS3.exists(w.RelativePath))
                     ) {
+                        let clipData = fs.readFileSync(w.AbsolutePath);
                         yield self._asyncS3.putObject(w.RelativePath, clipData);
                         // Remove the temp file
                         if (w.IsWrapped) {
-                            fs.unlinkSync(w.AbsolutePath);
+                             fs.unlinkSync(w.AbsolutePath);
                         }
                     }
                 };
 
-                let clipData = fs.readFileSync(wrappedClip.AbsolutePath);
-                runGenerator(uploadClosure, wrappedClip, clipData);
+                runGenerator(uploadClosure);
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
@@ -255,17 +255,17 @@ class AsyncS3 {
             Key: key,
         };
 
-        return new Promise((resolve, reject) => {
+        return (callback) => {
             this._s3.headObject(params, (err, metadata) => {
                 if (err && err.code === 'NotFound') {
-                    resolve(false); // Not found
+                    callback(null, false);
                 } else if (!err) {
-                    resolve(true); // found
+                    callback(null, true); // found
                 } else {
-                    reject(err); // error!
+                    callback(err); // error!
                 }
             });
-        });
+        };
     }
 
     putObject(key, data) {
@@ -278,18 +278,21 @@ class AsyncS3 {
         AppContext.getInstance().Logger.debug(
             `Attempting uploading to S3 with key: ${params.Key}`
         );
-        return new Promise((resolve, reject) => {
+
+        // The generator will block on this one
+        return (callback) => {
             this._s3.putObject(params, (err, data) => {
                 if (err) {
                     AppContext.getInstance().Logger.error(
                         'Error uploading file to S3. Error is: ' + err
                     );
-                    reject(err);
                 } else {
-                    resolve(data);
+                    AppContext.getInstance().Logger.info(
+                        'Successfully uploaded item to S3');
                 }
+                callback(err, data);
             });
-        });
+        };
     }
 }
 
