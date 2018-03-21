@@ -11,6 +11,31 @@ const path = require('path');
 const md5 = require('md5');
 const uuid = require('uuid/v1');
 
+// A generator function runner
+let runGenerator = (generatorFunction, ...params) => {
+    // recursive next()
+    let next = (err, arg) => {
+        // if error - throw and error
+        if (err) return it.throw(err);
+        // cache it.next(arg) as result
+        let result = it.next(arg);
+        // are we done?
+        if (result.done) return;
+        // result.value should be our callback() function from the XHR request
+        if (typeof result.value == 'function') {
+            // call next() as the callback()
+            result.value(next);
+        } else {
+            // if the response isn't a function
+            // pass it to next()
+            next(null, result.value);
+        }
+    };
+    // create the iterator
+    let it = generatorFunction(params);
+    return next();
+};
+
 class Raa1ClipPublisher extends ClipPublisher {
     constructor(credentialsConf) {
         super();
@@ -52,24 +77,24 @@ class Raa1ClipPublisher extends ClipPublisher {
                 let self = this;
                 // We want to block this part only, so we create surraounding closure
                 let uploadClosure = function* uploader(w, clipData) {
-                        // We upload programs if we are wrapping something
-                        // (they might be updated). However, if original clip is
-                        // being uploaded, we should only care to upload when
-                        // the file does not exsit on S3.
-                        if (
-                            w.IsWrapped ||
-                            !(yield self._asyncS3.exists(w.RelativePath))
-                        ) {
-                            yield self._asyncS3.putObject(w.RelativePath, clipData);
-                            // Remove the temp file
-                            if (w.IsWrapped) {
-                                fs.unlinkSync(w.AbsolutePath);
-                            }
+                    // We upload programs if we are wrapping something
+                    // (they might be updated). However, if original clip is
+                    // being uploaded, we should only care to upload when
+                    // the file does not exsit on S3.
+                    if (
+                        w.IsWrapped ||
+                        !(yield self._asyncS3.exists(w.RelativePath))
+                    ) {
+                        yield self._asyncS3.putObject(w.RelativePath, clipData);
+                        // Remove the temp file
+                        if (w.IsWrapped) {
+                            fs.unlinkSync(w.AbsolutePath);
                         }
+                    }
                 };
 
                 let clipData = fs.readFileSync(wrappedClip.AbsolutePath);
-                uploadClosure(wrappedClip, clipData);
+                runGenerator(uploadClosure, wrappedClip, clipData);
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
