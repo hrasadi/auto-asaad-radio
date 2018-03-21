@@ -11,15 +11,6 @@ const path = require('path');
 const md5 = require('md5');
 const uuid = require('uuid/v1');
 
-fs.readFileAsync = (filename) => {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filename, (err, data) => {
-            if (err) reject(err);
-            else resolve(data);
-        });
-    });
-};
-
 class Raa1ClipPublisher extends ClipPublisher {
     constructor(credentialsConf) {
         super();
@@ -79,9 +70,8 @@ class Raa1ClipPublisher extends ClipPublisher {
                     };
                 })(wrappedClip);
 
-                fs.readFileAsync(wrappedClip.AbsolutePath).then(async (clipData) => {
-                    await uploadClosure(clipData);
-                });
+                let clipData = fs.readFileSync(wrappedClip.AbsolutePath);
+                uploadClosure(clipData);
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
