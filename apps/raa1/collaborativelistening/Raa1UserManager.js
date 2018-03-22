@@ -214,7 +214,7 @@ class Raa1UserManager extends UserManager {
                 );
                 // Remove user if we have BadToken error (removed the app. etc.)
                 for (let failure of response.failed) {
-                    if (failure.response.reason == 'BadDeviceToken') {
+                    if (failure.status == 410) { // Bad device token
                         AppContext.getInstance().Logger.info(
                             `Device "${failure.device}" marked for deletion as ` +
                             `it seems not to be running RAA anymore.`
