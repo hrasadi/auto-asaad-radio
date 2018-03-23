@@ -163,6 +163,14 @@ class LineupManager {
         return null;
     }
 
+    getPublishedLineup(targetDate) {
+        let lineupFilePath = this.getPublishedLineupFilePath(targetDate);
+        if (fs.existsSync(lineupFilePath)) {
+            return new Lineup(JSON.parse(fs.readFileSync(lineupFilePath)));
+        }
+        return null;
+    }
+
     get MediaDirectory() {
         return this._lineupTemplate.MediaDirectory;
     }

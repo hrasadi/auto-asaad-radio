@@ -132,7 +132,8 @@ class PersonalFeed extends Feed {
         let today = DateUtils.getDateString(DateUtils.getNowInTimeZone());
 
         for (let dateString of [yesterday, today]) {
-            let lineup = AppContext.getInstance().LineupManager.getLineup(dateString);
+            let lineup = AppContext.getInstance()
+                                .LineupManager.getPublishedLineup(dateString);
 
             for (let box of lineup.Boxes) {
                 for (let program of box.Programs) {
