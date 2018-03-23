@@ -100,7 +100,7 @@ class User extends DBObject {
     }
 
     set DeviceType(value) {
-        this._deviceType = DeviceTypeEnum[value];
+        this._deviceType = value;
     }
 
     get IP() {
