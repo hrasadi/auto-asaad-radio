@@ -42,10 +42,17 @@ class PersonalFeed extends Feed {
         this._tableName = 'PersonalFeedEntry';
     }
 
+    /** This function only registers program for users who are active (used app recently)
+     * @param {Program} program The program to register in personal feed
+     * @param {String} targetDate The target date
+     * */
     registerProgram(program, targetDate) {
         let self = this;
 
-        let users = AppContext.getInstance().UserManager.entryListAll(User, null);
+        let users = AppContext.getInstance().UserManager.entryListAll(User, {
+            statement: 'LastActive > ?',
+            values: [self.UserManager.getUserActiveThreshold()],
+        });
         for (let user of users) {
             self.registerProgramForUser(program, targetDate, user);
         }

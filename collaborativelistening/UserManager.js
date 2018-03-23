@@ -3,6 +3,8 @@ const DBObject = require('./DBObject');
 
 const moment = require('moment');
 
+const USER_INACTIVITY_SECONDS_BEFORE_EXPIRATION = 15 * 24 * 3600; // 15 days
+
 class UserManager extends DBProvider {
     constructor(dbFileName) {
         super(dbFileName);
@@ -55,6 +57,11 @@ class UserManager extends DBProvider {
             user.LastActive = moment().unix();
             this.updateUser(user);
         }
+    }
+
+    getUserActiveThreshold() {
+        // now() - valid inactivity period
+        return moment().unix() - USER_INACTIVITY_SECONDS_BEFORE_EXPIRATION;
     }
 
     updateUser(user) {
