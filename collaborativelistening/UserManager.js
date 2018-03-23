@@ -49,11 +49,11 @@ class UserManager extends DBProvider {
     }
 
     reportUserActive(userId) {
-        let user = this.loadById(User, userId);
+        let user = this.getUser(userId);
         if (user) {
             // User exists, update the last active timestamp to now
             user.LastActive = moment().unix();
-            this.update(user);
+            this.updateUser(user);
         }
     }
 
@@ -62,7 +62,7 @@ class UserManager extends DBProvider {
     }
 
     getUser(userId) {
-        return this.loadById(User, userId);
+        return new User(this.loadById(User, userId));
     }
 
     removeUser(userId) {

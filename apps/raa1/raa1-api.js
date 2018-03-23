@@ -139,7 +139,7 @@ class Raa1API extends AppContext {
         this._webApp.get('/personalFeed/:userId', async (req, res) => {
             try {
                 let userId = req.params['userId'];
-                let feed = this.PersonalFeed.renderFeed(userId);
+                let feed = self.PersonalFeed.renderFeed(userId);
                 res.send(feed);
 
                 // Every time user fetches personal feed, we update user's last
