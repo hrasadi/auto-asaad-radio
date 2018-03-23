@@ -142,11 +142,10 @@ class Raa1API extends AppContext {
                 let feed = this.PersonalFeed.renderFeed(userId);
                 res.send(feed);
 
-                // TODO:
                 // Every time user fetches personal feed, we update user's last
                 // seen active timestamp. This will help us expire stale users from our
                 // db
-                // self.UserManager.updateUserLastActiveTimestamp(userId);
+                self.UserManager.reportUserActive(userId);
             } catch (error) {
                 AppContext.getInstance().Logger.error(error.stack);
             }
