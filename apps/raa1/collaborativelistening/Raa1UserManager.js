@@ -64,8 +64,7 @@ class Raa1UserManager extends UserManager {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = this.entryListAll(User, {
-            statement:
-                'Id = ? and DeviceType = ? and ' +
+            statement: 'Id = ? and DeviceType = ? and ' +
                 requiredNotificationPermission +
                 ' = 1' +
                 ' and NotificationToken != ""',
@@ -84,14 +83,13 @@ class Raa1UserManager extends UserManager {
         } else {
             AppContext.getInstance().Logger.debug(
                 `User ${userId} settings didn't not allow to send` +
-                    `notification with content ${alert}.`
+                `notification with content ${alert}.`
             );
         }
 
         // Notify FCM
         let fcmUsers = this.entryListAll(User, {
-            statement:
-                'Id = ? and DeviceType = ? and ' +
+            statement: 'Id = ? and DeviceType = ? and ' +
                 requiredNotificationPermission +
                 ' = 1' +
                 ' and NotificationToken != ""',
@@ -110,7 +108,7 @@ class Raa1UserManager extends UserManager {
         } else {
             AppContext.getInstance().Logger.debug(
                 `User ${userId} settings didn't not allow to send` +
-                    `notification with content ${alert}.`
+                `notification with content ${alert}.`
             );
         }
     }
@@ -119,8 +117,7 @@ class Raa1UserManager extends UserManager {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = this.entryListAll(User, {
-            statement:
-                'DeviceType = ? and ' +
+            statement: 'DeviceType = ? and ' +
                 requiredNotificationPermission +
                 ' = 1' +
                 ' and NotificationToken != ""',
@@ -147,13 +144,12 @@ class Raa1UserManager extends UserManager {
         );
         AppContext.getInstance().Logger.debug(
             `APNS notification with content ${alert}` +
-                ` sent to ${iosUsers.length} user(s)`
+            ` sent to ${iosUsers.length} user(s)`
         );
 
         // Notify FCM
         let fcmUsers = this.entryListAll(User, {
-            statement:
-                'DeviceType = ? and ' +
+            statement: 'DeviceType = ? and ' +
                 requiredNotificationPermission +
                 ' = 1' +
                 ' and NotificationToken != ""',
@@ -180,7 +176,7 @@ class Raa1UserManager extends UserManager {
         );
         AppContext.getInstance().Logger.debug(
             `FCM notification with content ${alert}` +
-                ` sent to ${fcmUsers.length} user(s)`
+            ` sent to ${fcmUsers.length} user(s)`
         );
     }
 
@@ -242,28 +238,36 @@ class Raa1UserManager extends UserManager {
             payload.data.feedEntryId = feedEntryId;
         }
 
-        this._firebase
-            .messaging()
-            .sendToDevice(recipientIds, payload)
-            .then((response) => {
-                if (response.failureCount > 0) {
-                    AppContext.getInstance().Logger.info(
-                        `Failed FCM messages: ${JSON.stringify(response.results)}`
-                    );
-                    // Remove user if token is not valid error (removed the app. etc.)
-                    for (let failure of response.results) {
-                        if (failure.canonicalRegistrationToken) {
-                            AppContext.getInstance().Logger.info(
-                                `Device "${failure.canonicalRegistrationToken}"` +
-                                `marked for deletion as ` +
-                                `it seems not to be running RAA anymore.`
-                            );
-                            // TODO:
-                            // this.removeUserByNotificationToken(failure.device);
-                        }
+        // Save the recipientIds in the stack (FCM does not return them back to us)
+        let self = this;
+        ((rIds) => {
+            self._firebase
+                .messaging()
+                .sendToDevice(rIds, payload)
+                .then((response) => {
+                    if (response.failureCount > 0) {
+                        AppContext.getInstance().Logger.info(
+                            `Failed FCM messages. Let's see if we have invalid token...`
+                        );
+                        // Remove user if token is not valid error (removed the app. etc.)
+                        response.results.forEach((result, index) => {
+                            if (result.error) {
+                                if (result.error.code ===
+                                    'messaging/invalid-registration-token' ||
+                                    result.error.code ===
+                                    'messaging/registration-token-not-registered') {
+                                    AppContext.getInstance().Logger.info(
+                                        `Device "${rIds[index]}"` +
+                                        `marked for deletion as ` +
+                                        `it seems not to be running RAA anymore.`
+                                    );
+                                    this.removeUserByNotificationToken(rIds[index]);
+                                }
+                            }
+                        });
                     }
-                }
-            });
+                });
+        })(recipientIds);
     }
 }
 
