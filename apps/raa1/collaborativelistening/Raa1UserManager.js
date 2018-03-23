@@ -257,7 +257,7 @@ class Raa1UserManager extends UserManager {
                                     result.error.code ===
                                     'messaging/registration-token-not-registered') {
                                     AppContext.getInstance().Logger.info(
-                                        `Device "${rIds[index]}"` +
+                                        `Device "${rIds[index]}" ` +
                                         `marked for deletion as ` +
                                         `it seems not to be running RAA anymore.`
                                     );

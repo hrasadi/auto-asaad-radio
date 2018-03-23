@@ -1,6 +1,8 @@
 const DBProvider = require('./DBProvider');
 const DBObject = require('./DBObject');
 
+const moment = require('moment');
+
 class UserManager extends DBProvider {
     constructor(dbFileName) {
         super(dbFileName);
@@ -43,6 +45,15 @@ class UserManager extends DBProvider {
                 this.removeUserByNotificationToken(user.NotificationToken);
             }
             this.persist(user); // And save
+        }
+    }
+
+    reportUserActive(userId) {
+        let user = this.loadById(User, userId);
+        if (user) {
+            // User exists, update the last active timestamp to now
+            user.LastActive = moment().unix();
+            this.update(user);
         }
     }
 
