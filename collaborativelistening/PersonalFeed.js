@@ -51,7 +51,7 @@ class PersonalFeed extends Feed {
 
         let users = AppContext.getInstance().UserManager.entryListAll(User, {
             statement: 'LastActive > ?',
-            values: [self.UserManager.getUserActiveThreshold()],
+            values: [AppContext.getInstance().UserManager.getUserActiveThreshold()],
         });
         for (let user of users) {
             self.registerProgramForUser(program, targetDate, user);
