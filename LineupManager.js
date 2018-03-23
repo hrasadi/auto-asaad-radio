@@ -55,7 +55,14 @@ class LineupManager {
     publishLineup(targetDate) {
         let lineup = this.getLineup(targetDate);
         if (lineup) {
-            lineup.publish();
+            let publishedLineup = lineup.publish();
+
+            let lineupJSON = JSON.stringify(publishedLineup, null, 2);
+            if (!AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
+                fs.writeFileSync(this.getPublishedLineupFilePath(targetDate), lineupJSON);
+            } else {
+                AppContext.getInstance().Logger.debug(lineupJSON);
+            }
         } else {
             throw Error('Lineup not found for date ' + targetDate);
         }
@@ -100,6 +107,15 @@ class LineupManager {
             '/run/lineup/' +
             this.getLineupFileName(targetDate) +
             '.json'
+        );
+    }
+
+    getPublishedLineupFilePath(targetDate) {
+        return (
+            AppContext.getInstance().CWD +
+            '/run/lineup/' +
+            this.getLineupFileName(targetDate) +
+            '.json.published'
         );
     }
 

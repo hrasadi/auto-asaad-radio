@@ -198,13 +198,21 @@ class Lineup extends Entity {
     /**
      * The compiled program is ready to be published. We publish
      * our content before populating the live stream.
+     * @return {Lineup} the published lineup for later use in API
      */
     publish() {
         AppContext.getInstance().Logger.info('Publishing lineup for ' + this._lineupId);
 
+        let publishedLineup = new Lineup(this);
+
+        let boxes = [];
         for (let box of this.Boxes) {
-            box.publish();
+            let b = box.publish();
+            if (b) {
+                boxes.push(b);
+            }
         }
+        publishedLineup.Boxes = boxes;
 
         // commit all publishers
         for (let publisherName in AppContext.getInstance('LineupGenerator').Publishers) {
@@ -226,6 +234,8 @@ class Lineup extends Entity {
                 );
             }
         }
+
+        return publishedLineup;
     }
 
     /**

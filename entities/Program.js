@@ -427,7 +427,7 @@ class Program extends BaseProgram {
             !this.Publishing.Archive &&
             this.Publishing.CollaborativeListeningFeed === 'None'
         ) {
-            return;
+            return null;
         }
 
         let programToPublish = AppContext.getInstance().ObjectBuilder.buildOfType(
@@ -513,6 +513,8 @@ class Program extends BaseProgram {
                     `${programToPublish.CanonicalIdPath} is in personal feed.`);
             }
         }
+
+        return programToPublish;
     }
 
     // Should be called after modifying the clips (e.g. addClip());

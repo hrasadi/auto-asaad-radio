@@ -201,9 +201,21 @@ class Box extends BaseBox {
     }
 
     publish() {
+        let publishedBox = new Box(this);
+
+        let programs = [];
         for (let program of this.Programs) {
-            program.publish();
+            let publishedProgram = program.publish();
+            if (publishedProgram) {
+                programs.push(publishedProgram);
+            }
         }
+        publishedBox.Programs = programs;
+
+        if (publishedBox.Programs.length > 0) {
+            return publishedBox;
+        }
+        return null;
     }
 
     readjustTiming() {
