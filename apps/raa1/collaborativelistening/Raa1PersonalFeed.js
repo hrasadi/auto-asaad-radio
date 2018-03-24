@@ -16,6 +16,7 @@ class Raa1PersonalFeed extends PersonalFeed {
             feedEntry.UserId,
             message,
             feedEntry,
+            program,
             'Personal'
         );
     }

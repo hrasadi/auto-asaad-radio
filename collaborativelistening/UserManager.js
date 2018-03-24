@@ -181,6 +181,14 @@ class User extends DBObject {
         this._notifyOnPersonalProgram = value;
     }
 
+    get NotificationExcludedPersonalPrograms() {
+        return this.getOrElse(this._notificationExcludedPersonalPrograms, null);
+    }
+
+    set NotificationExcludedPersonalPrograms(value) {
+        this._notificationExcludedPersonalPrograms = value;
+    }
+
     get NotifyOnPublicProgram() {
         return this.getOrElse(this._notifyOnPublicProgram, 1);
     }

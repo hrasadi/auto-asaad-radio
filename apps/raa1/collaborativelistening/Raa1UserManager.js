@@ -60,7 +60,7 @@ class Raa1UserManager extends UserManager {
         });
     }
 
-    notifyUser(userId, alert, feedEntry, entryType) {
+    notifyUser(userId, alert, feedEntry, program, entryType) {
         let requiredNotificationPermission = RequiredNotificationPermission[entryType];
         // Notify iOS
         let iosUsers = this.entryListAll(User, {
@@ -70,6 +70,17 @@ class Raa1UserManager extends UserManager {
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.iOS],
         });
+        if (entryType == 'Personal') {
+            iosUsers = iosUsers.filter((user) => {
+                if (user.NotificationExcludedPersonalPrograms) {
+                    let excluded = JSON.parse(user.NotificationExcludedPersonalPrograms);
+                    if (excluded[program.ProgramId]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
         if (iosUsers.length > 0) {
             this.notifyAPNS(
                 iosUsers.map((user) => user.NotificationToken),
@@ -95,6 +106,17 @@ class Raa1UserManager extends UserManager {
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.Android],
         });
+        if (entryType == 'Personal') {
+            fcmUsers = fcmUsers.filter((user) => {
+                if (user.NotificationExcludedPersonalPrograms) {
+                    let excluded = JSON.parse(user.NotificationExcludedPersonalPrograms);
+                    if (excluded[program.ProgramId]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
         if (fcmUsers.length > 0) {
             this.notifyFCM(
                 fcmUsers.map((user) => user.NotificationToken),
