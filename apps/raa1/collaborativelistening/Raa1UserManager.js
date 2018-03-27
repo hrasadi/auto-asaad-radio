@@ -70,7 +70,7 @@ class Raa1UserManager extends UserManager {
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.iOS],
         });
-        if (entryType == 'Personal') {
+        if (entryType === 'Personal') {
             iosUsers = iosUsers.filter((user) => {
                 if (user.NotificationExcludedPersonalPrograms) {
                     let excluded = JSON.parse(user.NotificationExcludedPersonalPrograms);
@@ -106,7 +106,7 @@ class Raa1UserManager extends UserManager {
                 ' and NotificationToken != ""',
             values: [userId, DeviceTypeEnum.Android],
         });
-        if (entryType == 'Personal') {
+        if (entryType === 'Personal') {
             fcmUsers = fcmUsers.filter((user) => {
                 if (user.NotificationExcludedPersonalPrograms) {
                     let excluded = JSON.parse(user.NotificationExcludedPersonalPrograms);

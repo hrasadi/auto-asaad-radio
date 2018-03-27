@@ -19,35 +19,17 @@ class PublicFeed extends Feed {
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
-                'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
+                'Program TEXT, ReleaseTimestamp REAL,' +
                 'ExpirationTimestamp REAL, UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS publicfeedentry_id_idx ' +
                                                             'ON PublicFeedEntry(Id)');
-
-        this._db.runSync(
-            'CREATE TABLE IF NOT EXISTS UPVOTES ' +
-                '(UserId TEXT, ' +
-                'ProgramId TEXT, Timestamp REAL, ' +
-                'PRIMARY KEY(UserId, ProgramId), ' +
-                'FOREIGN KEY(UserId) REFERENCES USER(Id), ' +
-                'UNIQUE(UserId), UNIQUE(ProgramId))'
-        );
-
         if (this._historyProdiver) {
             this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS PUBLICFEEDENTRY ' +
                     '(Id TEXT PRIMARY_KEY, ' +
                     'Program TEXT, Upvotes INTEGER, ReleaseTimestamp REAL,' +
                     'ExpirationTimestamp REAL, UNIQUE(Id))'
-            );
-            this._historyProdiver._db.runSync(
-                'CREATE TABLE IF NOT EXISTS UPVOTES ' +
-                    '(UserId TEXT ,' +
-                    'ProgramId TEXT, Timestamp REAL,' +
-                    'PRIMARY KEY(UserId, ProgramId), ' +
-                    'FOREIGN KEY(UserId) REFERENCES USER(Id), ' +
-                    'UNIQUE(UserId), UNIQUE(ProgramId))'
             );
         }
 
@@ -94,13 +76,6 @@ class PublicFeed extends Feed {
         }
     }
 
-    upvoteProgram(programId, userId) {
-        // TODO:
-        AppContext.getInstance().Logger.debug(
-            'Upvote program Id ' + programId + ' by user ' + userId
-        );
-    }
-
     renderFeed() {
         let now = DateUtils.getEpochSeconds(moment());
         return this.entryListAll(PublicFeedEntry, {
@@ -135,14 +110,6 @@ class PublicFeedEntry extends FeedEntry {
             this._id = Buffer.from(value.CanonicalIdPath).toString('base64');
             this._program = JSON.stringify(value);
         }
-    }
-
-    get Upvotes() {
-        return this._upvotes;
-    }
-
-    set Upvotes(value) {
-        this._upvotes = value;
     }
 }
 
