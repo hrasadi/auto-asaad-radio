@@ -62,9 +62,15 @@ class Raa1ProgramMigrator extends AppContext {
             }
         } else { // lineup V2
             for (let box of lineup.Boxes) {
-                for (let program of box.Programs) {
-                    if (program.Id === this._programName) {
-                        return program;
+                if (box.BoxId) { // Normal box
+                    for (let program of box.Programs) {
+                        if (program.Id === this._programName) {
+                            return program;
+                        }
+                    }
+                } else { // standalone program
+                    if (box.Id === this._programName) {
+                        return box; // This is actually a program!
                     }
                 }
             }
