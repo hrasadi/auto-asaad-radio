@@ -1,9 +1,18 @@
 const Logger = require('../../../logger');
 const AppContext = require('../../../AppContext');
 
+const Raa1ArchivePublisher = require('../publishers/Raa1ArchivePublisher');
+const Raa1ClipPublisher = require('../publishers/Raa1ClipPublisher');
+
+const LiquidsoapProgram = require('../../../liquidsoap/LiquidsoapProgram');
+
+const ProgramInfoDirectory =
+    require('../../../entities/programinfo/ProgramInfoDirectory');
+
 const program = require('commander');
 const path = require('path');
 const fs = require('fs');
+const moment = require('moment');
 
 /**
  * This script extracts all episodes from a given program from radio V1 and
@@ -16,6 +25,7 @@ class Raa1ProgramMigrator extends AppContext {
         this._oldLineupsPath = program.args[0];
         this._programName = program.args[1];
         this._confFilePath = program.args[2];
+        this._pinfoDirectoryFilePath = program.args[3];
 
         this._productionMode = process.env.NODE_ENV == 'production' ? true : false;
 
@@ -23,6 +33,21 @@ class Raa1ProgramMigrator extends AppContext {
 
         let myName = path.basename(__filename, '.js');
         this._logger = new Logger(this._cwd + '/run/logs/' + myName + '.log');
+
+        this._archivePublisher = new Raa1ArchivePublisher();
+        this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
+        try {
+            this._pinfoDirectory = new ProgramInfoDirectory(
+                JSON.parse(fs.readFileSync(this._pinfoDirectoryFilePath))
+            );
+        } catch (e) {
+            this.Logger.error(
+                'Error parsing program info directory file.' +
+                ' Inner exception is: ' +
+                e.stack
+            );
+            process.exit(1);
+        }
     }
 
     init() {
@@ -34,11 +59,12 @@ class Raa1ProgramMigrator extends AppContext {
             let program = this.checkProgramAired(lineupFilePath);
             if (program) {
                 // 3- Add it to archive (only if) it is not already added
-                console.log(program);
+                this.publishProgramToArchive(program);
             }
         }
         // 4- Merge with current archive
         // 5- Add handle to program directory if needed
+        // TODO: commit
     }
 
     listOldLineupFiles() {
@@ -77,6 +103,59 @@ class Raa1ProgramMigrator extends AppContext {
         }
         return null;
     }
+
+    publishProgramToArchive(program) {
+        // Build a program in V3 format
+        let programToPublish = new LiquidsoapProgram();
+
+        programToPublish.Id = program.Id;
+        programToPublish.Title = program.Title;
+
+        // infer Subtitle
+        programToPublish._subtitle = '';
+        if (program.PreShow) {
+            program._subtitle += program.Clips.map(
+                (clip) => clip.Description
+            ).join('؛ ') + '؛ ';
+        }
+        programToPublish._subtitle += program.Clip.map(
+            (clip) => clip.Description
+        ).filter((description) => {
+            if (description) { // filter out nulls
+                return true;
+            }
+            return false;
+        }).join('؛ ');
+
+
+        if (this.PreShow) {
+            let preshowPublicClip =
+                this._clipPublisher.getPublicClip(this.PreShow.Clips, 'MainClip');
+            programToPublish.PreShow.Clips = [preshowPublicClip];
+
+            if (this.PreShow.FillerClip) {
+                let preshowPublicFillerClip =
+                    this._clipPublisher.getPublicClip(
+                        [this.PreShow.FillerClip],
+                        'MainClip'
+                    );
+                programToPublish.PreShow.FillerClip = preshowPublicFillerClip;
+            }
+        }
+
+        let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
+
+        let showPublicClip = this._clipPublisher.getPublicClip(
+            this.Show.Clips,
+            this.Publishing.PublicClipNamingStrategy
+        );
+        programToPublish.Show.Clips = [showPublicClip];
+
+        this._archivePublisher.publish(
+            programToPublish,
+            actualPublishDate
+        );
+    }
 }
 
 /* === Entry Point === */
@@ -84,8 +163,8 @@ program.version('1.0.0').parse(process.argv);
 
 if (program.args.length < 3) {
     console.log(
-        'Usage: [NODE_ENV=production] node migrate-program-archive.js '+
-                    '{old-lineups-path} {program-name} {config-file}'
+        'Usage: [NODE_ENV=production] node migrate-program-archive.js ' +
+        '{old-lineups-path} {program-name} {config-file} {pinfo-directory-file-path}'
     );
     process.exit(1);
 }
