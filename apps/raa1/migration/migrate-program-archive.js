@@ -121,11 +121,11 @@ class Raa1ProgramMigrator extends AppContext {
         // infer Subtitle
         programToPublish._subtitle = '';
         if (program.PreShow) {
-            program._subtitle += program.Clips.map(
+            program._subtitle += program.PreShow.Clips.map(
                 (clip) => clip.Description
             ).join('؛ ') + '؛ ';
         }
-        programToPublish._subtitle += program.Clip.map(
+        programToPublish._subtitle += program.Show.Clips.map(
             (clip) => clip.Description
         ).filter((description) => {
             if (description) { // filter out nulls
