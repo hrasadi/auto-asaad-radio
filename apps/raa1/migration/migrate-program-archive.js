@@ -7,6 +7,7 @@ const Raa1ClipPublisher = require('../publishers/Raa1ClipPublisher');
 const LiquidsoapProgram = require('../../../liquidsoap/LiquidsoapProgram');
 const LiquidsoapMedia = require('../../../liquidsoap/LiquidsoapMedia');
 
+const Show = require('../../../entities/Show').Show;
 const Clip = require('../../../entities/Clip').Clip;
 
 const ObjectBuilder = require('../../../entities/ObjectBuilder');
@@ -130,6 +131,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
         programToPublish.Id = program.Id;
         programToPublish.Title = program.Title;
+        programToPublish.Show = new Show();
 
         // infer Subtitle
         programToPublish._subtitle = '';
