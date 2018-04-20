@@ -23,7 +23,7 @@ const moment = require('moment');
  * This script extracts all episodes from a given program from radio V1 and
  * builds/rebuilds archive entries for it. Also updates the program directory
  */
-class Raa1ProgramMigrator extends LineupGenerator {
+class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
     constructor(program) {
         super();
 
@@ -188,4 +188,4 @@ if (program.args.length < 3) {
     process.exit(1);
 }
 
-new Raa1ProgramMigrator(program).init();
+new Raa1ProgramMigrationLineupGenerator(program).init();
