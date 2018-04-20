@@ -69,6 +69,8 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
     }
 
     init() {
+        this._lineupManager.init(this._conf.LineupTemplate);
+
         // We do the following:
         // 1- Open all lineup files (in order of creation)
         let oldLineupFilesPaths = this.listOldLineupFiles();
