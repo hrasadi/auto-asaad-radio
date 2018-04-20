@@ -125,7 +125,7 @@ class Raa1ProgramMigrator extends AppContext {
                 (clip) => clip.Description
             ).join('؛ ') + '؛ ';
         }
-        programToPublish._subtitle += program.Clips.map(
+        programToPublish._subtitle += program.Show.Clips.map(
             (clip) => clip.Description
         ).filter((description) => {
             if (description) { // filter out nulls
