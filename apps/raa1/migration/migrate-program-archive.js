@@ -160,6 +160,8 @@ class Raa1ProgramMigrator extends AppContext {
             v3Media.Description = clip.Description;
 
             v3Clip.Media = v3Media;
+
+            return v3Clip;
         });
 
         let showPublicClip = this._clipPublisher.getPublicClip(
