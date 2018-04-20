@@ -5,9 +5,11 @@ const Raa1ArchivePublisher = require('../publishers/Raa1ArchivePublisher');
 const Raa1ClipPublisher = require('../publishers/Raa1ClipPublisher');
 
 const LiquidsoapProgram = require('../../../liquidsoap/LiquidsoapProgram');
+const LiquidsoapMedia = require('../../../liquidsoap/LiquidsoapMedia');
 
-const Media = require('../../../liquidsoap/LiquidsoapMedia');
 const Clip = require('../../../entities/Clip').Clip;
+
+const ObjectBuilder = require('../../../entities/ObjectBuilder');
 
 const ProgramInfoDirectory =
     require('../../../entities/programinfo/ProgramInfoDirectory');
@@ -43,6 +45,12 @@ class Raa1ProgramMigrator extends AppContext {
             this.Logger.error('Error parsing config file. Inner exception is: ' + e);
             process.exit(1);
         }
+
+        this._objectBuilder = new ObjectBuilder({
+            Program: LiquidsoapProgram,
+            Media: LiquidsoapMedia,
+        });
+
 
         this._archivePublisher = new Raa1ArchivePublisher();
         this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
@@ -147,7 +155,7 @@ class Raa1ProgramMigrator extends AppContext {
         let showClips = program.Show.Clips.map((clip) => {
             let v3Clip = new Clip();
 
-            let v3Media = new Media(null, v3Clip);
+            let v3Media = new LiquidsoapMedia(null, v3Clip);
             v3Media.Path = clip.Path;
             v3Media.Description = clip.Description;
 
