@@ -34,6 +34,13 @@ class Raa1ProgramMigrator extends AppContext {
         let myName = path.basename(__filename, '.js');
         this._logger = new Logger(this._cwd + '/run/logs/' + myName + '.log');
 
+        try {
+            this._conf = JSON.parse(fs.readFileSync(this._confFilePath));
+        } catch (e) {
+            this.Logger.error('Error parsing config file. Inner exception is: ' + e);
+            process.exit(1);
+        }
+
         this._archivePublisher = new Raa1ArchivePublisher();
         this._clipPublisher = new Raa1ClipPublisher(this._conf.Credentials);
         try {
