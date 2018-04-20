@@ -54,18 +54,18 @@ class Raa1ProgramMigrator extends AppContext {
 
     checkProgramAired(lineupFilePath) {
         let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf-8'));
-        if (lineup.Boxes) {
+        if (!lineup.Boxes) { // lineup V1
+            for (let program of lineup.Programs) {
+                if (program.Id === this._programName) {
+                    return program;
+                }
+            }
+        } else { // lineup V2
             for (let box of lineup.Boxes) {
                 for (let program of box.Programs) {
                     if (program.Id === this._programName) {
                         return program;
                     }
-                }
-            }
-        } else { // lineup V1
-            for (let program of lineup.Programs) {
-                if (program.Id === this._programName) {
-                    return program;
                 }
             }
         }
