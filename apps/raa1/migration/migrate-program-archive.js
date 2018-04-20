@@ -6,6 +6,9 @@ const Raa1ClipPublisher = require('../publishers/Raa1ClipPublisher');
 
 const LiquidsoapProgram = require('../../../liquidsoap/LiquidsoapProgram');
 
+const Media = require('../../../liquidsoap/LiquidsoapMedia');
+const Clip = require('../../../entities/Clip').Clip;
+
 const ProgramInfoDirectory =
     require('../../../entities/programinfo/ProgramInfoDirectory');
 
@@ -136,24 +139,23 @@ class Raa1ProgramMigrator extends AppContext {
 
 
         if (this.PreShow) {
-            let preshowPublicClip =
-                this._clipPublisher.getPublicClip(program.PreShow.Clips, 'MainClip');
-            programToPublish.PreShow.Clips = [preshowPublicClip];
-
-            if (program.PreShow.FillerClip) {
-                let preshowPublicFillerClip =
-                    this._clipPublisher.getPublicClip(
-                        [program.PreShow.FillerClip],
-                        'MainClip'
-                    );
-                programToPublish.PreShow.FillerClip = preshowPublicFillerClip;
-            }
+            this._logger.error('Hey!! Why are we migrating a program with prewshow?');
         }
 
         let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
 
+        let showClips = program.Show.Clips.map((clip) => {
+            let v3Clip = new Clip();
+
+            let v3Media = new Media(null, v3Clip);
+            v3Media.Path = clip.Path;
+            v3Media.Description = clip.Description;
+
+            v3Clip.Media = v3Media;
+        });
+
         let showPublicClip = this._clipPublisher.getPublicClip(
-            program.Show.Clips,
+            showClips,
             'MainClip'
         );
         programToPublish.Show.Clips = [showPublicClip];
