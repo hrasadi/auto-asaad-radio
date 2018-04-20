@@ -125,7 +125,7 @@ class Raa1ProgramMigrator extends AppContext {
                 (clip) => clip.Description
             ).join('؛ ') + '؛ ';
         }
-        programToPublish._subtitle += program.Show.Clips.map(
+        programToPublish._subtitle += program.Clips.map(
             (clip) => clip.Description
         ).filter((description) => {
             if (description) { // filter out nulls
@@ -137,13 +137,13 @@ class Raa1ProgramMigrator extends AppContext {
 
         if (this.PreShow) {
             let preshowPublicClip =
-                this._clipPublisher.getPublicClip(this.PreShow.Clips, 'MainClip');
+                this._clipPublisher.getPublicClip(program.PreShow.Clips, 'MainClip');
             programToPublish.PreShow.Clips = [preshowPublicClip];
 
-            if (this.PreShow.FillerClip) {
+            if (program.PreShow.FillerClip) {
                 let preshowPublicFillerClip =
                     this._clipPublisher.getPublicClip(
-                        [this.PreShow.FillerClip],
+                        [program.PreShow.FillerClip],
                         'MainClip'
                     );
                 programToPublish.PreShow.FillerClip = preshowPublicFillerClip;
@@ -153,8 +153,8 @@ class Raa1ProgramMigrator extends AppContext {
         let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
 
         let showPublicClip = this._clipPublisher.getPublicClip(
-            this.Show.Clips,
-            this.Publishing.PublicClipNamingStrategy
+            program.Show.Clips,
+            'MainClip'
         );
         programToPublish.Show.Clips = [showPublicClip];
 
