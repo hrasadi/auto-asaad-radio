@@ -29,7 +29,7 @@ class Raa1ProgramMigrator extends AppContext {
 
         this._productionMode = process.env.NODE_ENV == 'production' ? true : false;
 
-        this._cwd = __dirname;
+        this._cwd = path.join(__dirname, '..');
 
         let myName = path.basename(__filename, '.js');
         this._logger = new Logger(this._cwd + '/run/logs/' + myName + '.log');
