@@ -1,5 +1,5 @@
 const Logger = require('../../../logger');
-const AppContext = require('../../../AppContext');
+const LineupGenerator = require('../../../LineupGenerator');
 
 const Raa1ArchivePublisher = require('../publishers/Raa1ArchivePublisher');
 const Raa1ClipPublisher = require('../publishers/Raa1ClipPublisher');
@@ -23,7 +23,7 @@ const moment = require('moment');
  * This script extracts all episodes from a given program from radio V1 and
  * builds/rebuilds archive entries for it. Also updates the program directory
  */
-class Raa1ProgramMigrator extends AppContext {
+class Raa1ProgramMigrator extends LineupGenerator {
     constructor(program) {
         super();
 
