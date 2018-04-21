@@ -11,37 +11,12 @@ const path = require('path');
 const md5 = require('md5');
 const uuid = require('uuid/v1');
 
-// A generator function runner
-let runGenerator = (generatorFunction, ...params) => {
-    // recursive next()
-    let next = (err, arg) => {
-        // if error - throw and error
-        if (err) return it.throw(err);
-        // cache it.next(arg) as result
-        let result = it.next(arg);
-        // are we done?
-        if (result.done) return;
-        // result.value should be our callback() function from the XHR request
-        if (typeof result.value == 'function') {
-            // call next() as the callback()
-            result.value(next);
-        } else {
-            // if the response isn't a function
-            // pass it to next()
-            next(null, result.value);
-        }
-    };
-    // create the iterator
-    let it = generatorFunction(...params);
-    return next();
-};
-
 class Raa1ClipPublisher extends ClipPublisher {
     constructor(credentialsConf) {
         super();
         // Initiate AWS connection
         if (credentialsConf.AWS) {
-            this._asyncS3 = new AsyncS3(
+            this._syncS3 = new SyncS3(
                 AppContext.getInstance().CWD + '/' + credentialsConf.AWS,
                 'vod.raa.media'
             );
@@ -75,30 +50,25 @@ class Raa1ClipPublisher extends ClipPublisher {
             wrappedClip.wrap();
             try {
                 let self = this;
-                // We want to block this part only, so we create surraounding closure
-                let uploadClosure = function* uploader(...[w]) {
-                    // We upload programs if we are wrapping something
-                    // (they might be updated). However, if original clip is
-                    // being uploaded, we should only care to upload when
-                    // the file does not exsit on S3.
-                    if (
-                        w.IsWrapped ||
-                        !(yield self._asyncS3.exists(w.RelativePath))
-                    ) {
-                        let clipData = fs.readFileSync(w.AbsolutePath);
-                        yield self._asyncS3.putObject(w.RelativePath, clipData);
-                        // Remove the temp file
-                        if (w.IsWrapped) {
-                             fs.unlinkSync(w.AbsolutePath);
-                        }
-                    } else {
-                        AppContext.getInstance()
-                            .Logger.debug(`Not uploading ${w.RelativePath}. ` +
-                                'Either not wrapped or already exists in S3.');
+                // We upload programs if we are wrapping something
+                // (they might be updated). However, if original clip is
+                // being uploaded, we should only care to upload when
+                // the file does not exsit on S3.
+                if (
+                    wrappedClip.IsWrapped ||
+                     !(self._syncS3.exists(wrappedClip.RelativePath))
+                ) {
+                    self._asyncS3.putObject(wrappedClip.RelativePath,
+                                                        wrappedClip.AbsolutePath);
+                    // Remove the temp file
+                    if (wrappedClip.IsWrapped) {
+                            fs.unlinkSync(wrappedClip.AbsolutePath);
                     }
-                };
-
-                runGenerator(uploadClosure, wrappedClip);
+                } else {
+                    AppContext.getInstance()
+                        .Logger.debug(`Not uploading ${wrappedClip.RelativePath}. ` +
+                            'Either not wrapped or already exists in S3.');
+                }
             } catch (e) {
                 throw Error('Error while uploading public clip. Inner exception is ' + e);
             }
@@ -246,9 +216,9 @@ class WrappedClip {
     }
 }
 
-class AsyncS3 {
+class SyncS3 {
     constructor(confPath, bucket) {
-        AWS.config.loadFromPath(confPath);
+        this._confPath = confPath;
         this._s3 = new AWS.S3();
         this._bucket = bucket;
     }
@@ -272,31 +242,26 @@ class AsyncS3 {
         };
     }
 
-    putObject(key, data) {
+    putObject(key, filePath) {
         let params = {
             Bucket: this._bucket,
             Key: key,
         };
 
-        params.Body = data;
         AppContext.getInstance().Logger.debug(
             `Attempting uploading to S3 with key: ${params.Key}`
         );
 
-        // The generator will block on this one
-        return (callback) => {
-            this._s3.putObject(params, (err, data) => {
-                if (err) {
-                    AppContext.getInstance().Logger.error(
-                        'Error uploading file to S3. Error is: ' + err
-                    );
-                } else {
-                    AppContext.getInstance().Logger.info(
-                        'Successfully uploaded item to S3: ' + key);
-                }
-                callback(err, data);
-            });
-        };
+        try {
+            execSync('node s3-put-object.js ' + this._confPath +
+                                this._bucket + ' ' + key + ' ' + filePath);
+            AppContext.getInstance().Logger.info(
+                                'Successfully uploaded item to S3: ' + key);
+        } catch (error) {
+            AppContext.getInstance().Logger.error(
+                'Error uploading file to S3. Error is: ' + error
+            );
+        }
     }
 }
 
