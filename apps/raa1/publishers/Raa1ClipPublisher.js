@@ -223,8 +223,8 @@ class SyncS3 {
 
     exists(key) {
         try {
-            execSync('node ' + __dirname + '/s3-check-exists.js ' + this._confPath +
-                                                    + ' ' + this._bucket + ' ' + key);
+            execSync('node ' + __dirname +
+                    `/s3-check-exists.js ${this._confPath} ${this._bucket} ${key}`);
             return true;
         } catch (error) {
             if (error.status == 1) {
@@ -246,8 +246,8 @@ class SyncS3 {
         );
 
         try {
-            execSync('node ' + __dirname + '/s3-put-object.js ' + this._confPath +
-                                ' ' + this._bucket + ' ' + key + ' ' + filePath);
+            execSync('node ' + __dirname +
+                `/s3-put-object.js ${this._confPath} ${this._bucket} ${key} ${filePath}`);
             AppContext.getInstance().Logger.info(
                                 'Successfully uploaded item to S3: ' + key);
         } catch (error) {

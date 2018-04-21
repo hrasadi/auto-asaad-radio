@@ -2,13 +2,12 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const program = require('commander');
 
-class S3ObjectUploader {
+class S3ObjectExistanceChecker {
     constructor(program) {
         AWS.config.loadFromPath(program.args[0]);
         this._s3 = new AWS.S3();
         this._bucket = program.args[1];
         this._key = program.args[2];
-        this._filePath = program.args[3];
     }
 
     init() {
@@ -44,4 +43,4 @@ if (program.args.length < 2) {
     process.exit(1);
 }
 
-new S3ObjectUploader(program).init();
+new S3ObjectExistanceChecker(program).init();
