@@ -77,10 +77,10 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         let oldLineupFilesPaths = this.listOldLineupFiles();
         // 2- Look for the appearance of the given program (but not replays)
         for (let lineupFilePath of oldLineupFilesPaths) {
-            let program = this.checkProgramAired(lineupFilePath);
-            if (program) {
+            let airing = this.findProgramAired(lineupFilePath);
+            if (airing) {
                 // 3- Add it to archive (only if) it is not already added
-                this.publishProgramToArchive(program);
+                this.publishProgramToArchive(airing);
             }
         }
         // 4- Merge with current archive
@@ -99,7 +99,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         return lineupFilePaths.sort();
     }
 
-    checkProgramAired(lineupFilePath) {
+    findProgramAired(lineupFilePath) {
         let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf-8'));
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
@@ -112,12 +112,13 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                 if (box.BoxId) { // Normal box
                     for (let program of box.Programs) {
                         if (program.Id === this._programName) {
-                            return program;
+                            return {'box': box, 'program': program};
                         }
                     }
                 } else { // standalone program
                     if (box.Id === this._programName) {
-                        return box; // This is actually a program!
+                        // This is actually a program!
+                        return {'box': null, 'program': box};
                     }
                 }
             }
@@ -125,13 +126,24 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         return null;
     }
 
-    publishProgramToArchive(program) {
-        // Build a program in V3 format
+    publishProgramToArchive(airing) {
+        // create V3 program
         let programToPublish = new LiquidsoapProgram();
+
+        let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
+
+        // Rebuild the canonicalIdPath
+        let canonicalIdPath = actualPublishDate + '/';
+        if (airing.box) {
+            canonicalIdPath = airing.box.Id + '/';
+        }
+        canonicalIdPath += airing.program.Id;
 
         programToPublish.Id = program.Id;
         programToPublish.Title = program.Title;
         programToPublish.Show = new Show();
+
+        programToPublish.CanonicalIdPath = canonicalIdPath;
 
         // infer Subtitle
         programToPublish._subtitle = '';
@@ -153,8 +165,6 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (this.PreShow) {
             this._logger.error('Hey!! Why are we migrating a program with prewshow?');
         }
-
-        let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
 
         let showClips = program.Show.Clips.map((clip) => {
             let v3Clip = new Clip();
@@ -178,6 +188,8 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             programToPublish,
             actualPublishDate
         );
+
+        console.log(programToPublish.Show.Clips[0].Media.Path);
     }
 }
 
