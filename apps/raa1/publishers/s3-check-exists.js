@@ -5,6 +5,7 @@ const program = require('commander');
 class S3ObjectUploader {
     constructor(program) {
         AWS.config.loadFromPath(program.args[0]);
+        this._s3 = new AWS.S3();
         this._bucket = program.args[1];
         this._key = program.args[2];
         this._filePath = program.args[3];

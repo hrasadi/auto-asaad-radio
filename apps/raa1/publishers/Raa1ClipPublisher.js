@@ -3,7 +3,6 @@ const Clip = require('../../../entities/Clip').Clip;
 const AppContext = require('../../../AppContext');
 const ClipPublisher = require('../../../publishers/ClipPublisher');
 
-const AWS = require('aws-sdk');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const {URL} = require('url');
@@ -219,7 +218,6 @@ class WrappedClip {
 class SyncS3 {
     constructor(confPath, bucket) {
         this._confPath = confPath;
-        this._s3 = new AWS.S3();
         this._bucket = bucket;
     }
 
