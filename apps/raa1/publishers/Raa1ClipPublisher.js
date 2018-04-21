@@ -58,7 +58,7 @@ class Raa1ClipPublisher extends ClipPublisher {
                     wrappedClip.IsWrapped ||
                      !(self._syncS3.exists(wrappedClip.RelativePath))
                 ) {
-                    self._asyncS3.putObject(wrappedClip.RelativePath,
+                    self._syncS3.putObject(wrappedClip.RelativePath,
                                                         wrappedClip.AbsolutePath);
                     // Remove the temp file
                     if (wrappedClip.IsWrapped) {
@@ -229,7 +229,11 @@ class SyncS3 {
                                                     this._bucket + ' ' + key);
             return true;
         } catch (error) {
-            return false;
+            if (error.status == 1) {
+                return false;
+            } else {
+                throw (error.stdout);
+            }
         }
     }
 
