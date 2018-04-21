@@ -80,7 +80,8 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             let airing = this.findProgramAired(lineupFilePath);
             if (airing) {
                 // 3- Add it to archive (only if) it is not already added
-                this.publishProgramToArchive(airing);
+                let programToArchive = this.publishProgramToArchive(airing);
+                console.log(JSON.stringify(programToArchive));
             }
         }
         // 4- Merge with current archive
@@ -189,7 +190,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             actualPublishDate
         );
 
-        console.log(programToPublish.Show.Clips[0].Media.Path);
+        return programToPublish;
     }
 }
 
