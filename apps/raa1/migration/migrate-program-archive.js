@@ -130,7 +130,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         // create V3 program
         let programToPublish = new LiquidsoapProgram();
 
-        let actualPublishDate = moment(program.StartTime).format('YYYY-MM-DD');
+        let actualPublishDate = moment(airing.program.StartTime).format('YYYY-MM-DD');
 
         // Rebuild the canonicalIdPath
         let canonicalIdPath = actualPublishDate + '/';
@@ -139,20 +139,20 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         }
         canonicalIdPath += airing.program.Id;
 
-        programToPublish.Id = program.Id;
-        programToPublish.Title = program.Title;
+        programToPublish.Id = airing.program.Id;
+        programToPublish.Title = airing.program.Title;
         programToPublish.Show = new Show();
 
         programToPublish.CanonicalIdPath = canonicalIdPath;
 
         // infer Subtitle
         programToPublish._subtitle = '';
-        if (program.PreShow) {
-            program._subtitle += program.PreShow.Clips.map(
+        if (airing.program.PreShow) {
+            programToPublish._subtitle += airing.program.PreShow.Clips.map(
                 (clip) => clip.Description
             ).join('؛ ') + '؛ ';
         }
-        programToPublish._subtitle += program.Show.Clips.map(
+        programToPublish._subtitle += airing.program.Show.Clips.map(
             (clip) => clip.Description
         ).filter((description) => {
             if (description) { // filter out nulls
@@ -166,7 +166,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             this._logger.error('Hey!! Why are we migrating a program with prewshow?');
         }
 
-        let showClips = program.Show.Clips.map((clip) => {
+        let showClips = airing.program.Show.Clips.map((clip) => {
             let v3Clip = new Clip();
 
             let v3Media = new LiquidsoapMedia(null, v3Clip);
