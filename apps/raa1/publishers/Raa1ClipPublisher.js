@@ -224,22 +224,13 @@ class SyncS3 {
     }
 
     exists(key) {
-        let params = {
-            Bucket: this._bucket,
-            Key: key,
-        };
-
-        return (callback) => {
-            this._s3.headObject(params, (err, metadata) => {
-                if (err && err.code === 'NotFound') {
-                    callback(null, false);
-                } else if (!err) {
-                    callback(null, true); // found
-                } else {
-                    callback(err); // error!
-                }
-            });
-        };
+        try {
+            execSync('node s3-check-exists.js ' + this._confPath +
+                                                    this._bucket + ' ' + key);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     putObject(key, filePath) {
