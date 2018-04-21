@@ -20,18 +20,10 @@ class Publisher {
             AppContext.getInstance().CWD + '/run/rss/' + feedName + '.xml';
 
         let feed = this.createFeedGenerator(feedName, feedMode);
-        if (this._rollingListsDict[feedName].getItems(forTargetDate)) {
-            for (
-                let i = 0;
-                i < this._rollingListsDict[feedName].getItems(forTargetDate).length;
-                i++
-            ) {
-                feed.item(
-                    this.getRSSItem(
-                        this._rollingListsDict[feedName].getItems(forTargetDate)[i],
-                        feedMode
-                    )
-                );
+        let rollingListItems = this._rollingListsDict[feedName].getItems(forTargetDate);
+        if (rollingListItems) {
+            for (let i = 0; i < rollingListItems.length; i++) {
+                feed.item(this.getRSSItem(rollingListItems[i], feedMode));
             }
         }
 

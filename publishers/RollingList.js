@@ -1,10 +1,14 @@
+const AppContext = require('../AppContext');
+
 const fs = require('fs');
+const moment = require('moment');
 
 /**
  * This class manages JSON array file, with a maximum number of entries
  */
 class RollingList {
-    constructor(feedName, filePrefix, maxItems = 20) {
+    constructor(feedName, filePrefix, maxItems = 20,
+        allowDuplicateItems = true, uniqueIdentifierDelegate = null) {
         this._feedName = feedName;
         this._filePrefix = filePrefix;
         this._listFilePath = this._filePrefix + '/' + this._feedName + '.json';
@@ -15,16 +19,90 @@ class RollingList {
         }
 
         this._uncommitedMap = {};
+
+        this._allowDuplicateItems = allowDuplicateItems;
+        if (!allowDuplicateItems) {
+            if (!uniqueIdentifierDelegate) {
+                throw Error('Item duplication is not allowed but ' +
+                    'unique identifier delegate.');
+            }
+            this._getUniqueIdentifier = uniqueIdentifierDelegate;
+            // From item Id to its appearance date in the archive
+            this._itemExistanceMap = {};
+        }
     }
 
     addItem(item, targetDate) {
         if (item) {
+            // Duplication?
+            if (!this._allowDuplicateItems) {
+                let duplicationRemovalResult =
+                        this.removePossibleDuplicate(item, targetDate);
+                if (duplicationRemovalResult == 1) {
+                    // The new item is rejected
+                    return;
+                }
+            }
+
             if (!this._uncommitedMap[targetDate]) {
                 this._uncommitedMap[targetDate] = [];
             }
-
             this._uncommitedMap[targetDate].push(item);
+
+            // update the existance map
+            this._itemExistanceMap[this._getUniqueIdentifier(item)] = targetDate;
         }
+    }
+
+    removePossibleDuplicate(item, targetDate) {
+        let previousItemAppearanceDate =
+            this._itemExistanceMap[this._getUniqueIdentifier(item)];
+        if (previousItemAppearanceDate) {
+            // Remove the newer one;
+            if (moment(previousItemAppearanceDate).isBefore(moment(targetDate))) {
+                AppContext.getInstance().Logger.debug(
+                    `Item ${item} got rejected.` +
+                    'An older version of this item is published already'
+                );
+                // Reject the new item (there is an older version)
+                return 1;
+            } else {
+                // Remove the currently persisted version and save the new one
+                this.removeItem(item, targetDate);
+                AppContext.getInstance().Logger.debug(
+                    `Item ${item} overrides an already persisted version.`
+                );
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    removeItem(item, fromDate) {
+        // Search both history and uncommited map. It must be somewhere!
+        if (this._fullHistory[fromDate]) {
+            for (let i = 0; i < this._fullHistory[fromDate]; i++) {
+                if (this._getUniqueIdentifier(item) ===
+                    this._getUniqueIdentifier(this._fullHistory[fromDate][i])) {
+                    // Remove
+                    this._fullHistory[fromDate].splice(i, 1);
+                    return;
+                }
+            }
+        }
+        if (this._uncommitedMap[fromDate]) {
+            for (let i = 0; i < this._uncommitedMap[fromDate]; i++) {
+                if (
+                    this._getUniqueIdentifier(item) ===
+                    this._getUniqueIdentifier(this._uncommitedMap[fromDate][i])) {
+                    // Remove
+                    this._uncommitedMap[fromDate].splice(i, 1);
+                    return;
+                }
+            }
+        }
+        throw Error(`Data inconsistency detected! item ${item} must have ` +
+            `exists in history but we could not locate it for removal`);
     }
 
     loadHistroy() {
@@ -33,8 +111,25 @@ class RollingList {
                 this._fullHistory = JSON.parse(
                     fs.readFileSync(this._listFilePath, 'utf-8')
                 );
+                // rebuild the existance map
+                if (!this._allowDuplicateItems) {
+                    this.rebuildExistanceMap();
+                }
             } else {
                 this._fullHistory = {};
+            }
+        }
+    }
+
+    rebuildExistanceMap() {
+        for (let date of this._fullHistory) {
+            for (let item of this._fullHistory[date]) {
+                let duplicationRemovalResult = this.removePossibleDuplicate(item, date);
+                if (duplicationRemovalResult == 0 || duplicationRemovalResult == -1) {
+                    // 0: No duplicates. Add this item
+                    // -1: the other item removed. The new one should be referenced;
+                    this._itemExistanceMap[this._getUniqueIdentifier(item)] = date;
+                } // Else, this item is a duplicate, nothing to add to the map
             }
         }
     }

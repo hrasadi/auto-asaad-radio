@@ -30,7 +30,8 @@ class Raa1ArchivePublisher extends ArchivePublisher {
             this._rollingListsDict[program.ProgramId] =
                     new RollingList(program.ProgramId,
                                         AppContext.getInstance().CWD + '/run/archive/',
-                                        'unlimited');
+                                        'unlimited', false, (program) =>
+                                                program.Show.Clips[0].Media.Path);
         }
 
         this._rollingListsDict[program.ProgramId].addItem(program, targetDate);
