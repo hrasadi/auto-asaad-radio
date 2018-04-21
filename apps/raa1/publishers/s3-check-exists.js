@@ -1,5 +1,4 @@
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const program = require('commander');
 
 class S3ObjectExistanceChecker {
@@ -15,8 +14,6 @@ class S3ObjectExistanceChecker {
             Bucket: this._bucket,
             Key: this._key,
         };
-
-        params.Body = fs.readFileSync(this._filePath);
 
         this._s3.headObject(params, (err, metadata) => {
             if (err && err.code === 'NotFound') {
