@@ -37,9 +37,9 @@ class S3ObjectUploader {
 /* === Entry Point === */
 program.version('1.0.0').parse(process.argv);
 
-if (program.args.length < 3) {
+if (program.args.length < 2) {
     console.log(
-        'Usage: node s3-put-object.js {conf-path} {bucket} {key}'
+        'Usage: node s3-check-exists.js {conf-path} {bucket} {key}'
     );
     process.exit(1);
 }
