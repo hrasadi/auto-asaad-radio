@@ -1,6 +1,6 @@
-import AWS from 'aws-sdk';
-import fs from 'fs';
-import program from 'commander';
+const AWS = require('aws-sdk');
+const fs = require('fs');
+const program = require('commander');
 
 class S3ObjectUploader {
     constructor(program) {
