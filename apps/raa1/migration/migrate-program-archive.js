@@ -132,7 +132,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
         // extract publish date from lineup name
         let matches = (/.*-([0-9]{4})-([0-9]{2})-([0-9]{2})\.json$/g).exec(airing.lineup);
-        let actualPublishDate = matches[0] + '-' + matches[1] + '-' + matches[2];
+        let actualPublishDate = matches[1] + '-' + matches[2] + '-' + matches[3];
 
         // Rebuild the canonicalIdPath
         let canonicalIdPath = actualPublishDate + '/';

@@ -61,7 +61,7 @@ class RollingList {
             // Remove the newer one;
             if (moment(previousItemAppearanceDate).isBefore(moment(targetDate))) {
                 AppContext.getInstance().Logger.debug(
-                    `Item ${JSON.stringify(item)} got rejected.` +
+                    `Item ${JSON.stringify(item)} got rejected. ` +
                     'An older version of this item is published already'
                 );
                 // Reject the new item (there is an older version)

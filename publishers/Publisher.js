@@ -147,7 +147,7 @@ class Publisher {
         rssFeedItem.custom_elements.push(itunesSubtitleElement);
 
         let itunesDurationElement = {};
-        let pduration = moment.duration(program.Metadata.Duration, 'seconds');
+        let pduration = moment.duration(program.Show.Clips[0].Media.Duration, 'seconds');
         itunesDurationElement['itunes:duration'] =
             Math.floor(pduration.asMinutes()) + ':' + pduration.seconds();
         rssFeedItem.custom_elements.push(itunesDurationElement);
