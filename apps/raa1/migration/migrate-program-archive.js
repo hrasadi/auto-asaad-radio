@@ -32,6 +32,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         this._programName = program.args[1];
         this._confFilePath = program.args[2];
         this._pinfoDirectoryFilePath = program.args[3];
+        this._migrateUntilDate = program.args[4];
 
         this._productionMode = process.env.NODE_ENV == 'production' ? true : false;
 
@@ -99,11 +100,21 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
     }
 
     findProgramAired(lineupFilePath) {
+        // extract publish date from lineup name
+        let matches = (/.*-([0-9]{4})-([0-9]{2})-([0-9]{2})\.json$/g)
+                                                        .exec(lineupFilePath);
+        let lineupDate = matches[1] + '-' + matches[2] + '-' + matches[3];
+
+        if (moment(this._migrateUntilDate).isAfter(moment(lineupDate))) {
+            // Not our concern
+            return;
+        }
+
         let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf-8'));
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
                 if (program.Id === this._programName) {
-                    return {'box': null, 'program': program, 'lineup': lineupFilePath};
+                    return {'box': null, 'program': program, 'lineupDate': lineupDate};
                 }
             }
         } else { // lineup V2
@@ -112,13 +123,13 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                     for (let program of box.Programs) {
                         if (program.Id === this._programName) {
                             return {'box': box, 'program': program,
-                                            'lineup': lineupFilePath};
+                                            'lineupDate': lineupDate};
                         }
                     }
                 } else { // standalone program
                     if (box.Id === this._programName) {
                         // This is actually a program!
-                        return {'box': null, 'program': box, 'lineup': lineupFilePath};
+                        return {'box': null, 'program': box, 'lineupDate': lineupDate};
                     }
                 }
             }
@@ -130,9 +141,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         // create V3 program
         let programToPublish = new LiquidsoapProgram();
 
-        // extract publish date from lineup name
-        let matches = (/.*-([0-9]{4})-([0-9]{2})-([0-9]{2})\.json$/g).exec(airing.lineup);
-        let actualPublishDate = matches[1] + '-' + matches[2] + '-' + matches[3];
+        let actualPublishDate = airing.lineupDate;
 
         // Rebuild the canonicalIdPath
         let canonicalIdPath = actualPublishDate + '/';
@@ -198,10 +207,11 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 /* === Entry Point === */
 program.version('1.0.0').parse(process.argv);
 
-if (program.args.length < 3) {
+if (program.args.length < 4) {
     console.log(
         'Usage: [NODE_ENV=production] node migrate-program-archive.js ' +
-        '{old-lineups-path} {program-name} {config-file} {pinfo-directory-file-path}'
+        '{old-lineups-path} {program-name} {config-file} {pinfo-directory-file-path} ' +
+        '{migrate-until-date}'
     );
     process.exit(1);
 }
