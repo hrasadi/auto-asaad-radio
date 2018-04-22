@@ -225,6 +225,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
 const excludeClipPatterns = [
     '/home/ubuntu/media/radio-auto-asaad.mp3',
+    '/home/ubuntu/media/blank.mp3',
     '/Specials/',
 ];
 
