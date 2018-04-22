@@ -142,7 +142,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
     removeExcludedClips(program) {
         // remove unwanted clips
-        for (let i = 0; i < program.Show.Clips.length; i++) {
+        for (let i = program.Show.Clips.length - 1; i >= 0; i--) {
             for (let excludePattern of excludeClipPatterns) {
                 if (program.Show.Clips[i].Path.includes(excludePattern)) {
                     program.Show.Clips.splice(i, 1);
