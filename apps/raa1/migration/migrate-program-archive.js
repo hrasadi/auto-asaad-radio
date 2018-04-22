@@ -114,15 +114,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
                 if (program.Id === this._programName) {
-                    // remove unwanted clips
-                    for (let i = 0; i < program.Show.Clips.length; i++) {
-                        // idea is that actual clips have the name of
-                        // program in their name
-                        if (!program.Show.Clips[i].Path.includes(this._programName)) {
-                            // Remove
-                            program.Show.Clips.splice(i, 1);
-                        }
-                    }
+                    this.removeExcludedClips(program);
                     return {'box': null, 'program': program, 'lineupDate': lineupDate};
                 }
             }
@@ -131,12 +123,14 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                 if (box.BoxId) { // Normal box
                     for (let program of box.Programs) {
                         if (program.Id === this._programName) {
+                            this.removeExcludedClips(program);
                             return {'box': box, 'program': program,
                                             'lineupDate': lineupDate};
                         }
                     }
                 } else { // standalone program
                     if (box.Id === this._programName) {
+                        this.removeExcludedClips(program);
                         // This is actually a program!
                         return {'box': null, 'program': box, 'lineupDate': lineupDate};
                     }
@@ -144,6 +138,17 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             }
         }
         return null;
+    }
+
+    removeExcludedClips(program) {
+        // remove unwanted clips
+        for (let i = 0; i < program.Show.Clips.length; i++) {
+            for (let excludePattern of excludeClipPatterns) {
+                if (program.Show.Clips[i].Path.includes(excludePattern)) {
+                    program.Show.Clips.splice(i, 1);
+                }
+            }
+        }
     }
 
     publishProgramToArchive(airing) {
@@ -217,6 +222,11 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         return programToPublish;
     }
 }
+
+const excludeClipPatterns = [
+    '/home/ubuntu/media/radio-auto-asaad.mp3',
+    '/Specials/',
+];
 
 /* === Entry Point === */
 program.version('1.0.0').parse(process.argv);
