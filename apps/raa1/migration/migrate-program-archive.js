@@ -114,6 +114,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
                 if (program.Id === this._programName) {
+                    program.Show.Clips[0].IsMainClip = true;
                     return {'box': null, 'program': program, 'lineupDate': lineupDate};
                 }
             }
