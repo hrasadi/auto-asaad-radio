@@ -80,7 +80,7 @@ class RollingList {
 
     removeItem(item, fromDate) {
         // Search both history and uncommited map. It must be somewhere!
-        if (this._fullHistory[fromDate]) {
+        if (this._fullHistory && this._fullHistory[fromDate]) {
             for (let i = 0; i < this._fullHistory[fromDate]; i++) {
                 if (this._getUniqueIdentifier(item) ===
                     this._getUniqueIdentifier(this._fullHistory[fromDate][i])) {
@@ -90,7 +90,7 @@ class RollingList {
                 }
             }
         }
-        if (this._uncommitedMap[fromDate]) {
+        if (this._uncommitedMap && this._uncommitedMap[fromDate]) {
             for (let i = 0; i < this._uncommitedMap[fromDate]; i++) {
                 if (
                     this._getUniqueIdentifier(item) ===
