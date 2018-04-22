@@ -107,7 +107,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
         if (moment(this._migrateUntilDate).isSameOrAfter(moment(lineupDate))) {
             // Not our concern
-            return;
+            return null;
         }
 
         let lineup = JSON.parse(fs.readFileSync(lineupFilePath, 'utf-8'));
