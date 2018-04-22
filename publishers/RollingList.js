@@ -26,9 +26,9 @@ class RollingList {
                 throw Error('Item duplication is not allowed but ' +
                     'unique identifier delegate.');
             }
-            this._getUniqueIdentifier = uniqueIdentifierDelegate;
             // From item Id to its appearance date in the archive
             this._itemExistanceMap = {};
+            this._getUniqueIdentifier = uniqueIdentifierDelegate;
         }
     }
 
@@ -49,8 +49,10 @@ class RollingList {
             }
             this._uncommitedMap[targetDate].push(item);
 
-            // update the existance map
-            this._itemExistanceMap[this._getUniqueIdentifier(item)] = targetDate;
+            if (!this._allowDuplicateItems) {
+                // update the existance map
+                this._itemExistanceMap[this._getUniqueIdentifier(item)] = targetDate;
+            }
         }
     }
 
