@@ -146,6 +146,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
             for (let excludePattern of excludeClipPatterns) {
                 if (program.Show.Clips[i].Path.includes(excludePattern)) {
                     program.Show.Clips.splice(i, 1);
+                    break;
                 }
             }
         }
