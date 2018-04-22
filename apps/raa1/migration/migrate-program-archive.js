@@ -105,7 +105,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                                                         .exec(lineupFilePath);
         let lineupDate = matches[1] + '-' + matches[2] + '-' + matches[3];
 
-        if (moment(this._migrateUntilDate).isAfter(moment(lineupDate))) {
+        if (moment(this._migrateUntilDate).isSameOrAfter(moment(lineupDate))) {
             // Not our concern
             return;
         }
