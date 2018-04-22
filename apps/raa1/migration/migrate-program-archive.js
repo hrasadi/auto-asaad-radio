@@ -116,10 +116,9 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                 if (program.Id === this._programName) {
                     // remove unwanted clips
                     for (let i = 0; i < program.Show.Clips.length; i++) {
-                        if (
-                            program.Show.Clips[i].Path ===
-                            '/home/ubuntu/media/radio-auto-asaad.mp3'
-                        ) {
+                        // idea is that actual clips have the name of
+                        // program in their name
+                        if (!program.Show.Clips[i].Path.includes(this._programName)) {
                             // Remove
                             program.Show.Clips.splice(i, 1);
                         }
