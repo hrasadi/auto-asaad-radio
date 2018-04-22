@@ -111,12 +111,12 @@ class RollingList {
                 this._fullHistory = JSON.parse(
                     fs.readFileSync(this._listFilePath, 'utf-8')
                 );
-                // rebuild the existance map
-                if (!this._allowDuplicateItems) {
-                    this.rebuildExistanceMap();
-                }
             } else {
                 this._fullHistory = {};
+            }
+            // rebuild the existance map
+            if (!this._allowDuplicateItems) {
+                this.rebuildExistanceMap();
             }
         }
     }
