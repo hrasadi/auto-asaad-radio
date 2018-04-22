@@ -103,7 +103,7 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
                 if (program.Id === this._programName) {
-                    return program;
+                    return {'box': null, 'program': program, 'lineup': lineupFilePath};
                 }
             }
         } else { // lineup V2
@@ -111,13 +111,14 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
                 if (box.BoxId) { // Normal box
                     for (let program of box.Programs) {
                         if (program.Id === this._programName) {
-                            return {'box': box, 'program': program};
+                            return {'box': box, 'program': program,
+                                            'lineup': lineupFilePath};
                         }
                     }
                 } else { // standalone program
                     if (box.Id === this._programName) {
                         // This is actually a program!
-                        return {'box': null, 'program': box};
+                        return {'box': null, 'program': box, 'lineup': lineupFilePath};
                     }
                 }
             }
@@ -129,7 +130,9 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         // create V3 program
         let programToPublish = new LiquidsoapProgram();
 
-        let actualPublishDate = moment(airing.program.StartTime).format('YYYY-MM-DD');
+        // extract publish date from lineup name
+        let matches = (/.*-([0-9]{4})-([0-9]{2})-([0-9]{2})\.json$/g).exec(airing.lineup);
+        let actualPublishDate = matches[0] + '-' + matches[1] + '-' + matches[2];
 
         // Rebuild the canonicalIdPath
         let canonicalIdPath = actualPublishDate + '/';
