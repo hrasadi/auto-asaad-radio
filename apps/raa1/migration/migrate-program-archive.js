@@ -139,9 +139,9 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (airing.box) {
             canonicalIdPath = airing.box.BoxId + '/';
         }
-        canonicalIdPath += airing.program.ProgramId;
+        canonicalIdPath += airing.program.Id;
 
-        programToPublish.ProgramId = airing.program.ProgramId;
+        programToPublish.Id = airing.program.Id;
         programToPublish.Title = airing.program.Title;
         programToPublish.Show = new Show();
 
