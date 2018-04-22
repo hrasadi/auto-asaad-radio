@@ -122,7 +122,7 @@ class RollingList {
     }
 
     rebuildExistanceMap() {
-        for (let date of this._fullHistory) {
+        for (let date of Object.keys(this._fullHistory)) {
             for (let item of this._fullHistory[date]) {
                 let duplicationRemovalResult = this.removePossibleDuplicate(item, date);
                 if (duplicationRemovalResult == 0 || duplicationRemovalResult == -1) {
