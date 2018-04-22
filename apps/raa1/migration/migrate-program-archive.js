@@ -114,7 +114,16 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         if (!lineup.Boxes) { // lineup V1
             for (let program of lineup.Programs) {
                 if (program.Id === this._programName) {
-                    program.Show.Clips[0].IsMainClip = true;
+                    // remove unwanted clips
+                    for (let i = 0; i < program.Show.Clips.length; i++) {
+                        if (
+                            program.Show.Clips[i].Path ===
+                            '/home/ubuntu/media/radio-auto-asaad.mp3'
+                        ) {
+                            // Remove
+                            program.Show.Clips.splice(i, 1);
+                        }
+                    }
                     return {'box': null, 'program': program, 'lineupDate': lineupDate};
                 }
             }
@@ -189,6 +198,11 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
 
             return v3Clip;
         });
+
+        if (showClips.length != 1) {
+            console.log('It is suspicsious to have show with more than one ' +
+                    `clip for migration. Recheck ${JSON.stringify(programToPublish)}`);
+        }
 
         let showPublicClip = this._clipPublisher.getPublicClip(
             showClips,
