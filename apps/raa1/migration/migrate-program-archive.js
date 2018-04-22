@@ -137,11 +137,11 @@ class Raa1ProgramMigrationLineupGenerator extends LineupGenerator {
         // Rebuild the canonicalIdPath
         let canonicalIdPath = actualPublishDate + '/';
         if (airing.box) {
-            canonicalIdPath = airing.box.Id + '/';
+            canonicalIdPath = airing.box.BoxId + '/';
         }
-        canonicalIdPath += airing.program.Id;
+        canonicalIdPath += airing.program.ProgramId;
 
-        programToPublish.Id = airing.program.Id;
+        programToPublish.ProgramId = airing.program.ProgramId;
         programToPublish.Title = airing.program.Title;
         programToPublish.Show = new Show();
 
