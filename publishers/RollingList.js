@@ -62,7 +62,7 @@ class RollingList {
             if (moment(previousItemAppearanceDate).isBefore(moment(targetDate))) {
                 AppContext.getInstance().Logger.debug(
                     `Item ${JSON.stringify(item)} got rejected. ` +
-                    'An older version of this item is published already'
+                    'An older version of this item is published already!'
                 );
                 // Reject the new item (there is an older version)
                 return 1;
@@ -101,8 +101,8 @@ class RollingList {
                 }
             }
         }
-        throw Error(`Data inconsistency detected! item ${JSON.stringify(item)}` +
-             `must have exists in history but we could not locate it for removal`);
+        throw Error(`Data inconsistency detected! Item ${JSON.stringify(item)}` +
+             ` must have existed in history but we could not locate it for removal`);
     }
 
     loadHistroy() {
