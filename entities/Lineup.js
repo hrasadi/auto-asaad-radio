@@ -304,13 +304,26 @@ class Lineup extends Entity {
                             moment(this.Boxes[i - 1].EndTime)
                         )
                     ) {
-                        AppContext.getInstance().Logger.info(
-                            'Box ' +
-                            this.Boxes[i - 1].BoxId +
-                            ' will be splitted to wrap box ' +
-                            this.Boxes[i].BoxId
-                        );
-                        this.wrapBox(i, i - 1);
+                        if (
+                            moment(this.Boxes[i].StartTime).isSameOrBefore(
+                                moment(this.Boxes[i - 1].StartTime)
+                            )
+                        ) {
+                            let shiftAmount = moment(this.Boxes[i - 1].StartTime).diff(
+                                moment(this.Boxes[i].EndTime),
+                                'seconds'
+                            );
+
+                            this.shiftBoxDown(i - 1, shiftAmount);
+                        } else {
+                            AppContext.getInstance().Logger.info(
+                                'Box ' +
+                                this.Boxes[i - 1].BoxId +
+                                ' will be splitted to wrap box ' +
+                                this.Boxes[i].BoxId
+                            );
+                            this.wrapBox(i, i - 1);
+                        }
                     }
                 }
             }
