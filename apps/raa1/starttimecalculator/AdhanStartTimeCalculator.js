@@ -59,9 +59,16 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
             return this._timingsCache[md5(qs)];
         }
 
+        // let res = request(
+        //     'GET',
+        //     'http://api.aladhan.com' +
+        //     '/timingsByCity/' +
+        //     qs
+        // );
+
         let res = request(
             'GET',
-            'http://api.aladhan.com' +
+            'http://172.31.26.52' +
             '/timingsByCity/' +
             qs
         );
