@@ -68,7 +68,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
 
         let res = request(
             'GET',
-            'http://172.31.26.52:8001' +
+            'http://172.31.26.52:8001/v1' +
             '/timingsByCity/' +
             qs
         );
