@@ -46,10 +46,15 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         // There is a bug in aladhan API and that results in
         // errorneous city detection if there is space in city name
         // surround values in "" to workaround this.
+        // let qs = queryString.stringify({
+        //     country: `"${user.Country}"`,
+        //     state: `"${user.State}"`,
+        //     city: `"${user.City}"`,
+        //     method: this._adhanConf.CalculationMethod,
+        // });
         let qs = queryString.stringify({
-            country: `"${user.Country}"`,
-            state: `"${user.State}"`,
-            city: `"${user.City}"`,
+            latitude: `"${user.Latitude}"`,
+            longitude: `"${user.Longitude}"`,
             method: this._adhanConf.CalculationMethod,
         });
         qs = DateUtils.getEpochSeconds(
@@ -59,17 +64,10 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
             return this._timingsCache[md5(qs)];
         }
 
-        // let res = request(
-        //     'GET',
-        //     'http://api.aladhan.com' +
-        //     '/timingsByCity/' +
-        //     qs
-        // );
-
         let res = request(
             'GET',
-            'http://172.31.26.52:8001/v1' +
-            '/timingsByCity/' +
+            'http://api.aladhan.com' +
+            '/timings/' +
             qs
         );
 
