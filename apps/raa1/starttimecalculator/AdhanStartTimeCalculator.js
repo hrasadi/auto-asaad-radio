@@ -53,8 +53,8 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         //     method: this._adhanConf.CalculationMethod,
         // });
         let qs = queryString.stringify({
-            latitude: `"${user.Latitude}"`,
-            longitude: `"${user.Longitude}"`,
+            latitude: `${user.Latitude}`,
+            longitude: `${user.Longitude}`,
             method: this._adhanConf.CalculationMethod,
         });
         qs = DateUtils.getEpochSeconds(
