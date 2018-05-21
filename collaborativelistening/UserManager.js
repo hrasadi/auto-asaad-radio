@@ -61,7 +61,7 @@ class UserManager extends DBProvider {
         if (user) {
             // User exists, update the last active timestamp to now
             user.LastActive = moment().unix();
-            this.updateUser(user);
+            this.update(user);
         }
     }
 
@@ -92,7 +92,7 @@ class UserManager extends DBProvider {
     }
 
     updateUser(user) {
-        this.update(user);
+        this.update(new User(user));
     }
 
     getUser(userId) {
@@ -118,7 +118,7 @@ class UserManager extends DBProvider {
     getUserLocalityFromGoogle(user) {
         let qs = queryString.stringify({
             latlng: `${user.Latitude},${user.Longitude}`,
-            key: `${AppContext.Config.Credentials.CalculationMethod}`,
+            key: `${AppContext.getInstance().Config.Credentials.GoogleGeocodingAPIKey}`,
         });
 
         let res = request(
