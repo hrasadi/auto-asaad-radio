@@ -71,7 +71,7 @@ class PersonalFeed extends Feed {
         feedEntry.UserId = user.Id;
 
         // If users city is undetermied, try to find it out
-        AppContext.getInstance().UserManager.fixUserMissingData(user);
+        AppContext.getInstance().UserManager.fixMissingUserData(user);
 
         // Override program name if configured so
         let programTitle = program.Title;
