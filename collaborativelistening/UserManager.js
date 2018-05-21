@@ -1,7 +1,10 @@
+const AppContext = require('../AppContext');
 const DBProvider = require('./DBProvider');
 const DBObject = require('./DBObject');
 
 const moment = require('moment');
+const request = require('sync-request');
+const queryString = require('query-string');
 
 const USER_INACTIVITY_SECONDS_BEFORE_EXPIRATION = 15 * 24 * 3600; // 15 days
 
@@ -48,6 +51,9 @@ class UserManager extends DBProvider {
             }
             this.persist(user); // And save
         }
+
+        // In case location data is not complete, try to fix it.
+        this.fixMissingUserData(user);
     }
 
     reportUserActive(userId) {
@@ -55,6 +61,27 @@ class UserManager extends DBProvider {
         if (user) {
             // User exists, update the last active timestamp to now
             user.LastActive = moment().unix();
+            this.updateUser(user);
+        }
+    }
+
+    fixMissingUserData(user) {
+        if (!user.Latitude || !user.Longitude) {
+            // Users's GPS was off. Just use the defaults, nothing to do here
+            return;
+        }
+        if (!user.City) {
+            // Try to find city name using lat/long (ask Google Geocoding)
+            let city = null;
+            city = this.getUserLocalityFromGoogle(user);
+
+            if (city) {
+                user.City = city;
+            } else {
+                // City name could not be found, use a default string (e.g. 'Your City')
+                city = 'شهر شما';
+            }
+
             this.updateUser(user);
         }
     }
@@ -87,6 +114,36 @@ class UserManager extends DBProvider {
     // implemented in subclasses
     notifyUser(userId, alert, program) {}
     notifyAllUsers(alert, feedEntry, program, entryType) {}
+
+    getUserLocalityFromGoogle(user) {
+        let qs = queryString.stringify({
+            latlng: `${user.Latitude},${user.Longitude}`,
+            key: `${AppContext.Config.Credentials.CalculationMethod}`,
+        });
+
+        let res = request(
+            'GET',
+            'https://maps.googleapis.com/' +
+            '/maps/api/geocode/json?' +
+            qs
+        );
+
+        if (res.statusCode > 400) {
+            AppContext.getInstance().Logger.warn(
+                `Error while querying google geocoding ${res.getBody()}`);
+            return null;
+        }
+
+        let parsed = JSON.parse(res.getBody());
+        for (let result of parsed.results) {
+            for (let addressComponent of result.address_components) {
+                if (addressComponent.types.includes('locality')) {
+                    return addressComponent.long_name;
+                }
+            }
+        }
+        return null;
+    }
 }
 
 class User extends DBObject {

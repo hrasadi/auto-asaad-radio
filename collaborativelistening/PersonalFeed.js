@@ -9,6 +9,9 @@ const FeedEntry = F.FeedEntry;
 const U = require('../collaborativelistening/UserManager');
 const User = U.User;
 
+const P = require('../entities/Program');
+const Program = P.Program;
+
 const moment = require('moment-timezone');
 
 class PersonalFeed extends Feed {
@@ -58,10 +61,17 @@ class PersonalFeed extends Feed {
         }
     }
 
-    registerProgramForUser(program, targetDate, user) {
+    registerProgramForUser(unpersonalizedProgram, targetDate, user) {
+        let program = new Program(
+            unpersonalizedProgram,
+            unpersonalizedProgram._parentBox
+        );
         let feedEntry = new PersonalFeedEntry();
 
         feedEntry.UserId = user.Id;
+
+        // If users city is undetermied, try to find it out
+        AppContext.getInstance().UserManager.fixUserMissingData(user);
 
         // Override program name if configured so
         let programTitle = program.Title;

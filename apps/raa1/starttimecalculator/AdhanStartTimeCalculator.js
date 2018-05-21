@@ -34,7 +34,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     calculate(targetDate, scheduleObj, user) {
         this.validate(scheduleObj);
 
-        if (!user || !user.City) {
+        if (!user || !user.Latitude || !user.Longitude) {
             user = this._adhanConf;
         }
 
@@ -47,9 +47,8 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         // errorneous city detection if there is space in city name
         // surround values in "" to workaround this.
         let qs = queryString.stringify({
-            country: `"${user.Country}"`,
-            state: `"${user.State}"`,
-            city: `"${user.City}"`,
+            latitute: `${user.Latitude}`,
+            longitude: `${user.Longitude}`,
             method: this._adhanConf.CalculationMethod,
         });
         qs = DateUtils.getEpochSeconds(
@@ -62,7 +61,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         let res = request(
             'GET',
             'http://api.aladhan.com' +
-            '/timingsByCity/' +
+            '/timings/' +
             qs
         );
 
