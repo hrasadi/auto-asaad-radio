@@ -47,7 +47,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         // errorneous city detection if there is space in city name
         // surround values in "" to workaround this.
         let qs = queryString.stringify({
-            latitute: `${user.Latitude}`,
+            latitude: `${user.Latitude}`,
             longitude: `${user.Longitude}`,
             method: this._adhanConf.CalculationMethod,
         });
