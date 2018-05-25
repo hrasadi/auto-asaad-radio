@@ -22,16 +22,16 @@ class UserManager extends DBProvider {
 
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS "USER" (Id TEXT PRIMARY_KEY, ' +
-                'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
-                'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
-                'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +
-                'NotificationExcludedPersonalPrograms TEXT, ' +
-                'NotifyOnPublicProgram INTEGER, ' +
-                'NotificationExcludedPublicPrograms TEXT, ' +
-                'NotifyOnLiveProgram INTEGER, LastActive REAL, UNIQUE(Id))'
+            'DeviceType INTEGER, IP TEXT, TimeZone TEXT, Latitude REAL, ' +
+            'Longitude REAL, Country TEXT, State TEXT, City TEXT, ' +
+            'NotificationToken TEXT, NotifyOnPersonalProgram INTEGER, ' +
+            'NotificationExcludedPersonalPrograms TEXT, ' +
+            'NotifyOnPublicProgram INTEGER, ' +
+            'NotificationExcludedPublicPrograms TEXT, ' +
+            'NotifyOnLiveProgram INTEGER, LastActive REAL, UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS user_notification_token_idx ' +
-                                                    'ON User(NotificationToken)');
+            'ON User(NotificationToken)');
         this._db.runSync('CREATE INDEX IF NOT EXISTS user_id_idx ON User(Id)');
 
         this._type = User;
@@ -135,13 +135,19 @@ class UserManager extends DBProvider {
         }
 
         let parsed = JSON.parse(res.getBody());
-        for (let result of parsed.results) {
-            for (let addressComponent of result.address_components) {
-                if (addressComponent.types.includes('locality')) {
-                    return addressComponent.long_name;
+        for (let lookupType of ['locality',
+                'administrative_area_level_4',
+                'administrative_area_level_3',
+                'administrative_area_level_2']) {
+            for (let result of parsed.results) {
+                for (let addressComponent of result.address_components) {
+                    if (addressComponent.types.includes(lookupType)) {
+                        return addressComponent.long_name;
+                    }
                 }
             }
         }
+        // non of the types returned an acceptable result
         return null;
     }
 }
