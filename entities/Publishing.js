@@ -24,7 +24,15 @@ class Publishing extends Entity {
     }
 
     set Archive(value) {
-        this._archive = value;
+        if (typeof value === 'boolean') {
+            this._archive = value;
+        } else {
+            if (value && value.toLowerCase() === 'true') {
+                this._archive = true;
+            } else {
+                this._archive = false;
+            }
+        }
     }
 
     get Podcast() {
@@ -32,7 +40,15 @@ class Publishing extends Entity {
     }
 
     set Podcast(value) {
-        this._podcast = value;
+        if (typeof value === 'boolean') {
+            this._podcast = value;
+        } else {
+            if (value && value.toLowerCase() === 'true') {
+                this._podcast = true;
+            } else {
+                this._podcast = false;
+            }
+        }
     }
 
     get PodcastFeed() {

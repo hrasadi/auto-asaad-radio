@@ -136,6 +136,7 @@ class UserManager extends DBProvider {
 
         let parsed = JSON.parse(res.getBody());
         for (let lookupType of ['locality',
+                'administrative_area_level_5',
                 'administrative_area_level_4',
                 'administrative_area_level_3',
                 'administrative_area_level_2']) {
