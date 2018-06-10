@@ -181,13 +181,12 @@ class Raa1LineupGenerator extends LineupGenerator {
         ) {
             if (this._productionMode) {
                 execSync(
-                    'echo \'cd ' +
-                        __dirname +
-                        '; NODE_ENV=production ' +
-                        process.argv.join(' ') +
-                        '\' | at -t ' +
-                        tomorrowMomentInOurZone.format('YYYYMMDDHHmm.ss') +
-                        ' 2>&1'
+                    `echo \'cd ${__dirname}                                  \
+                        ; NODE_ENV=production                                \
+                        node ${__filename} ${this._confFilePath}             \
+                        ${this._pinfoDirectoryFilePath}\' | at -t            \
+                        ${tomorrowMomentInOurZone.format('YYYYMMDDHHmm.ss')} \
+                        2>&1`
                 );
                 fs.writeFileSync(
                     lockFilePath,
