@@ -37,13 +37,14 @@ class Raa1UserManager extends UserManager {
     initAPNS() {
         // Configure APN endpoint
         let apnProviderOptions = {
+            token: {},
             production: true,
         };
 
-        apnProviderOptions.cert =
-            AppContext.getInstance().CWD + '/' + this._credentials.APNS.cert;
-        apnProviderOptions.key =
+        apnProviderOptions.token.key =
             AppContext.getInstance().CWD + '/' + this._credentials.APNS.key;
+        apnProviderOptions.token.keyId = this._credentials.APNS.keyId;
+        apnProviderOptions.token.teamId = this._credentials.APNS.teamId;
 
         this._apnProvider = new apn.Provider(apnProviderOptions);
     }
