@@ -70,8 +70,8 @@ class LineupGenerator extends AppContext {
             if (!this.GeneratorOptions.TestMode) {
                 daysToCompile = moment(DateUtils.getTodayString())
                                 .diff(moment(this._targetDate), 'days') + 1;
-                // And we cannot surpass the plans we created
-                daysToCompile = Math.min(daysToCompile,
+                // Compile up to today or to catch up to days we planned ahead
+                daysToCompile = Math.max(daysToCompile,
                                         this.GeneratorOptions.PlanAheadDays);
             }
 
