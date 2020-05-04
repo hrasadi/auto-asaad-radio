@@ -57,7 +57,14 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         let parsed = this.aladhanTimings(epochAndQueryString);
 
         if (!this.validateTimingsDate(parsed, targetDateInAPIFormat)) {
-            // Explain the bug
+            // For the western hemesphere, passing the date (e.g. '03-04-2020') to the
+            // API returns the timings for the day before (i.e. '02-04-2020'). This is
+            // probably due to a bug where the API cannot determine the correct timezone
+            // when parsing the requests.
+            // As a workaround, we compare the returned date (used by API to perform
+            // calculations) with our target date and call the API again with a "today+1"
+            // timestamp if the API is returning wrong values.
+            // This should be considered a hack and should be fixed in the upstream API
             epochAndQueryString = DateUtils.getEpochSeconds(
                 DateUtils.getDateStartMomentInUTC(targetDate).add(1, 'day')) + '?' + qs;
             parsed = this.aladhanTimings(epochAndQueryString);
