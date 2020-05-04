@@ -6,14 +6,12 @@ const DateUtils = require('../../../DateUtils');
 const moment = require('moment');
 const request = require('sync-request');
 const queryString = require('query-string');
-const md5 = require('md5');
 
 class AdhanStartTimeCalculator extends StartTimeCalculator {
     constructor(adhanConf) {
         super();
 
         this._adhanConf = adhanConf;
-        this._timingsCache = {};
     }
 
     validate(scheduleObj) {
@@ -43,6 +41,8 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     }
 
     readAdhanTimings(targetDate, user) {
+        let targetDateInAPIFormat = moment(targetDate, 'DD-MM-YYYY');
+
         // There is a bug in aladhan API and that results in
         // errorneous city detection if there is space in city name
         // surround values in "" to workaround this.
@@ -51,13 +51,39 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
             longitude: `${user.Longitude}`,
             method: this._adhanConf.CalculationMethod,
         });
-        qs = DateUtils.getEpochSeconds(
-                DateUtils.getDateStartMomentInUTC(targetDate)) + '?' + qs;
 
-        if (this._timingsCache[md5(qs)]) {
-            return this._timingsCache[md5(qs)];
+        let epochAndQueryString = DateUtils.getEpochSeconds(
+            DateUtils.getDateStartMomentInUTC(targetDate)) + '?' + qs;
+        let parsed = this.aladhanTimings(epochAndQueryString);
+
+        if (!this.validateTimingsDate(parsed, targetDateInAPIFormat)) {
+            // Explain the bug
+            epochAndQueryString = DateUtils.getEpochSeconds(
+                DateUtils.getDateStartMomentInUTC(targetDate).add(1, 'day')) + '?' + qs;
+            parsed = this.aladhanTimings(epochAndQueryString);
+            if (!this.validateTimingsDate(parsed, targetDateInAPIFormat)) {
+                throw Error('Could not find a working combination for target date: '
+                    + targetDate);
+            }
         }
 
+        let dateTimings = {};
+        for (let adhanName in parsed.data.timings) {
+            if (parsed.data.timings.hasOwnProperty(adhanName)) {
+                let timingLocalMoment = moment.tz(
+                    targetDate + ' ' + parsed.data.timings[adhanName],
+                    'YYYY-MM-DD HH:mm',
+                    parsed.data.meta.timezone
+                );
+
+                dateTimings[adhanName] = timingLocalMoment;
+            }
+        }
+
+        return dateTimings;
+    }
+
+    aladhanTimings(qs) {
         let res = request(
             'GET',
             'http://api.aladhan.com' +
@@ -78,25 +104,21 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
         if (res.statusCode > 300) {
             throw Error('Error while reading adhan times for given request: ' + qs);
         }
-        let parsed = JSON.parse(res.getBody());
+        return JSON.parse(res.getBody());
+    }
 
-        let dateTimings = {};
-        for (let adhanName in parsed.data.timings) {
-            if (parsed.data.timings.hasOwnProperty(adhanName)) {
-                let timingLocalMoment = moment.tz(
-                    targetDate + ' ' + parsed.data.timings[adhanName],
-                    'YYYY-MM-DD HH:mm',
-                    parsed.data.meta.timezone
-                );
-
-                dateTimings[adhanName] = timingLocalMoment;
-            }
+    /**
+     *
+     * @param {object} parsedTimings JSON object containing the API call repose
+     * @param {string} targetDate the target date in DD-MM-YYYY format
+     * @return {boolean} true if the percieved date by API was equal to our
+     * target date, otherwise false
+     */
+    validateTimingsDate(parsedTimings, targetDate) {
+        if (parsedTimings.data.date.gregorian.date == targetDate) {
+            return true;
         }
-
-        // Cache for future use
-        this._timingsCache[md5(qs)] = dateTimings;
-
-        return dateTimings;
+        return false;
     }
 }
 
