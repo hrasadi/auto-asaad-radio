@@ -41,7 +41,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     }
 
     readAdhanTimings(targetDate, user) {
-        let targetDateInAPIFormat = moment(targetDate, 'DD-MM-YYYY');
+        let targetDateInAPIFormat = moment(targetDate).format('DD-MM-YYYY');
 
         // There is a bug in aladhan API and that results in
         // errorneous city detection if there is space in city name
