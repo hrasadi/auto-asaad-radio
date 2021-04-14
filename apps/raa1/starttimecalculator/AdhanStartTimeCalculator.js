@@ -102,7 +102,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     aladhanTimings(qs) {
         let res = request(
             'GET',
-            this._adhanConf.AladhanAPIEndpoint, +
+            this._adhanConf.AladhanAPIEndpoint +
             '/timings/' +
             qs
         );
