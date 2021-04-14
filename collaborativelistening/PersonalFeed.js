@@ -26,8 +26,8 @@ class PersonalFeed extends Feed {
         this._db.runSync(
             'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
             '(Id TEXT PRIMARY_KEY, ' +
-            'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-            'ExpirationTimestamp REAL, UNIQUE(Id))'
+            'Program TEXT, UserId TEXT, ReleaseTimestamp REAL, ' +
+            'ShowStartOffset REAL, ExpirationTimestamp REAL, UNIQUE(Id))'
         );
         this._db.runSync('CREATE INDEX IF NOT EXISTS personalfeedentry_id_idx ON ' +
             'PersonalFeedEntry(Id)');
@@ -36,8 +36,8 @@ class PersonalFeed extends Feed {
             this._historyProdiver._db.runSync(
                 'CREATE TABLE IF NOT EXISTS PERSONALFEEDENTRY ' +
                 '(Id TEXT PRIMARY_KEY, ' +
-                'Program TEXT, UserId TEXT, ReleaseTimestamp REAL,' +
-                'ExpirationTimestamp REAL, UNIQUE(Id))'
+                'Program TEXT, UserId TEXT, ReleaseTimestamp REAL, ' +
+                'ShowStartOffset REAL, ExpirationTimestamp REAL, UNIQUE(Id))'
             );
         }
 
@@ -96,29 +96,25 @@ class PersonalFeed extends Feed {
                 'seconds'
             );
             releaseMoment = moment(releaseMoment).subtract(offset, 'seconds');
+            // If there is a PreShow, also store the offset which will be used in the apps
+            // to rebuild the ShowStartTime for the customer.
+            feedEntry.ShowStartOffset = offset;
         }
-
-        if (releaseMoment) {
-            feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(releaseMoment);
-        } else {
-            feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(
-                program.Metadata.StartTime
-            );
-        }
+        feedEntry.ReleaseTimestamp = DateUtils.getEpochSeconds(releaseMoment);
 
         feedEntry.ExpirationTimestamp = DateUtils.getEpochSeconds(
             moment
-            .unix(feedEntry.ReleaseTimestamp)
-            .add(program.Metadata.Duration, 'seconds')
+                .unix(feedEntry.ReleaseTimestamp)
+                .add(program.Metadata.Duration, 'seconds')
         );
-        feedEntry.Program = program;
-
         // If the feed is already expired, why publish?
         // This case might happen when we are replanning
         // dates from the past.
         if (feedEntry.ExpirationTimestamp < moment().unix()) {
             return;
         }
+
+        feedEntry.Program = program;
 
         try {
             if (AppContext.getInstance('LineupGenerator').GeneratorOptions.TestMode) {
@@ -150,12 +146,14 @@ class PersonalFeed extends Feed {
 
         for (let dateString of [yesterday, today]) {
             let lineup = AppContext.getInstance()
-                                .LineupManager.getPublishedLineup(dateString);
+                .LineupManager.getPublishedLineup(dateString);
 
-            for (let box of lineup.Boxes) {
-                for (let program of box.Programs) {
-                    if (program.Publishing.CollaborativeListeningFeed === 'Personal') {
-                        this.registerProgramForUser(program, dateString, user);
+            if (lineup != null) {
+                for (let box of lineup.Boxes) {
+                    for (let program of box.Programs) {
+                        if (program.Publishing.CollaborativeListeningFeed === 'Personal') {
+                            this.registerProgramForUser(program, dateString, user);
+                        }
                     }
                 }
             }
@@ -230,6 +228,18 @@ class PersonalFeedEntry extends FeedEntry {
     set UserId(value) {
         this._userId = value;
         this.refreshId();
+    }
+
+    /**
+     * The timestamp of the switching between pre-show and the show pieces of
+     * the program in the personal feed.
+     */
+    get ShowStartOffset() {
+        return this._showStartOffset;
+    }
+
+    set ShowStartOffset(value) {
+        this._showStartOffset = value;
     }
 }
 
