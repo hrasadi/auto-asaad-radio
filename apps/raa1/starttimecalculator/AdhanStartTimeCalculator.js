@@ -43,6 +43,14 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     readAdhanTimings(targetDate, user) {
         let targetDateInAPIFormat = moment(targetDate).format('DD-MM-YYYY');
 
+        // The calculateStartTimeMethod can create up to 1 minute of error,
+        // where start time is sooner than Adhan. In order to play safe, we
+        // we offset all the times by one minutes (except for Fajr time where
+        // we actually prefer sooner Adhan for fasting).
+        // API allows tuning times by providing the comma separated "tune" string:
+        // tune=Imsak,Fajr,Sunrise,Zhuhr,Asr,Sunset,Maghrib,Isha,Midnight
+        let tuneString = '0,0,1,1,1,1,1,1,1';
+
         // There is a bug in aladhan API and that results in
         // errorneous city detection if there is space in city name
         // surround values in "" to workaround this.
@@ -50,6 +58,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
             latitude: `${user.Latitude}`,
             longitude: `${user.Longitude}`,
             method: this._adhanConf.CalculationMethod,
+            tune: tuneString,
         });
 
         let epochAndQueryString = DateUtils.getEpochSeconds(
@@ -93,7 +102,7 @@ class AdhanStartTimeCalculator extends StartTimeCalculator {
     aladhanTimings(qs) {
         let res = request(
             'GET',
-            'http://api.aladhan.com' +
+            this._adhanConf.AladhanAPIEndpint, +
             '/timings/' +
             qs
         );
