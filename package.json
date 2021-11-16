@@ -4,7 +4,7 @@
   "description": "Auto-asaad is a set of scripts for social media automation",
   "dependencies": {
     "apn": "^2.2.0",
-    "aws-sdk": "^2.188.0",
+    "aws-sdk": "^2.814.0",
     "better-sqlite3": "^4.1.0",
     "body-parser": "^1.18.2",
     "child_process": "^1.0.2",
